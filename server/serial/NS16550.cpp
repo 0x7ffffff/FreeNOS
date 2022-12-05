@@ -19,34 +19,28 @@
 #include <FreeNOS/User.h>
 #include "NS16550.h"
 
-template<> SerialDevice* AbstractFactory<SerialDevice>::create()
-{
+template<>
+SerialDevice *AbstractFactory<SerialDevice>::create() {
     return new NS16550(UART0_IRQ);
 }
 
 NS16550::NS16550(const u32 irq)
-    : SerialDevice(irq)
-{
+        : SerialDevice(irq) {
     m_identifier << "serial0";
 }
 
-FileSystem::Result NS16550::initialize()
-{
-    if (!isKernel)
-    {
+FileSystem::Result NS16550::initialize() {
+    if (!isKernel) {
         // Remap IO base to ensure we have user-level access to the registers.
-        if (m_io.map(UART_BASE, PAGESIZE*2,
+        if (m_io.map(UART_BASE, PAGESIZE * 2,
                      Memory::User | Memory::Readable | Memory::Writable | Memory::Device)
-            != IO::Success)
-        {
+            != IO::Success) {
             return FileSystem::IOError;
         }
 
         // Disable receiving interrupts
         ProcessCtl(SELF, DisableIRQ, m_irq);
-    }
-    else
-    {
+    } else {
         m_io.setBase(UART_BASE);
     }
 
@@ -59,13 +53,10 @@ FileSystem::Result NS16550::initialize()
     // Use 8 bit data transmission, 1 stop bit, no parity
     m_io.write(LineControl, LineControl8Bits);
 
-    if (isKernel)
-    {
+    if (isKernel) {
         // Mask all interrupts.
         m_io.write(InterruptEnable, 0);
-    }
-    else
-    {
+    } else {
         // Enable Rx/Tx interrupts and FIFOs
         m_io.write(FifoControl, FifoControlTrigger1 | FifoControlEnable);
         m_io.write(InterruptEnable, ReceiveDataInterrupt);
@@ -75,79 +66,63 @@ FileSystem::Result NS16550::initialize()
     return FileSystem::Success;
 }
 
-FileSystem::Result NS16550::interrupt(const Size vector)
-{
+FileSystem::Result NS16550::interrupt(const Size vector) {
     // Mask interrupt until FIFOs are empty
     m_io.write(InterruptEnable, 0);
     return FileSystem::Success;
 }
 
-FileSystem::Result NS16550::read(IOBuffer & buffer,
-                                 Size & size,
-                                 const Size offset)
-{
+FileSystem::Result NS16550::read(IOBuffer &buffer,
+                                 Size &size,
+                                 const Size offset) {
     Size bytes = 0;
 
     // Read as much bytes as possible
-    while ((m_io.read(LineStatus) & LineStatusDataReady) && bytes < size)
-    {
+    while ((m_io.read(LineStatus) & LineStatusDataReady) && bytes < size) {
         u8 byte = m_io.read(ReceiveBuffer);
         buffer.bufferedWrite(&byte, 1);
         bytes++;
     }
 
     // Re-enable interrupts
-    if (!isKernel)
-    {
-        if (!(m_io.read(InterruptEnable) & ReceiveDataInterrupt))
-        {
+    if (!isKernel) {
+        if (!(m_io.read(InterruptEnable) & ReceiveDataInterrupt)) {
             m_io.write(InterruptEnable, ReceiveDataInterrupt);
             ProcessCtl(SELF, EnableIRQ, m_irq);
         }
     }
 
-    if (buffer.getCount())
-    {
+    if (buffer.getCount()) {
         size = buffer.getCount();
         return FileSystem::Success;
-    }
-    else
-    {
+    } else {
         return FileSystem::RetryAgain;
     }
 }
 
-FileSystem::Result NS16550::write(IOBuffer & buffer,
-                                  Size & size,
-                                  const Size offset)
-{
+FileSystem::Result NS16550::write(IOBuffer &buffer,
+                                  Size &size,
+                                  const Size offset) {
     Size bytes = 0;
 
     // Write as much bytes as possible
-    while (bytes < size)
-    {
+    while (bytes < size) {
         // Wait until TX fifo is empty
-        while (!(m_io.read(LineStatus) & LineStatusTxEmpty))
-        {
-            ;
+        while (!(m_io.read(LineStatus) & LineStatusTxEmpty)) { ;
         }
 
         m_io.write(TransmitHolding, buffer[bytes++]);
     }
 
-    if (bytes)
-    {
+    if (bytes) {
         size = bytes;
         return FileSystem::Success;
-    }
-    else
-    {
+    } else {
         return FileSystem::RetryAgain;
     }
 }
 
-void NS16550::setDivisorLatch(bool enabled)
-{
+void NS16550::setDivisorLatch(bool enabled) {
     // Set the divisor latch register
     u32 lc = m_io.read(LineControl);
 

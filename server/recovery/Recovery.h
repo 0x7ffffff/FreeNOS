@@ -26,21 +26,18 @@
  * @{
  */
 
-namespace Recovery
-{
+namespace Recovery {
     /**
      * Actions which may be performed on the recovery server.
      */
-    enum Action
-    {
+    enum Action {
         RestartProcess = 1
     };
 
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success = 0,
         IOError,
         InvalidArgument,

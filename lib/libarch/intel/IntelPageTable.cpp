@@ -37,35 +37,31 @@
 
 MemoryContext::Result IntelPageTable::map(Address virt,
                                           Address phys,
-                                          Memory::Access access)
-{
+                                          Memory::Access access) {
     // Check if the address is already mapped
-    if (m_pages[ TABENTRY(virt) ] & PAGE_PRESENT)
+    if (m_pages[TABENTRY(virt)] & PAGE_PRESENT)
         return MemoryContext::AlreadyExists;
 
     // Insert mapping
-    m_pages[ TABENTRY(virt) ] = phys | PAGE_PRESENT | flags(access);
+    m_pages[TABENTRY(virt)] = phys | PAGE_PRESENT | flags(access);
     return MemoryContext::Success;
 }
 
-MemoryContext::Result IntelPageTable::unmap(Address virt)
-{
-    m_pages[ TABENTRY(virt) ] = PAGE_NONE;
+MemoryContext::Result IntelPageTable::unmap(Address virt) {
+    m_pages[TABENTRY(virt)] = PAGE_NONE;
     return MemoryContext::Success;
 }
 
-MemoryContext::Result IntelPageTable::translate(Address virt, Address *phys) const
-{
-    if (!(m_pages[ TABENTRY(virt) ] & PAGE_PRESENT))
+MemoryContext::Result IntelPageTable::translate(Address virt, Address *phys) const {
+    if (!(m_pages[TABENTRY(virt)] & PAGE_PRESENT))
         return MemoryContext::InvalidAddress;
 
-    *phys = (m_pages[ TABENTRY(virt) ] & PAGEMASK);
+    *phys = (m_pages[TABENTRY(virt)] & PAGEMASK);
     return MemoryContext::Success;
 }
 
-MemoryContext::Result IntelPageTable::access(Address virt, Memory::Access *access) const
-{
-    u32 entry = m_pages[ TABENTRY(virt) ];
+MemoryContext::Result IntelPageTable::access(Address virt, Memory::Access *access) const {
+    u32 entry = m_pages[TABENTRY(virt)];
 
     if (!(entry & PAGE_PRESENT))
         return MemoryContext::InvalidAddress;
@@ -73,17 +69,16 @@ MemoryContext::Result IntelPageTable::access(Address virt, Memory::Access *acces
     *access = Memory::Readable;
 
     if (entry & PAGE_WRITE) *access |= Memory::Writable;
-    if (entry & PAGE_USER)  *access |= Memory::User;
+    if (entry & PAGE_USER) *access |= Memory::User;
 
     return MemoryContext::Success;
 }
 
-u32 IntelPageTable::flags(Memory::Access access) const
-{
+u32 IntelPageTable::flags(Memory::Access access) const {
     u32 f = 0;
 
     if (access & Memory::Writable) f |= PAGE_WRITE;
-    if (access & Memory::User)     f |= PAGE_USER;
+    if (access & Memory::User) f |= PAGE_USER;
 
     return f;
 }

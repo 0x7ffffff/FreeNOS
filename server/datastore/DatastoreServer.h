@@ -39,21 +39,20 @@
  *
  * Provides a key/value in-memory based data storage that can be used system wide.
  */
-class DatastoreServer : public ChannelServer<DatastoreServer, DatastoreMessage>
-{
-  private:
+class DatastoreServer : public ChannelServer<DatastoreServer, DatastoreMessage> {
+private:
 
     /** Maximum size of a single buffer */
     static const Size MaximumBufferSize = KiloByte(256);
 
-  public:
+public:
 
     /**
      * Class constructor function.
      */
     DatastoreServer();
 
-  private:
+private:
 
     /**
      * Retrieve current buffer table for given ProcessID.
@@ -62,7 +61,7 @@ class DatastoreServer : public ChannelServer<DatastoreServer, DatastoreMessage>
      *
      * @return Pointer to a HashTable on success, NULL on failure.
      */
-    HashTable<String, Address> * getBufferTable(const ProcessID pid);
+    HashTable <String, Address> *getBufferTable(const ProcessID pid);
 
     /**
      * Add a new buffer.
@@ -71,10 +70,11 @@ class DatastoreServer : public ChannelServer<DatastoreServer, DatastoreMessage>
      */
     void registerBuffer(DatastoreMessage *msg);
 
-  private:
+private:
 
     /** Per-process hash table with key to buffers mapping. */
-    HashTable<ProcessID, HashTable<String, Address> *> m_buffers;
+    HashTable<ProcessID, HashTable < String, Address> *>
+    m_buffers;
 };
 
 /**

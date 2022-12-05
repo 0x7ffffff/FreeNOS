@@ -50,18 +50,17 @@
  * @todo Add a fault injection tester that modifies the memory of running programs to introduce/simulate
  *       software errors and verify that the system keeps running while the programs are restarted.
  */
-class RecoveryServer : public ChannelServer<RecoveryServer, RecoveryMessage>
-{
-  private:
+class RecoveryServer : public ChannelServer<RecoveryServer, RecoveryMessage> {
+private:
 
-  public:
+public:
 
     /**
      * Class constructor function.
      */
     RecoveryServer();
 
-  private:
+private:
 
     /**
      * Restart a process.

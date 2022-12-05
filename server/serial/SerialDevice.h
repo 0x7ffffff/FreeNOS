@@ -35,9 +35,8 @@
  * Provides sequential byte stream of incoming (RX) and outgoing (TX) data.
  */
 class SerialDevice : public Device,
-                     public AbstractFactory<SerialDevice>
-{
-  public:
+                     public AbstractFactory<SerialDevice> {
+public:
 
     /**
      * Constructor
@@ -56,7 +55,7 @@ class SerialDevice : public Device,
     /** Keeps track of inode number for SerialDevices */
     static u32 inodeNumber;
 
-  protected:
+protected:
 
     /** interrupt vector */
     const u32 m_irq;

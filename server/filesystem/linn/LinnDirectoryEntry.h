@@ -41,8 +41,7 @@
 /**
  * Struct of an directory entry in LinnFS.
  */
-typedef struct LinnDirectoryEntry
-{
+typedef struct LinnDirectoryEntry {
     /** Inode number. */
     le32 inode;
 
@@ -52,7 +51,7 @@ typedef struct LinnDirectoryEntry
     /** File name. Null terminated. */
     char name[LINN_DIRENT_NAME_LEN];
 }
-LinnDirectoryEntry;
+        LinnDirectoryEntry;
 
 /**
  * @}

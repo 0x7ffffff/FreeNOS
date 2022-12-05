@@ -29,23 +29,20 @@
 #define INTERRUPT_DISABLEIRQ1     (INTERRUPT_BASE_ADDR+0x21C)
 #define INTERRUPT_DISABLEIRQ2     (INTERRUPT_BASE_ADDR+0x220)
 #define INTERRUPT_DISABLEBASICIRQ (INTERRUPT_BASE_ADDR+0x224)
-   #define IRQSYSTIMERC1 1
-   #define IRQSYSTIMERC3 3
-   #define IRQAUX        29
-   #define IRQUART       57
+#define IRQSYSTIMERC1 1
+#define IRQSYSTIMERC3 3
+#define IRQAUX        29
+#define IRQUART       57
 
-BroadcomInterrupt::BroadcomInterrupt() : IntController()
-{
+BroadcomInterrupt::BroadcomInterrupt() : IntController() {
     // disable all IRQ sources first, just to be "safe"
     m_io.write(INTERRUPT_DISABLEIRQ1, 0xFFFFFFFF);
     m_io.write(INTERRUPT_DISABLEIRQ2, 0xFFFFFFFF);
 }
 
-BroadcomInterrupt::Result BroadcomInterrupt::enable(uint vector)
-{
+BroadcomInterrupt::Result BroadcomInterrupt::enable(uint vector) {
     // enable the respective interrupt
-    if(vector < 32)
-    {
+    if (vector < 32) {
         // only 1 bits are recognized when writing to the (en/dis)able regs.
         // using |= here could be problematic since it would likely be
         // implemented as multiple instructions: at least a read, an or,
@@ -54,44 +51,34 @@ BroadcomInterrupt::Result BroadcomInterrupt::enable(uint vector)
         // routine, the |= would write back the old state of the enable
         // bits. This would effectively be re-enabling interrupts that we
         // wanted disabled.
-        m_io.write(INTERRUPT_ENABLEIRQ1, (1<<vector));
-    }
-    else
-    {
-        m_io.write(INTERRUPT_ENABLEIRQ2, (1<<(vector-32)));
+        m_io.write(INTERRUPT_ENABLEIRQ1, (1 << vector));
+    } else {
+        m_io.write(INTERRUPT_ENABLEIRQ2, (1 << (vector - 32)));
     }
     return Success;
 }
 
-BroadcomInterrupt::Result BroadcomInterrupt::disable(uint vector)
-{
+BroadcomInterrupt::Result BroadcomInterrupt::disable(uint vector) {
     // disable IRQs for this device before NULL-ing the vector. otherwise,
     // we might interrupt with a NULL_VECT in the handler's address.
     // because the interrupt wasn't ACKed because we never went to the
     // handler routine, the device will continue to assert its IRQ line,
     // which will put us in a never-ending IRQ loop.
-    if(vector < 32)
-    {
-        m_io.write(INTERRUPT_DISABLEIRQ1, (1<<vector));
-    }
-    else
-    {
-        m_io.write(INTERRUPT_DISABLEIRQ2, (1<<(vector-32)));
+    if (vector < 32) {
+        m_io.write(INTERRUPT_DISABLEIRQ1, (1 << vector));
+    } else {
+        m_io.write(INTERRUPT_DISABLEIRQ2, (1 << (vector - 32)));
     }
     return Success;
 }
 
-BroadcomInterrupt::Result BroadcomInterrupt::clear(uint vector)
-{
+BroadcomInterrupt::Result BroadcomInterrupt::clear(uint vector) {
     return Success;
 }
 
-BroadcomInterrupt::Result BroadcomInterrupt::nextPending(uint & irq)
-{
-    for (Size i = 0; i < 64; i++)
-    {
-        if (isTriggered(i))
-        {
+BroadcomInterrupt::Result BroadcomInterrupt::nextPending(uint &irq) {
+    for (Size i = 0; i < 64; i++) {
+        if (isTriggered(i)) {
             irq = i;
             return Success;
         }
@@ -100,13 +87,12 @@ BroadcomInterrupt::Result BroadcomInterrupt::nextPending(uint & irq)
     return NotFound;
 }
 
-bool BroadcomInterrupt::isTriggered(u32 vector)
-{
+bool BroadcomInterrupt::isTriggered(u32 vector) {
     u32 basic = m_io.read(INTERRUPT_BASICPEND);
 
-    switch (vector)
-    {
-        case 9: return (basic & (1 << 11));
+    switch (vector) {
+        case 9:
+            return (basic & (1 << 11));
     }
     u32 pend1 = m_io.read(INTERRUPT_IRQPEND1);
     u32 pend2 = m_io.read(INTERRUPT_IRQPEND2);
@@ -114,5 +100,5 @@ bool BroadcomInterrupt::isTriggered(u32 vector)
     if (vector < 32)
         return (pend1 & (1 << vector));
     else
-        return (pend2 & (1 << (vector-32)));
+        return (pend2 & (1 << (vector - 32)));
 }

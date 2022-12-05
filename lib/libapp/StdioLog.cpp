@@ -16,20 +16,21 @@
  */
 
 #ifndef __HOST__
+
 #include <FreeNOS/User.h>
+
 #endif /* __HOST__ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include "StdioLog.h"
 
-StdioLog::StdioLog() : Log()
-{
+StdioLog::StdioLog() : Log() {
 }
 
-void StdioLog::write(const char *str)
-{
+void StdioLog::write(const char *str) {
     const ssize_t result = ::write(1, str, strlen(str));
 
     // We do not really care about this result. Writing to standard
@@ -38,8 +39,7 @@ void StdioLog::write(const char *str)
     (void) result;
 }
 
-void StdioLog::terminate() const
-{
+void StdioLog::terminate() const {
 #ifndef __HOST__
     PrivExec(Panic);
 #endif /* __HOST__ */

@@ -26,25 +26,21 @@
 #include "WriteCommand.h"
 
 WriteCommand::WriteCommand()
-    : ShellCommand("write", 2)
-{
+        : ShellCommand("write", 2) {
     m_help = "Write data to a file";
 }
 
-int WriteCommand::execute(const Size nparams, const char **params)
-{
+int WriteCommand::execute(const Size nparams, const char **params) {
     int fd;
     String buf;
-    
+
     // Attempt to open the file first
-    if ((fd = open(params[0], O_WRONLY)) < 0)
-    {
+    if ((fd = open(params[0], O_WRONLY)) < 0) {
         ERROR("failed to open `" << params[0] << "': " << strerror(errno));
         return EXIT_FAILURE;
     }
     // Fill write buffer
-    for (Size i = 1; i < nparams; i++)
-    {
+    for (Size i = 1; i < nparams; i++) {
         buf << params[i];
         buf << " ";
     }
@@ -52,8 +48,7 @@ int WriteCommand::execute(const Size nparams, const char **params)
     buf << "\n";
 
     // Write buffer to the file
-    if (write(fd, *buf, buf.length()) < 0)
-    {
+    if (write(fd, *buf, buf.length()) < 0) {
         ERROR("failed to write `" << params[0] << "': " << strerror(errno));
         return EXIT_FAILURE;
     }

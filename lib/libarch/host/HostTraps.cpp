@@ -25,10 +25,8 @@
 #include "HostShares.h"
 #include "HostTraps.h"
 
-static API::Result hostPrivExecHandler(PrivOperation op, Address addr)
-{
-    switch (op)
-    {
+static API::Result hostPrivExecHandler(PrivOperation op, Address addr) {
+    switch (op) {
         case RebootSystem:
             ::exit(1);
             break;
@@ -58,21 +56,17 @@ static API::Result hostPrivExecHandler(PrivOperation op, Address addr)
 static API::Result hostProcessCtlHandler(ProcessID procID,
                                          ProcessOperation action,
                                          Address addr,
-                                         Address output)
-{
-    switch (action)
-    {
+                                         Address output) {
+    switch (action) {
         case GetPID:
             return (API::Result) getpid();
 
-        case EnterSleep:
-        {
+        case EnterSleep: {
             usleep(100000);
             return API::Success;
         }
 
-        case InfoTimer:
-        {
+        case InfoTimer: {
             Timer::Info *info = (Timer::Info *) addr;
             info->frequency = 250;
             info->ticks = 128;
@@ -86,34 +80,30 @@ static API::Result hostProcessCtlHandler(ProcessID procID,
     return API::InvalidArgument;
 }
 
-static API::Result hostSystemInfoHandler(SystemInformation *info)
-{
+static API::Result hostSystemInfoHandler(SystemInformation *info) {
     // Clear the structure and fill strings
     MemoryBlock::set(info, 0, sizeof(*info));
     MemoryBlock::copy(info->cmdline, (char *) "kernel", sizeof(info->cmdline));
 
     // Set various members
-    info->version     = VERSIONCODE;
-    info->memorySize  = MegaByte(256);
+    info->version = VERSIONCODE;
+    info->memorySize = MegaByte(256);
     info->memoryAvail = MegaByte(128);
-    info->coreId      = 0;
+    info->coreId = 0;
 
     return API::Success;
 }
 
 static API::Result hostVMCopyHandler(ProcessID procID, API::Operation how, Address ours,
-                                     Address theirs, Size sz)
-{
-    if (procID == SELF || procID == (ProcessID)getpid())
-    {
-        switch (how)
-        {
+                                     Address theirs, Size sz) {
+    if (procID == SELF || procID == (ProcessID) getpid()) {
+        switch (how) {
             case API::Read:
-                MemoryBlock::copy((void *)ours, (void *)theirs, sz);
+                MemoryBlock::copy((void *) ours, (void *) theirs, sz);
                 return API::Success;
 
             case API::Write:
-                MemoryBlock::copy((void *)theirs, (void *)ours, sz);
+                MemoryBlock::copy((void *) theirs, (void *) ours, sz);
                 return API::Success;
 
             default:
@@ -126,42 +116,32 @@ static API::Result hostVMCopyHandler(ProcessID procID, API::Operation how, Addre
 
 static API::Result hostVMCtlHandler(ProcessID procID,
                                     MemoryOperation op,
-                                    Memory::Range *range)
-{
-    switch (op)
-    {
-        case UnMap:
-        {
+                                    Memory::Range *range) {
+    switch (op) {
+        case UnMap: {
             return API::Success;
         }
 
-        case LookupVirtual:
-        {
+        case LookupVirtual: {
             range->phys = range->virt;
             return API::Success;
         }
 
-        case MapContiguous:
-        {
-            if (range->virt == ZERO)
-            {
-                if (range->phys == ZERO)
-                {
-                    range->virt = (Address) new u8[range->size];
-                }
-                else
-                {
+        case MapContiguous: {
+            if (range->virt == ZERO) {
+                if (range->phys == ZERO) {
+                    range->virt = (Address)
+                    new u8[range->size];
+                } else {
                     range->virt = range->phys;
                 }
             }
             return API::Success;
         }
 
-        case Release:
-        {
-            if (range->virt != 0 && range->size != 0)
-            {
-                delete[] (u8 *)(range->virt);
+        case Release: {
+            if (range->virt != 0 && range->size != 0) {
+                delete[] (u8 * )(range->virt);
             }
         }
 
@@ -174,10 +154,8 @@ static API::Result hostVMCtlHandler(ProcessID procID,
 
 static API::Result hostVMShareHandler(ProcessID procID,
                                       API::Operation op,
-                                      ProcessShares::MemoryShare *share)
-{
-    switch (op)
-    {
+                                      ProcessShares::MemoryShare *share) {
+    switch (op) {
         case API::Create:
             return HostShareManager::instance()->createShare(procID, share);
 
@@ -197,10 +175,8 @@ static API::Result hostVMShareHandler(ProcessID procID,
     return API::InvalidArgument;
 }
 
-static API::Result hostApiHandler(ulong api, ulong arg1, ulong arg2, ulong arg3, ulong arg4, ulong arg5)
-{
-    switch (api)
-    {
+static API::Result hostApiHandler(ulong api, ulong arg1, ulong arg2, ulong arg3, ulong arg4, ulong arg5) {
+    switch (api) {
         case API::PrivExecNumber:
             return hostPrivExecHandler((PrivOperation) arg1, arg2);
 
@@ -226,27 +202,22 @@ static API::Result hostApiHandler(ulong api, ulong arg1, ulong arg2, ulong arg3,
     return API::InvalidArgument;
 }
 
-ulong trapKernel1(ulong num, ulong arg1)
-{
+ulong trapKernel1(ulong num, ulong arg1) {
     return hostApiHandler(num, arg1, 0, 0, 0, 0);
 }
 
-ulong trapKernel2(ulong num, ulong arg1, ulong arg2)
-{
+ulong trapKernel2(ulong num, ulong arg1, ulong arg2) {
     return hostApiHandler(num, arg1, arg2, 0, 0, 0);
 }
 
-ulong trapKernel3(ulong num, ulong arg1, ulong arg2, ulong arg3)
-{
+ulong trapKernel3(ulong num, ulong arg1, ulong arg2, ulong arg3) {
     return hostApiHandler(num, arg1, arg2, arg3, 0, 0);
 }
 
-ulong trapKernel4(ulong num, ulong arg1, ulong arg2, ulong arg3, ulong arg4)
-{
+ulong trapKernel4(ulong num, ulong arg1, ulong arg2, ulong arg3, ulong arg4) {
     return hostApiHandler(num, arg1, arg2, arg3, arg4, 0);
 }
 
-ulong trapKernel5(ulong num, ulong arg1, ulong arg2, ulong arg3, ulong arg4, ulong arg5)
-{
+ulong trapKernel5(ulong num, ulong arg1, ulong arg2, ulong arg3, ulong arg4, ulong arg5) {
     return hostApiHandler(num, arg1, arg2, arg3, arg4, arg5);
 }

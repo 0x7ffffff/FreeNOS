@@ -24,8 +24,7 @@
 #include "unistd.h"
 #include "sys/stat.h"
 
-DIR * opendir(const char *dirname)
-{
+DIR *opendir(const char *dirname) {
     Dirent *dirent;
     DIR *dir;
     int fd;
@@ -33,14 +32,12 @@ DIR * opendir(const char *dirname)
     Error e;
 
     // First stat the directory
-    if (stat(dirname, &st) < 0)
-    {
+    if (stat(dirname, &st) < 0) {
         return (ZERO);
     }
 
     // Try to open the directory
-    if ((fd = open(dirname, ZERO)) < 0)
-    {
+    if ((fd = open(dirname, ZERO)) < 0) {
         return (ZERO);
     }
 
@@ -50,16 +47,15 @@ DIR * opendir(const char *dirname)
 
     // Allocate DIR object
     dir = new DIR;
-    dir->fd        = fd;
-    dir->buffer    = new struct dirent[1024];
+    dir->fd = fd;
+    dir->buffer = new struct dirent[1024];
     memset(dir->buffer, 0, 1024 * sizeof(struct dirent));
-    dir->current   = 0;
-    dir->count     = 0;
-    dir->eof       = false;
+    dir->current = 0;
+    dir->count = 0;
+    dir->eof = false;
 
     // Read them all
-    if ((e = read(fd, dirent, sizeof(Dirent) * 1024)) < 0)
-    {
+    if ((e = read(fd, dirent, sizeof(Dirent) * 1024)) < 0) {
         e = errno;
         closedir(dir);
         errno = e;
@@ -67,18 +63,17 @@ DIR * opendir(const char *dirname)
     }
 
     // Fill in the dirent structs
-    for (Size i = 0; i < e / sizeof(Dirent); i++)
-    {
+    for (Size i = 0; i < e / sizeof(Dirent); i++) {
         u8 types[] =
-        {
-            DT_REG,
-            DT_DIR,
-            DT_BLK,
-            DT_CHR,
-            DT_LNK,
-            DT_FIFO,
-            DT_SOCK,
-        };
+                {
+                        DT_REG,
+                        DT_DIR,
+                        DT_BLK,
+                        DT_CHR,
+                        DT_LNK,
+                        DT_FIFO,
+                        DT_SOCK,
+                };
         strlcpy((dir->buffer)[i].d_name, dirent[i].name, DIRLEN);
         (dir->buffer)[i].d_type = types[dirent[i].type];
     }

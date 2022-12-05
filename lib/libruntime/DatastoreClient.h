@@ -36,9 +36,8 @@
  *
  * Provides a simple interface to the datastore server
  */
-class DatastoreClient
-{
-  public:
+class DatastoreClient {
+public:
 
     /**
      * Class constructor function.
@@ -56,7 +55,7 @@ class DatastoreClient
                                      void *buffer,
                                      const Size size) const;
 
-  private:
+private:
 
     /** Process identifier of the datastore server */
     const ProcessID m_pid;

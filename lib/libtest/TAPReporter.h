@@ -33,9 +33,8 @@
  *
  * @see https://testanything.org/tap-specification.html
  */
-class TAPReporter : public TestReporter
-{
-  public:
+class TAPReporter : public TestReporter {
+public:
 
     /**
      * Constructor.
@@ -45,24 +44,24 @@ class TAPReporter : public TestReporter
     /**
      * Report start of testing.
      */
-    virtual void reportBegin(List<TestInstance *> & tests);
+    virtual void reportBegin(List<TestInstance *> &tests);
 
     /**
      * Report start of a test.
      */
-    virtual void reportBefore(TestInstance & test);
+    virtual void reportBefore(TestInstance &test);
 
     /**
      * Report finish of a test.
      */
-    virtual void reportAfter(TestInstance & test, TestResult & result);
+    virtual void reportAfter(TestInstance &test, TestResult &result);
 
     /**
      * Report completion of all tests.
      */
-    virtual void reportFinish(List<TestInstance *> & tests);
+    virtual void reportFinish(List<TestInstance *> &tests);
 
-  private:
+private:
 
     /** Test counter. */
     uint m_count;

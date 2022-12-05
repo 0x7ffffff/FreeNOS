@@ -30,13 +30,7 @@
 #include "NetCat.h"
 
 NetCat::NetCat(int argc, char **argv)
-    : POSIXApplication(argc, argv)
-    , m_client(0)
-    , m_socket(0)
-    , m_lineLen(0)
-    , m_host(0)
-    , m_port(0)
-{
+        : POSIXApplication(argc, argv), m_client(0), m_socket(0), m_lineLen(0), m_host(0), m_port(0) {
     parser().setDescription("network send/receive");
     parser().registerPositional("DEVICE", "device name of network adapter");
     parser().registerPositional("HOST", "host address");
@@ -46,33 +40,28 @@ NetCat::NetCat(int argc, char **argv)
     parser().registerFlag('l', "listen", "listen mode");
 }
 
-NetCat::~NetCat()
-{
+NetCat::~NetCat() {
 }
 
-NetCat::Result NetCat::initialize()
-{
+NetCat::Result NetCat::initialize() {
     DEBUG("");
 
     // Create a network client
     m_client = new NetworkClient(arguments().get("DEVICE"));
 
     // Initialize networking client
-    if (m_client->initialize() != NetworkClient::Success)
-    {
+    if (m_client->initialize() != NetworkClient::Success) {
         ERROR("failed to initialize network client for device: "
-               << arguments().get("DEVICE"));
+                      << arguments().get("DEVICE"));
         return IOError;
     }
     // Create an UDP socket
-    if (m_client->createSocket(NetworkClient::UDP, &m_socket) != NetworkClient::Success)
-    {
+    if (m_client->createSocket(NetworkClient::UDP, &m_socket) != NetworkClient::Success) {
         ERROR("failed to create UDP socket");
         return IOError;
     }
     // Convert to IPV4 address
-    if (!(m_host = IPV4::toAddress(arguments().get("HOST"))))
-    {
+    if (!(m_host = IPV4::toAddress(arguments().get("HOST")))) {
         ERROR("failed to convert to IPV4 address: " << arguments().get("HOST"));
         return IOError;
     }
@@ -80,8 +69,7 @@ NetCat::Result NetCat::initialize()
     m_port = atoi(arguments().get("PORT"));
 
     // Bind to a local port.
-    if (m_client->bindSocket(m_socket, 0, arguments().get("listen") ? m_port : 0))
-    {
+    if (m_client->bindSocket(m_socket, 0, arguments().get("listen") ? m_port : 0)) {
         ERROR("failed to bind socket");
         return IOError;
     }
@@ -89,28 +77,22 @@ NetCat::Result NetCat::initialize()
     return Success;
 }
 
-NetCat::Result NetCat::exec()
-{
+NetCat::Result NetCat::exec() {
     DEBUG("");
 
     DEBUG("sending on device: " << arguments().get("DEVICE"));
     DEBUG("sending to host: " << arguments().get("HOST") <<
-          " on port " << arguments().get("PORT"));
+                              " on port " << arguments().get("PORT"));
 
-    if (arguments().get("listen"))
-    {
+    if (arguments().get("listen")) {
         // Keep receiving from UDP
-        while (1)
-        {
+        while (1) {
             udpReceive();
             printLine();
         }
-    }
-    else
-    {
+    } else {
         // Keep reading and sending UDP
-        while (1)
-        {
+        while (1) {
             readLine();
             udpSend();
         }
@@ -118,16 +100,14 @@ NetCat::Result NetCat::exec()
     return Success;
 }
 
-NetCat::Result NetCat::printLine()
-{
+NetCat::Result NetCat::printLine() {
     printf("%s\r\n", m_lineBuf);
     m_lineBuf[0] = 0;
     m_lineLen = 0;
     return Success;
 }
 
-NetCat::Result NetCat::readLine()
-{
+NetCat::Result NetCat::readLine() {
     DEBUG("");
 
     // Reset
@@ -135,14 +115,12 @@ NetCat::Result NetCat::readLine()
     bool reading = true;
 
     // Read a line
-    while (m_lineLen < sizeof(m_lineBuf) - 3 && reading)
-    {
+    while (m_lineLen < sizeof(m_lineBuf) - 3 && reading) {
         // Read a character
         read(0, &m_lineBuf[m_lineLen], 1);
-        
+
         // Process character
-        switch (m_lineBuf[m_lineLen])
-        {
+        switch (m_lineBuf[m_lineLen]) {
             case '\r':
             case '\n':
                 printf("\r\n");
@@ -150,13 +128,12 @@ NetCat::Result NetCat::readLine()
                 break;
 
             case '\b':
-                if (m_lineLen > 0)
-                {
+                if (m_lineLen > 0) {
                     m_lineLen--;
                     printf("\b \b");
                 }
                 break;
-        
+
             default:
                 printf("%c", m_lineBuf[m_lineLen]);
                 m_lineLen++;
@@ -176,8 +153,7 @@ NetCat::Result NetCat::readLine()
     return Success;
 }
 
-NetCat::Result NetCat::udpSend()
-{
+NetCat::Result NetCat::udpSend() {
     DEBUG("line = " << m_lineBuf);
 
     // Send UDP datagram
@@ -187,23 +163,20 @@ NetCat::Result NetCat::udpSend()
 
     Error r = ::sendto(m_socket, m_lineBuf, m_lineLen, 0,
                        &addr, sizeof(addr));
-    if (r <= 0)
-    {
+    if (r <= 0) {
         ERROR("failed to send UDP datagram: " << strerror(errno));
         return IOError;
     }
     return Success;
 }
 
-NetCat::Result NetCat::udpReceive()
-{
+NetCat::Result NetCat::udpReceive() {
     struct sockaddr addr;
 
     // Receive UDP datagram
     int r = recvfrom(m_socket, m_lineBuf, sizeof(m_lineBuf), 0,
                      &addr, sizeof(addr));
-    if (r < 0)
-    {
+    if (r < 0) {
         ERROR("failed to receive UDP datagram: " << strerror(errno));
         return IOError;
     }

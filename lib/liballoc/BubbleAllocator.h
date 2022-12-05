@@ -32,9 +32,8 @@
 /**
  * Keeps growing allocated memory, and can't actually free memory (hence the name).
  */
-class BubbleAllocator : public Allocator
-{
-  public:
+class BubbleAllocator : public Allocator {
+public:
 
     /**
      * Class constructor.
@@ -61,7 +60,7 @@ class BubbleAllocator : public Allocator
      * @note The alignment field in args is ignored. Only the alignment
      *       value passed to the constructor is used.
      */
-    virtual Result allocate(Range & args);
+    virtual Result allocate(Range &args);
 
     /**
      * Release memory.
@@ -74,7 +73,7 @@ class BubbleAllocator : public Allocator
      */
     virtual Result release(const Address addr);
 
-  private:
+private:
 
     /** Number of bytes allocated. */
     Size m_allocated;

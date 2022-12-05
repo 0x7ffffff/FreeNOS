@@ -39,14 +39,13 @@ struct FileSystemMessage;
  *
  * @see FileSystemServer
  */
-class FileSystemClient
-{
-  private:
+class FileSystemClient {
+private:
 
     /** Maximum number of mounted filesystems. */
     static const Size MaximumFileSystemMounts = 16;
 
-  public:
+public:
 
     /**
      * Class constructor function.
@@ -61,7 +60,7 @@ class FileSystemClient
      *
      * @return String pointer containing current directory
      */
-    const String * getCurrentDirectory() const;
+    const String *getCurrentDirectory() const;
 
     /**
      * Set new current directory.
@@ -113,7 +112,7 @@ class FileSystemClient
      * @return Result code
      */
     FileSystem::Result openFile(const char *path,
-                                Size & descriptor) const;
+                                Size &descriptor) const;
 
     /**
      * Close a file
@@ -201,9 +200,9 @@ class FileSystemClient
      *
      * @return FileSystemMount array pointer or NULL on failure
      */
-    FileSystemMount * getFileSystems(Size &numberOfMounts) const;
+    FileSystemMount *getFileSystems(Size &numberOfMounts) const;
 
-  private:
+private:
 
     /**
      * Send an IPC request to the target file system
@@ -234,7 +233,7 @@ class FileSystemClient
      */
     ProcessID findMount(const char *path) const;
 
-  private:
+private:
 
     /** FileSystem mounts table */
     static FileSystemMount m_mounts[MaximumFileSystemMounts];

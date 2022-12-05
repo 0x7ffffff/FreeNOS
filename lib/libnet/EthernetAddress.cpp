@@ -20,25 +20,20 @@
 
 EthernetAddress::EthernetAddress(const u32 inode,
                                  Ethernet *eth)
-    : File(inode)
-    , m_eth(eth)
-{
+        : File(inode), m_eth(eth) {
     m_size = sizeof(Ethernet::Address);
 }
 
-EthernetAddress::~EthernetAddress()
-{
+EthernetAddress::~EthernetAddress() {
 }
 
-FileSystem::Result EthernetAddress::read(IOBuffer & buffer,
-                                         Size & size,
-                                         const Size offset)
-{
+FileSystem::Result EthernetAddress::read(IOBuffer &buffer,
+                                         Size &size,
+                                         const Size offset) {
     Ethernet::Address addr;
     m_eth->getAddress(&addr);
 
-    if (offset >= m_size)
-    {
+    if (offset >= m_size) {
         size = 0;
         return FileSystem::Success;
     }
@@ -49,9 +44,8 @@ FileSystem::Result EthernetAddress::read(IOBuffer & buffer,
     return FileSystem::Success;
 }
 
-FileSystem::Result EthernetAddress::write(IOBuffer & buffer,
-                                          Size & size,
-                                          const Size offset)
-{
+FileSystem::Result EthernetAddress::write(IOBuffer &buffer,
+                                          Size &size,
+                                          const Size offset) {
     return FileSystem::NotSupported;
 }

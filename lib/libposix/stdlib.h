@@ -113,7 +113,7 @@ extern C long strtol(const char *nptr, char **endptr, int base);
  *         it shall return a null pointer [CX] [Option Start]  and set
  *         errno to indicate the error.
  */
-extern C void * malloc(size_t size);
+extern C void *malloc(size_t size);
 
 /**
  * @brief Free allocated memory

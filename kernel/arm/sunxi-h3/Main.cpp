@@ -31,18 +31,17 @@
 
 extern Address __start, __end, __bootimg;
 
-static u32 ALIGN(16 * 1024) SECTION(".data") tmpPageDir[4096];
+static u32 ALIGN(16 * 1024)
+SECTION(".data") tmpPageDir[4096];
 
-extern C int kernel_main(void)
-{
+extern C int kernel_main(void) {
 #ifdef ARMV7
     // Raise the SMP bit for ARMv7
     ARMControl ctrl;
     ctrl.set(ARMControl::SMPBit);
 #endif
 
-    if (read_core_id() == 0)
-    {
+    if (read_core_id() == 0) {
         // Invalidate all caches now
         Arch::Cache cache;
         cache.invalidate(Cache::Unified);
@@ -54,35 +53,33 @@ extern C int kernel_main(void)
 
     if (read_core_id() != 0) {
         CoreInfo tmpInfo;
-        MemoryBlock::copy((void *)&tmpInfo,
-            (void *)SunxiCoreServer::SecondaryCoreInfoAddress, sizeof(coreInfo));
+        MemoryBlock::copy((void *) &tmpInfo,
+                          (void *) SunxiCoreServer::SecondaryCoreInfoAddress, sizeof(coreInfo));
         memoryBaseAddr = tmpInfo.memory.phys;
     }
 
     // Prepare early page tables and re-map the temporary stack
-    ARMPaging paging(&mem, (Address) &tmpPageDir, memoryBaseAddr);
+    ARMPaging paging(&mem, (Address) & tmpPageDir, memoryBaseAddr);
 
     // Activate MMU
     paging.initialize();
     paging.activate(true);
 
     // Fill coreInfo for boot core
-    if (read_core_id() == 0)
-    {
-        BootImage *bootimage = (BootImage *) &__bootimg;
+    if (read_core_id() == 0) {
+        BootImage *bootimage = (BootImage * ) & __bootimg;
         MemoryBlock::set(&coreInfo, 0, sizeof(CoreInfo));
-        coreInfo.bootImageAddress = (Address) (bootimage);
-        coreInfo.bootImageSize    = bootimage->bootImageSize;
-        coreInfo.kernel.phys      = (Address) &__start;
-        coreInfo.kernel.size      = ((Address) &__end - (Address) &__start);
-        coreInfo.memory.phys      = RAM_ADDR;
-        coreInfo.memory.size      = RAM_SIZE;
+        coreInfo.bootImageAddress = (Address)(bootimage);
+        coreInfo.bootImageSize = bootimage->bootImageSize;
+        coreInfo.kernel.phys = (Address) & __start;
+        coreInfo.kernel.size = ((Address) & __end - (Address) & __start);
+        coreInfo.memory.phys = RAM_ADDR;
+        coreInfo.memory.size = RAM_SIZE;
     }
-    // Copy CoreInfo prepared by the CoreServer
-    else
-    {
-        MemoryBlock::copy((void *)&coreInfo,
-            (void *)SunxiCoreServer::SecondaryCoreInfoAddress, sizeof(coreInfo));
+        // Copy CoreInfo prepared by the CoreServer
+    else {
+        MemoryBlock::copy((void *) &coreInfo,
+                          (void *) SunxiCoreServer::SecondaryCoreInfoAddress, sizeof(coreInfo));
     }
 
     // Clear BSS

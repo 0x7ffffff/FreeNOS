@@ -25,19 +25,16 @@
 #include "SievePrime.h"
 
 SievePrime::SievePrime(int argc, char **argv)
-    : POSIXApplication(argc, argv)
-{
+        : POSIXApplication(argc, argv) {
     parser().setDescription("Compute prime numbers using the Sieve of Eratosthenes algorithm");
     parser().registerPositional("NUMBER", "Maximum number to search for prime numbers");
     parser().registerFlag('o', "stdout", "Write results to standard output if set");
 }
 
-SievePrime::~SievePrime()
-{
+SievePrime::~SievePrime() {
 }
 
-SievePrime::Result SievePrime::exec()
-{
+SievePrime::Result SievePrime::exec() {
     u8 *map;
     int n, k = 2, i, last, sqrt_of_n;
     Size resultsWritten = 0;
@@ -47,8 +44,7 @@ SievePrime::Result SievePrime::exec()
     sqrt_of_n = sqrt(n);
 
     // Try to allocate memory
-    if ((map = (u8 *) malloc(n * sizeof(u8))) == NULL)
-    {
+    if ((map = (u8 *) malloc(n * sizeof(u8))) == NULL) {
         ERROR("malloc failed: " << strerror(errno));
         return IOError;
     }
@@ -61,21 +57,18 @@ SievePrime::Result SievePrime::exec()
     searchSequential(sqrt_of_n, map);
 
     // Now continue above sqrt(n) sequentially
-    while (k < sqrt_of_n)
-    {
+    while (k < sqrt_of_n) {
         // Prime number?
-        if (!map[k])
-        {
+        if (!map[k]) {
             k++;
             continue;
         }
 
         // Mark multiples of k in my range
-        i    = sqrt_of_n;
+        i = sqrt_of_n;
         last = n;
 
-        while (i < last)
-        {
+        while (i < last) {
             // Do we need to unmark this number? (no prime)
             if (!(i % k))
                 map[i] = 0;
@@ -95,24 +88,19 @@ SievePrime::Result SievePrime::exec()
 
 SievePrime::Result SievePrime::reportResult(const int n,
                                             const u8 *map,
-                                            Size & resultsWritten,
-                                            const Size offsetNumber) const
-{
+                                            Size &resultsWritten,
+                                            const Size offsetNumber) const {
     // Print the result
-    if (arguments().get("stdout"))
-    {
+    if (arguments().get("stdout")) {
         String output;
 
-        for (int i = 0; i < n; i++)
-        {
-            if (map[i] == 1)
-            {
+        for (int i = 0; i < n; i++) {
+            if (map[i] == 1) {
                 output << " " << (i + offsetNumber);
                 resultsWritten++;
             }
 
-            if (resultsWritten >= 32)
-            {
+            if (resultsWritten >= 32) {
                 output << "\r\n";
                 write(1, *output, output.length());
                 output = "";
@@ -120,8 +108,7 @@ SievePrime::Result SievePrime::reportResult(const int n,
             }
         }
 
-        if (output.length() > 0)
-        {
+        if (output.length() > 0) {
             write(1, *output, output.length());
         }
     }
@@ -130,20 +117,16 @@ SievePrime::Result SievePrime::reportResult(const int n,
 }
 
 SievePrime::Result SievePrime::searchSequential(const int n,
-                                                u8 *map) const
-{
+                                                u8 *map) const {
     int i, j;
 
     // Sequential algorithm
     // Next is a prime
-    for (i = 2; i < n; i++)
-    {
+    for (i = 2; i < n; i++) {
         // Prime number?
-        if (map[i])
-        {
+        if (map[i]) {
             // Mask off all multiples
-            for (j = i + 1; j < n; j++)
-            {
+            for (j = i + 1; j < n; j++) {
                 if (!(j % i))
                     map[j] = 0;
             }

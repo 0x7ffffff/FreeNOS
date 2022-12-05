@@ -19,8 +19,7 @@
 #include "string.h"
 #include "sys/types.h"
 
-char * strndup(const char *s, size_t size)
-{
+char *strndup(const char *s, size_t size) {
     size_t bytes;
     char *buff;
 
@@ -28,14 +27,12 @@ char * strndup(const char *s, size_t size)
     bytes = strlen(s);
 
     // Calculate bytes to allocate
-    if (bytes > size)
-    {
+    if (bytes > size) {
         bytes = size;
     }
 
     // Allocate buffer
-    if ((buff = (char *) malloc(bytes + 1)) == NULL)
-    {
+    if ((buff = (char *) malloc(bytes + 1)) == NULL) {
         return (char *) NULL;
     }
 

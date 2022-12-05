@@ -20,44 +20,36 @@
 #include <sys/time.h>
 #include "SystemClock.h"
 
-SystemClock::SystemClock()
-{
+SystemClock::SystemClock() {
     m_timeval.tv_sec = 0;
     m_timeval.tv_usec = 0;
 }
 
-void SystemClock::value(struct timeval & val) const
-{
+void SystemClock::value(struct timeval &val) const {
     val.tv_sec = m_timeval.tv_sec;
     val.tv_usec = m_timeval.tv_usec;
 }
 
-SystemClock::Result SystemClock::now()
-{
+SystemClock::Result SystemClock::now() {
     struct timezone tz;
 
-    if (gettimeofday(&m_timeval, &tz) != 0)
-    {
+    if (gettimeofday(&m_timeval, &tz) != 0) {
         return SystemClock::IOError;
-    }
-    else
-    {
+    } else {
         return SystemClock::Success;
     }
 }
 
-void SystemClock::printDiff(const SystemClock & clock) const
-{
+void SystemClock::printDiff(const SystemClock &clock) const {
     printDiff(clock.m_timeval);
 }
 
-void SystemClock::printDiff(const struct timeval & stamp) const
-{
+void SystemClock::printDiff(const struct timeval &stamp) const {
     const u64 usec1 = (m_timeval.tv_sec * 1000000) + (m_timeval.tv_usec);
     const u64 usec2 = (stamp.tv_sec * 1000000) + (stamp.tv_usec);
 
     // Print time measured
     printf("%us %uusec\n",
-            (uint) ((usec2 - usec1) / 1000000),
-            (uint) ((usec2 - usec1) % 1000000));
+           (uint)((usec2 - usec1) / 1000000),
+           (uint)((usec2 - usec1) % 1000000));
 }

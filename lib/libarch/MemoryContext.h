@@ -39,22 +39,20 @@ class SplitAllocator;
 /**
  * Virtual memory abstract interface.
  */
-class MemoryContext
-{
-  public:
+class MemoryContext {
+public:
 
     /**
      * Result codes.
      */
-    typedef enum Result
-    {
+    typedef enum Result {
         Success,
         InvalidAddress,
         InvalidSize,
         AlreadyExists,
         OutOfMemory
     }
-    Result;
+            Result;
 
     /**
      * Constructor.
@@ -74,7 +72,7 @@ class MemoryContext
      *
      * @return MemoryContext object pointer or NULL.
      */
-    static MemoryContext * getCurrent();
+    static MemoryContext *getCurrent();
 
     /**
      * Initialize the MemoryContext
@@ -194,7 +192,7 @@ class MemoryContext
      *
      * @return Result code
      */
-    virtual Result releaseSection(const Memory::Range & range,
+    virtual Result releaseSection(const Memory::Range &range,
                                   const bool tablesOnly = false) = 0;
 
     /**
@@ -221,7 +219,7 @@ class MemoryContext
      */
     virtual void mapRangeSparseCallback(Address *phys);
 
-  protected:
+protected:
 
     /** Physical memory allocator */
     SplitAllocator *m_alloc;
@@ -233,7 +231,7 @@ class MemoryContext
     static MemoryContext *m_current;
 
     /** Callback object for mapRangeSparseCallback function */
-    Callback<MemoryContext, Address> m_mapRangeSparseCallback;
+    Callback <MemoryContext, Address> m_mapRangeSparseCallback;
 
     /** Saved range input for use in the mapRangeSparse Callback. */
     Memory::Range *m_savedRange;

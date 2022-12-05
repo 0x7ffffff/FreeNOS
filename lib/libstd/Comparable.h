@@ -31,9 +31,9 @@
 /**
  * Objects which can be compared to each other.
  */
-template <class T> class Comparable
-{
-  public:
+template<class T>
+class Comparable {
+public:
 
     /**
      * Class destructor.

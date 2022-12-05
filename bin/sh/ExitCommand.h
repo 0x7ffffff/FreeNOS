@@ -32,9 +32,8 @@
 /**
  * Exit the Shell.
  */
-class ExitCommand : public ShellCommand
-{
-  public:
+class ExitCommand : public ShellCommand {
+public:
 
     /**
      * Constructor function.

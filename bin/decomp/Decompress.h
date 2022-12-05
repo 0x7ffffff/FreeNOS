@@ -28,9 +28,8 @@
 /**
  * Decompress a compressed file
  */
-class Decompress : public POSIXApplication
-{
-  public:
+class Decompress : public POSIXApplication {
+public:
 
     /**
      * Constructor
@@ -52,7 +51,7 @@ class Decompress : public POSIXApplication
      */
     virtual Result exec();
 
-  private:
+private:
 
     /**
      * Decompress the given file

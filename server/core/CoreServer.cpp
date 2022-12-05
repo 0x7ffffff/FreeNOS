@@ -26,11 +26,10 @@
 #include <unistd.h>
 #include "CoreServer.h"
 
-const char * CoreServer::kernelPath = "/boot/kernel";
+const char *CoreServer::kernelPath = "/boot/kernel";
 
 CoreServer::CoreServer()
-    : ChannelServer<CoreServer, CoreMessage>(this)
-{
+        : ChannelServer<CoreServer, CoreMessage>(this) {
     m_numRegions = 0;
     m_kernel = ZERO;
     MemoryBlock::set(&m_kernelImage, 0, sizeof(m_kernelImage));
@@ -43,58 +42,49 @@ CoreServer::CoreServer()
     m_fromSlave = ZERO;
 
     // Register IPC handlers
-    addIPCHandler(Core::GetCoreCount,  &CoreServer::getCoreCount);
+    addIPCHandler(Core::GetCoreCount, &CoreServer::getCoreCount);
 
     // Because of waitpid() we must send the reply manually before waitpid().
     addIPCHandler(Core::CreateProcess, &CoreServer::createProcess, false);
 }
 
-int CoreServer::runCore()
-{
+int CoreServer::runCore() {
     CoreMessage msg;
 
     if (m_info.coreId == 0)
         return run();
 
-    while (true)
-    {
+    while (true) {
         // wait from a message of the master core
         receiveFromMaster(&msg);
 
-        const MessageHandler<IPCHandlerFunction> *h = m_ipcHandlers.get(msg.action);
-        if (h)
-        {
+        const MessageHandler <IPCHandlerFunction> *h = m_ipcHandlers.get(msg.action);
+        if (h) {
             const bool sendReply = h->sendReply;
-            (this->*h->exec) (&msg);
+            (this->*h->exec)(&msg);
 
-            if (sendReply)
-            {
+            if (sendReply) {
                 sendToMaster(&msg);
             }
-        }
-        else
-        {
-            ERROR("invalid action " << (int)msg.action << " from master");
+        } else {
+            ERROR("invalid action " << (int) msg.action << " from master");
         }
     }
 }
 
-void CoreServer::createProcess(CoreMessage *msg)
-{
+void CoreServer::createProcess(CoreMessage *msg) {
     const Size maximumArguments = 64;
     char cmd[128], *argv[maximumArguments], *arg = ZERO;
     Memory::Range range;
     API::Result result = API::Success;
     Size argc = 0;
 
-    if (m_info.coreId == 0)
-    {
+    if (m_info.coreId == 0) {
         // Find physical address for program buffer
         range.virt = msg->programAddr;
-        if ((result = VMCtl(msg->from, LookupVirtual, &range)) != API::Success)
-        {
+        if ((result = VMCtl(msg->from, LookupVirtual, &range)) != API::Success) {
             ERROR("failed to lookup virtual address at " <<
-                  (void *) msg->programAddr << ": " << (int)result);
+                                                         (void *) msg->programAddr << ": " << (int) result);
             msg->result = Core::InvalidArgument;
             return;
         }
@@ -102,41 +92,35 @@ void CoreServer::createProcess(CoreMessage *msg)
 
         // Find physical address for command
         range.virt = (Address) msg->programCmd;
-        if ((result = VMCtl(msg->from, LookupVirtual, &range)) != API::Success)
-        {
+        if ((result = VMCtl(msg->from, LookupVirtual, &range)) != API::Success) {
             ERROR("failed to lookup virtual address at " <<
-                  (void *) msg->programCmd << ": " << (int)result);
+                                                         (void *) msg->programCmd << ": " << (int) result);
             msg->result = Core::InvalidArgument;
             return;
         }
         msg->programCmd = (char *) range.phys;
 
         // Forward message to slave core
-        if (sendToSlave(msg->coreNumber, msg) != Core::Success)
-        {
-            ERROR("failed to write channel on core"<<msg->coreNumber);
+        if (sendToSlave(msg->coreNumber, msg) != Core::Success) {
+            ERROR("failed to write channel on core" << msg->coreNumber);
             msg->result = Core::IOError;
             return;
         }
         DEBUG("creating program at phys " << (void *) msg->programAddr << " on core" << msg->coreNumber);
 
         // Wait until the slave created the program
-        if (receiveFromSlave(msg->coreNumber, msg) != Core::Success)
-        {
+        if (receiveFromSlave(msg->coreNumber, msg) != Core::Success) {
             ERROR("failed to read channel on core" << msg->coreNumber);
             msg->result = Core::IOError;
             return;
         }
-        DEBUG("program created with result " << (int)msg->result << " at core" << msg->coreNumber);
+        DEBUG("program created with result " << (int) msg->result << " at core" << msg->coreNumber);
         ChannelClient::instance()->syncSendTo(msg, sizeof(*msg), msg->from);
-    }
-    else
-    {
+    } else {
         // Copy the program command
         result = VMCopy(SELF, API::ReadPhys, (Address) cmd,
-                       (Address) msg->programCmd, sizeof(cmd));
-        if (result != API::Success)
-        {
+                        (Address) msg->programCmd, sizeof(cmd));
+        if (result != API::Success) {
             ERROR("failed to copy program command: result = " << (int) result);
             msg->result = Core::InvalidArgument;
             sendToMaster(msg);
@@ -146,16 +130,12 @@ void CoreServer::createProcess(CoreMessage *msg)
         arg = cmd;
 
         // Translate space separated command to argv[]
-        for (Size i = 0; i < sizeof(cmd) && argc < maximumArguments - 1; i++)
-        {
-            if (cmd[i] == ' ')
-            {
+        for (Size i = 0; i < sizeof(cmd) && argc < maximumArguments - 1; i++) {
+            if (cmd[i] == ' ') {
                 cmd[i] = 0;
                 argv[argc++] = arg;
-                arg = &cmd[i+1];
-            }
-            else if (cmd[i] == 0)
-            {
+                arg = &cmd[i + 1];
+            } else if (cmd[i] == 0) {
                 argv[argc++] = arg;
                 break;
             }
@@ -164,91 +144,74 @@ void CoreServer::createProcess(CoreMessage *msg)
         argv[argc] = 0;
 
         // Map the program buffer
-        range.phys   = msg->programAddr;
-        range.virt   = 0;
+        range.phys = msg->programAddr;
+        range.virt = 0;
         range.access = Memory::Readable | Memory::User;
-        range.size   = msg->programSize;
-        if ((result = VMCtl(SELF, MapContiguous, &range)) != API::Success)
-        {
-            ERROR("failed to map program data: " << (int)result);
+        range.size = msg->programSize;
+        if ((result = VMCtl(SELF, MapContiguous, &range)) != API::Success) {
+            ERROR("failed to map program data: " << (int) result);
             msg->result = Core::IOError;
             sendToMaster(msg);
             return;
         }
 
-        int pid = spawn(range.virt, msg->programSize, (const char **)argv);
-        if (pid == -1)
-        {
+        int pid = spawn(range.virt, msg->programSize, (const char **) argv);
+        if (pid == -1) {
             ERROR("failed to spawn() program: " << pid);
             msg->result = Core::IOError;
             sendToMaster(msg);
-        }
-        else
-        {
+        } else {
             // reply to master before calling waitpid()
             msg->result = Core::Success;
             sendToMaster(msg);
         }
 
-        if ((result = VMCtl(SELF, UnMap, &range)) != API::Success)
-        {
-            ERROR("failed to unmap program data: " << (int)result);
+        if ((result = VMCtl(SELF, UnMap, &range)) != API::Success) {
+            ERROR("failed to unmap program data: " << (int) result);
         }
 
         // Wait until the spawned process completes
-        if (pid != -1)
-        {
+        if (pid != -1) {
             int status;
-            waitpid((pid_t)pid, &status, 0);
+            waitpid((pid_t) pid, &status, 0);
         }
     }
 }
 
-void CoreServer::getCoreCount(CoreMessage *msg)
-{
+void CoreServer::getCoreCount(CoreMessage *msg) {
     DEBUG("");
 
-    if (m_info.coreId == 0)
-    {
+    if (m_info.coreId == 0) {
         if (m_cores)
             msg->coreNumber = m_cores->getCores().count();
         else
             msg->coreNumber = 1;
 
         msg->result = Core::Success;
-    }
-    else
+    } else
         msg->result = Core::InvalidArgument;
 }
 
-Core::Result CoreServer::test()
-{
+Core::Result CoreServer::test() {
     const Size pingPongNumber = 0x12345678;
 
-    if (m_info.coreId != 0)
-    {
+    if (m_info.coreId != 0) {
         CoreMessage msg;
-        msg.type   = ChannelMessage::Response;
+        msg.type = ChannelMessage::Response;
         msg.action = Core::PongResponse;
         msg.coreNumber = pingPongNumber;
 
         sendToMaster(&msg);
-    }
-    else if (m_cores != NULL)
-    {
+    } else if (m_cores != NULL) {
         CoreMessage msg;
         Size numCores = m_cores->getCores().count();
 
-        for (Size i = 1; i < numCores; i++)
-        {
+        for (Size i = 1; i < numCores; i++) {
             receiveFromSlave(i, &msg);
 
-            if (msg.action == Core::PongResponse && msg.coreNumber == pingPongNumber)
-            {
+            if (msg.action == Core::PongResponse && msg.coreNumber == pingPongNumber) {
                 NOTICE("core" << i << " send a Pong");
-            }
-            else
-            {
+            } else {
                 ERROR("invalid message received from core" << i);
             }
         }
@@ -257,54 +220,43 @@ Core::Result CoreServer::test()
     return Core::Success;
 }
 
-CoreServer::Result CoreServer::initialize()
-{
+CoreServer::Result CoreServer::initialize() {
     // Only core0 needs to start other coreservers
-    if (m_info.coreId != 0)
-    {
-        if (setupChannels() != Core::Success)
-        {
+    if (m_info.coreId != 0) {
+        if (setupChannels() != Core::Success) {
             ERROR("failed to setup IPC channels");
             return IOError;
-        }
-        else
-        {
+        } else {
             return Success;
         }
     }
 
-    if (loadKernel() != Core::Success)
-    {
+    if (loadKernel() != Core::Success) {
         ERROR("failed to load kernel program");
         return IOError;
     }
 
-    if (discoverCores() != Core::Success)
-    {
+    if (discoverCores() != Core::Success) {
         ERROR("failed to discover cores");
         return IOError;
     }
 
-    if (prepareCoreInfo() != Core::Success)
-    {
+    if (prepareCoreInfo() != Core::Success) {
         ERROR("failed to prepare CoreInfo data array");
         return IOError;
     }
 
-    if (setupChannels() != Core::Success)
-    {
+    if (setupChannels() != Core::Success) {
         ERROR("failed to setup IPC channels");
         return IOError;
     }
 
-    if (bootAll() != Core::Success)
-    {
+    if (bootAll() != Core::Success) {
         ERROR("failed to boot all cores");
         return IOError;
     }
 
-    if (unloadKernel() != Core::Success)
-    {
+    if (unloadKernel() != Core::Success) {
         ERROR("failed to unload kernel program");
         return IOError;
     }
@@ -312,8 +264,7 @@ CoreServer::Result CoreServer::initialize()
     return Success;
 }
 
-Core::Result CoreServer::loadKernel()
-{
+Core::Result CoreServer::loadKernel() {
     struct stat st;
     int fd, r;
     API::Result result;
@@ -321,82 +272,75 @@ Core::Result CoreServer::loadKernel()
     DEBUG("Opening : " << kernelPath);
 
     // Stat the compressed program image
-    if ((r = stat(kernelPath, &st)) != 0)
-    {
+    if ((r = stat(kernelPath, &st)) != 0) {
         ERROR("failed to stat() kernel on path: " << kernelPath <<
-              ": result " << r);
+                                                  ": result " << r);
         return Core::IOError;
     }
 
     // Map memory buffer for the compressed program image
     Memory::Range compressed;
-    compressed.virt   = ZERO;
-    compressed.phys   = ZERO;
-    compressed.size   = st.st_size;
-    compressed.access = Memory::User|Memory::Readable|Memory::Writable;
+    compressed.virt = ZERO;
+    compressed.phys = ZERO;
+    compressed.size = st.st_size;
+    compressed.access = Memory::User | Memory::Readable | Memory::Writable;
 
     // Allocate compressed memory buffer
     result = VMCtl(SELF, MapContiguous, &compressed);
-    if (result != API::Success)
-    {
+    if (result != API::Success) {
         ERROR("failed to allocate compressed kernel image with VMCtl: result = " << (int) result);
         return Core::IOError;
     }
 
     // Open the file
-    if ((fd = open(kernelPath, O_RDONLY)) < 0)
-    {
+    if ((fd = open(kernelPath, O_RDONLY)) < 0) {
         ERROR("failed to open() kernel on path: " << kernelPath <<
-              ": result " << fd);
+                                                  ": result " << fd);
         return Core::IOError;
     }
 
     // Read the file
-    if ((r = read(fd, (void *) compressed.virt, st.st_size)) != st.st_size)
-    {
+    if ((r = read(fd, (void *) compressed.virt, st.st_size)) != st.st_size) {
         ERROR("failed to read() kernel on path: " << kernelPath <<
-              ": result " << r);
+                                                  ": result " << r);
         return Core::IOError;
     }
     close(fd);
 
     // Initialize decompressor
-    Lz4Decompressor lz4((void *)compressed.virt, st.st_size);
+    Lz4Decompressor lz4((void *) compressed.virt, st.st_size);
     Lz4Decompressor::Result decompResult = lz4.initialize();
-    if (decompResult != Lz4Decompressor::Success)
-    {
+    if (decompResult != Lz4Decompressor::Success) {
         ERROR("failed to initialize LZ4 decompressor: result = " << (int) decompResult);
         return Core::IOError;
     }
 
     // Map memory buffer for the uncompressed program image
-    m_kernelImage.virt   = ZERO;
-    m_kernelImage.phys   = ZERO;
-    m_kernelImage.size   = lz4.getUncompressedSize();
-    m_kernelImage.access = Memory::User|Memory::Readable|Memory::Writable;
+    m_kernelImage.virt = ZERO;
+    m_kernelImage.phys = ZERO;
+    m_kernelImage.size = lz4.getUncompressedSize();
+    m_kernelImage.access = Memory::User | Memory::Readable | Memory::Writable;
 
     // Allocate uncompressed memory buffer
     result = VMCtl(SELF, MapContiguous, &m_kernelImage);
-    if (result != API::Success)
-    {
+    if (result != API::Success) {
         ERROR("failed to allocate kernel image with VMCtl: result = " << (int) result);
         return Core::IOError;
     }
 
     // Decompress the kernel program
-    decompResult = lz4.read((void *)m_kernelImage.virt, lz4.getUncompressedSize());
-    if (decompResult != Lz4Decompressor::Success)
-    {
+    decompResult = lz4.read((void *) m_kernelImage.virt, lz4.getUncompressedSize());
+    if (decompResult != Lz4Decompressor::Success) {
         ERROR("failed to decompress kernel image: result = " << (int) decompResult);
         return Core::IOError;
     }
 
     // Attempt to read executable format
-    ExecutableFormat::Result execResult = ExecutableFormat::find((const u8 *)m_kernelImage.virt, st.st_size, &m_kernel);
-    if (execResult != ExecutableFormat::Success)
-    {
+    ExecutableFormat::Result execResult = ExecutableFormat::find((const u8 *) m_kernelImage.virt, st.st_size,
+                                                                 &m_kernel);
+    if (execResult != ExecutableFormat::Success) {
         ERROR("failed to find ExecutableFormat of kernel on path: " << kernelPath <<
-             ": result " << (int) execResult);
+                                                                    ": result " << (int) execResult);
         return Core::ExecError;
     }
 
@@ -404,17 +348,15 @@ Core::Result CoreServer::loadKernel()
     m_numRegions = 16;
     execResult = m_kernel->regions(m_regions, &m_numRegions);
 
-    if (execResult != ExecutableFormat::Success)
-    {
+    if (execResult != ExecutableFormat::Success) {
         ERROR("failed to get ExecutableFormat regions of kernel on path: " << kernelPath <<
-              ": result " << (int) execResult);
+                                                                           ": result " << (int) execResult);
         return Core::ExecError;
     }
 
     // Release compressed kernel image
     result = VMCtl(SELF, Release, &compressed);
-    if (result != API::Success)
-    {
+    if (result != API::Success) {
         ERROR("failed to release compressed kernel image with VMCtl: result = " << (int) result);
         return Core::IOError;
     }
@@ -423,12 +365,10 @@ Core::Result CoreServer::loadKernel()
     return Core::Success;
 }
 
-Core::Result CoreServer::unloadKernel()
-{
+Core::Result CoreServer::unloadKernel() {
     // Cleanup program buffer
     const API::Result r = VMCtl(SELF, Release, &m_kernelImage);
-    if (r != API::Success)
-    {
+    if (r != API::Success) {
         ERROR("failed to deallocate kernel image with VMCtl: result = " << (int) r);
         return Core::IOError;
     }
@@ -439,28 +379,25 @@ Core::Result CoreServer::unloadKernel()
 }
 
 Core::Result CoreServer::prepareCore(uint coreId, CoreInfo *info,
-                                           ExecutableFormat::Region *regions)
-{
+                                     ExecutableFormat::Region *regions) {
     API::Result r;
     SystemInformation sysInfo;
 
-    DEBUG("Reserving: " << (void *)info->memory.phys << " size=" <<
-            info->memory.size << " available=" << sysInfo.memoryAvail);
+    DEBUG("Reserving: " << (void *) info->memory.phys << " size=" <<
+                        info->memory.size << " available=" << sysInfo.memoryAvail);
 
     // Claim the core's memory
-    if ((r = VMCtl(SELF, ReserveMem, &info->memory)) != API::Success)
-    {
+    if ((r = VMCtl(SELF, ReserveMem, &info->memory)) != API::Success) {
         ERROR("VMCtl(ReserveMem) failed for core" << coreId <<
-              " at " << (void *)info->memory.phys << ": result " << (int) r);
+                                                  " at " << (void *) info->memory.phys << ": result " << (int) r);
         return Core::OutOfMemory;
     }
 
     DEBUG("Starting core" << coreId << " with "
-          << info->memory.size / 1024 / 1024 << "MB");
+                          << info->memory.size / 1024 / 1024 << "MB");
 
     // Map the kernel
-    for (Size i = 0; i < m_numRegions; i++)
-    {
+    for (Size i = 0; i < m_numRegions; i++) {
         Memory::Range range;
         range.phys = info->memory.phys + (regions[i].virt - RAM_ADDR);
         range.virt = 0;
@@ -469,33 +406,31 @@ Core::Result CoreServer::prepareCore(uint coreId, CoreInfo *info,
                        Memory::User;
 
         // Map the target kernel's memory for regions[i].size
-        if ((r = VMCtl(SELF, MapContiguous, &range)) != 0)
-        {
+        if ((r = VMCtl(SELF, MapContiguous, &range)) != 0) {
             ERROR("VMCtl(Map) failed for kernel on core" << coreId <<
-                  " at " << (void *)range.phys << ": result " << (int) r);
+                                                         " at " << (void *) range.phys << ": result " << (int) r);
             return Core::OutOfMemory;
         }
 
         // Copy the kernel to the target core's memory
         r = VMCopy(SELF, API::Write, m_kernelImage.virt + regions[i].dataOffset,
                    range.virt, regions[i].dataSize);
-        if (r != API::Success)
-        {
+        if (r != API::Success) {
             ERROR("VMCopy failed for kernel regions[" << i << "].dataOffset" <<
-                  " at " << (void *)regions[i].dataOffset << ": result " << (int) r);
+                                                      " at " << (void *) regions[i].dataOffset << ": result "
+                                                      << (int) r);
             return Core::MemoryError;
         }
 
         // Unmap the target kernel's memory
-        if ((r = VMCtl(SELF, UnMap, &range)) != API::Success)
-        {
+        if ((r = VMCtl(SELF, UnMap, &range)) != API::Success) {
             ERROR("VMCtl(UnMap) failed for kernel on core" << coreId <<
-                  " at " << (void *)range.phys << ": result " << (int) r);
+                                                           " at " << (void *) range.phys << ": result " << (int) r);
             return Core::MemoryError;
         }
 
         DEBUG(kernelPath << "[" << i << "] = " << (void *) m_regions[i].virt <<
-              " @ " << (void *) range.phys);
+                         " @ " << (void *) range.phys);
     }
 
     // Copy the BootImage after the kernel.
@@ -506,29 +441,26 @@ Core::Result CoreServer::prepareCore(uint coreId, CoreInfo *info,
     range.access = Memory::Readable | Memory::Writable | Memory::User;
 
     // Map BootImage buffer
-    if ((r = VMCtl(SELF, MapContiguous, &range)) != API::Success)
-    {
+    if ((r = VMCtl(SELF, MapContiguous, &range)) != API::Success) {
         ERROR("VMCtl(Map) failed for BootImage on core" << coreId <<
-              " at " << (void *)range.phys << ": result " << (int) r);
+                                                        " at " << (void *) range.phys << ": result " << (int) r);
         return Core::OutOfMemory;
     }
 
     // Copy the BootImage
     r = VMCopy(SELF, API::Write, sysInfo.bootImageAddress,
                range.virt, sysInfo.bootImageSize);
-    if (r != API::Success)
-    {
+    if (r != API::Success) {
         ERROR("VMCopy failed for BootIage on core" << coreId <<
-              " at " << (void *)sysInfo.bootImageAddress <<
-              ": result " << (int) r);
+                                                   " at " << (void *) sysInfo.bootImageAddress <<
+                                                   ": result " << (int) r);
         return Core::MemoryError;
     }
 
     // Unmap the BootImage
-    if ((r = VMCtl(SELF, UnMap, &range)) != API::Success)
-    {
+    if ((r = VMCtl(SELF, UnMap, &range)) != API::Success) {
         ERROR("VMCtl(UnMap) failed for BootImage on core" << coreId <<
-              " at " << (void *)range.phys << ": result " << (int) r);
+                                                          " at " << (void *) range.phys << ": result " << (int) r);
         return Core::MemoryError;
     }
 
@@ -536,14 +468,12 @@ Core::Result CoreServer::prepareCore(uint coreId, CoreInfo *info,
 }
 
 
-Core::Result CoreServer::prepareCoreInfo()
-{
+Core::Result CoreServer::prepareCoreInfo() {
     SystemInformation sysInfo;
     Size memPerCore = 0;
 
-    List<uint> & cores = m_cores->getCores();
-    if (cores.count() == 0)
-    {
+    List <uint> &cores = m_cores->getCores();
+    if (cores.count() == 0) {
         ERROR("no cores found");
         return Core::NotFound;
     }
@@ -553,18 +483,16 @@ Core::Result CoreServer::prepareCoreInfo()
     memPerCore *= MegaByte(4);
 
     NOTICE("found " << cores.count() << " cores: " <<
-            (memPerCore / 1024 / 1024) << "MB per core");
+                    (memPerCore / 1024 / 1024) << "MB per core");
 
     // Allocate CoreInfo for each core
     m_coreInfo = new Index<CoreInfo, MaxCores>();
 
     // Prepare CoreInfo for each core
-    for (ListIterator<uint> i(cores); i.hasCurrent(); i++)
-    {
+    for (ListIterator <uint> i(cores); i.hasCurrent(); i++) {
         uint coreId = i.current();
 
-        if (coreId != 0)
-        {
+        if (coreId != 0) {
             CoreInfo *info = new CoreInfo;
             m_coreInfo->insertAt(coreId, info);
             MemoryBlock::set(info, 0, sizeof(CoreInfo));
@@ -585,7 +513,7 @@ Core::Result CoreServer::prepareCoreInfo()
 
             info->coreChannelAddress = info->heapAddress + info->heapSize;
             info->coreChannelAddress += PAGESIZE - (info->heapSize % PAGESIZE);
-            info->coreChannelSize    = PAGESIZE * 4;
+            info->coreChannelSize = PAGESIZE * 4;
             clearPages(info->coreChannelAddress, info->coreChannelSize);
 
             m_kernel->entry(&info->kernelEntry);
@@ -597,35 +525,30 @@ Core::Result CoreServer::prepareCoreInfo()
     return Core::Success;
 }
 
-Core::Result CoreServer::bootAll()
-{
-    List<uint> & cores = m_cores->getCores();
-    if (cores.count() == 0)
-    {
+Core::Result CoreServer::bootAll() {
+    List <uint> &cores = m_cores->getCores();
+    if (cores.count() == 0) {
         ERROR("no cores found");
         return Core::NotFound;
     }
 
     // Boot each core
-    for (ListIterator<uint> i(cores); i.hasCurrent(); i++)
-    {
+    for (ListIterator <uint> i(cores); i.hasCurrent(); i++) {
         uint coreId = i.current();
 
-        if (coreId != 0)
-        {
-            prepareCore(coreId, (CoreInfo *)m_coreInfo->get(coreId), m_regions);
-            bootCore(coreId, (CoreInfo *)m_coreInfo->get(coreId));
+        if (coreId != 0) {
+            prepareCore(coreId, (CoreInfo *) m_coreInfo->get(coreId), m_regions);
+            bootCore(coreId, (CoreInfo *) m_coreInfo->get(coreId));
         }
     }
 
     return Core::Success;
 }
 
-Core::Result CoreServer::clearPages(Address addr, Size size)
-{
+Core::Result CoreServer::clearPages(Address addr, Size size) {
     Memory::Range range;
 
-    DEBUG("addr = " << (void*)addr << ", size = " << size);
+    DEBUG("addr = " << (void *) addr << ", size = " << size);
 
     range.phys = addr;
     range.virt = ZERO;
@@ -639,21 +562,18 @@ Core::Result CoreServer::clearPages(Address addr, Size size)
     return Core::Success;
 }
 
-Core::Result CoreServer::setupChannels()
-{
+Core::Result CoreServer::setupChannels() {
     SystemInformation info;
 
     DEBUG("");
 
-    if (info.coreId == 0)
-    {
+    if (info.coreId == 0) {
         Size numCores = m_cores->getCores().count();
 
-        m_toSlave    = new Index<MemoryChannel, MaxCores>();
-        m_fromSlave  = new Index<MemoryChannel, MaxCores>();
+        m_toSlave = new Index<MemoryChannel, MaxCores>();
+        m_fromSlave = new Index<MemoryChannel, MaxCores>();
 
-        for (Size i = 1; i < numCores; i++)
-        {
+        for (Size i = 1; i < numCores; i++) {
             MemoryChannel *ch = new MemoryChannel(Channel::Producer, sizeof(CoreMessage));
             CoreInfo *coreInfo = m_coreInfo->get(i);
             ch->setPhysical(coreInfo->coreChannelAddress + (PAGESIZE * 2),
@@ -665,9 +585,7 @@ Core::Result CoreServer::setupChannels()
                             coreInfo->coreChannelAddress + PAGESIZE);
             m_fromSlave->insertAt(i, ch);
         }
-    }
-    else
-    {
+    } else {
         m_toMaster = new MemoryChannel(Channel::Producer, sizeof(CoreMessage));
         m_toMaster->setPhysical(info.coreChannelAddress,
                                 info.coreChannelAddress + PAGESIZE);
@@ -680,15 +598,12 @@ Core::Result CoreServer::setupChannels()
     return Core::Success;
 }
 
-Core::Result CoreServer::receiveFromMaster(CoreMessage *msg)
-{
+Core::Result CoreServer::receiveFromMaster(CoreMessage *msg) {
     Channel::Result result = Channel::NotFound;
 
     // wait from a message of the master core
-    while (result != Channel::Success)
-    {
-        for (uint i = 0; i < MaxMessageRetry && result != Channel::Success; i++)
-        {
+    while (result != Channel::Success) {
+        for (uint i = 0; i < MaxMessageRetry && result != Channel::Success; i++) {
             result = m_fromMaster->read(msg);
         }
 
@@ -699,14 +614,11 @@ Core::Result CoreServer::receiveFromMaster(CoreMessage *msg)
     return Core::Success;
 }
 
-Core::Result CoreServer::sendToMaster(CoreMessage *msg)
-{
-    while (m_toMaster->write(msg) != Channel::Success)
-        ;
+Core::Result CoreServer::sendToMaster(CoreMessage *msg) {
+    while (m_toMaster->write(msg) != Channel::Success);
 
     const MemoryChannel::Result result = m_toMaster->flush();
-    if (result != Channel::Success)
-    {
+    if (result != Channel::Success) {
         ERROR("failed to flush master channel: result = " << (int) result);
         msg->result = Core::IOError;
         return Core::IOError;
@@ -715,47 +627,40 @@ Core::Result CoreServer::sendToMaster(CoreMessage *msg)
     return Core::Success;
 }
 
-Core::Result CoreServer::receiveFromSlave(uint coreId, CoreMessage *msg)
-{
+Core::Result CoreServer::receiveFromSlave(uint coreId, CoreMessage *msg) {
     MemoryChannel *ch = m_fromSlave->get(coreId);
     if (!ch)
         return Core::IOError;
 
-    while (ch->read(msg) != Channel::Success)
-        ;
+    while (ch->read(msg) != Channel::Success);
 
     return Core::Success;
 }
 
-Core::Result CoreServer::sendToSlave(uint coreId, CoreMessage *msg)
-{
+Core::Result CoreServer::sendToSlave(uint coreId, CoreMessage *msg) {
     MemoryChannel *ch = m_toSlave->get(coreId);
-    if (!ch)
-    {
+    if (!ch) {
         ERROR("cannot retrieve MemoryChannel for core" << coreId);
         msg->result = Core::NotFound;
         return Core::IOError;
     }
 
     MemoryChannel::Result result = ch->write(msg);
-    if (result != Channel::Success)
-    {
-        ERROR("failed to write channel on core" << coreId << ": result = " << (int)result);
+    if (result != Channel::Success) {
+        ERROR("failed to write channel on core" << coreId << ": result = " << (int) result);
         msg->result = Core::IOError;
         return Core::IOError;
     }
 
     result = ch->flush();
-    if (result != Channel::Success)
-    {
-        ERROR("failed to flush channel on core" << coreId << ": result = " << (int)result);
+    if (result != Channel::Success) {
+        ERROR("failed to flush channel on core" << coreId << ": result = " << (int) result);
         msg->result = Core::IOError;
         return Core::IOError;
     }
 
     // Send IPI to ensure the slave wakes up for the message
-    if (sendIPI(coreId) != Core::Success)
-    {
+    if (sendIPI(coreId) != Core::Success) {
         ERROR("failed to send IPI to core" << coreId);
         return Core::IOError;
     }

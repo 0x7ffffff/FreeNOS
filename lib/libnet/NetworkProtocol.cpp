@@ -22,19 +22,13 @@
 NetworkProtocol::NetworkProtocol(NetworkServer &server,
                                  NetworkDevice &device,
                                  NetworkProtocol &parent)
-    : Directory(server.getNextInode())
-    , m_server(server)
-    , m_device(device)
-    , m_parent(parent)
-{
+        : Directory(server.getNextInode()), m_server(server), m_device(device), m_parent(parent) {
 }
 
-NetworkProtocol::~NetworkProtocol()
-{
+NetworkProtocol::~NetworkProtocol() {
 }
 
-const Size NetworkProtocol::getMaximumPacketSize() const
-{
+const Size NetworkProtocol::getMaximumPacketSize() const {
     return m_device.getMaximumPacketSize();
 }
 
@@ -42,7 +36,6 @@ FileSystem::Result NetworkProtocol::getTransmitPacket(NetworkQueue::Packet **pkt
                                                       const void *address,
                                                       const Size addressSize,
                                                       const NetworkProtocol::Identifier protocol,
-                                                      const Size payloadSize)
-{
+                                                      const Size payloadSize) {
     return FileSystem::NotSupported;
 }

@@ -28,9 +28,8 @@
 /**
  * Compute prime numbers using the Sieve of Eratosthenes algorithm
  */
-class SievePrime : public POSIXApplication
-{
-  public:
+class SievePrime : public POSIXApplication {
+public:
 
     /**
      * Constructor
@@ -52,7 +51,7 @@ class SievePrime : public POSIXApplication
      */
     virtual Result exec();
 
-  protected:
+protected:
 
     /**
      * Report the calculated results
@@ -66,7 +65,7 @@ class SievePrime : public POSIXApplication
      */
     Result reportResult(const int n,
                         const u8 *map,
-                        Size & resultsWritten,
+                        Size &resultsWritten,
                         const Size offsetNumber = 0) const;
 
     /**

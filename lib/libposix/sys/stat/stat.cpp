@@ -22,8 +22,7 @@
 #include "string.h"
 #include "sys/stat.h"
 
-int stat(const char *path, struct stat *buf)
-{
+int stat(const char *path, struct stat *buf) {
     const FileSystemClient filesystem;
     FileSystem::FileStat st;
 
@@ -33,8 +32,7 @@ int stat(const char *path, struct stat *buf)
     const FileSystem::Result result = filesystem.statFile(path, &st);
 
     // Copy information into buf
-    switch (result)
-    {
+    switch (result) {
         case FileSystem::Success:
             buf->fromFileStat(&st);
             errno = ESUCCESS;

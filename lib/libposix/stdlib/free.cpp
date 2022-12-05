@@ -19,7 +19,6 @@
 #include "stdlib.h"
 #include "errno.h"
 
-extern C void free(void *ptr)
-{
+extern C void free(void *ptr) {
     delete (char *) ptr;
 }

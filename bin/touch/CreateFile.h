@@ -28,9 +28,8 @@
 /**
  * Create new files on the filesystem
  */
-class CreateFile : public POSIXApplication
-{
-  public:
+class CreateFile : public POSIXApplication {
+public:
 
     /**
      * Constructor
@@ -52,7 +51,7 @@ class CreateFile : public POSIXApplication
      */
     virtual Result exec();
 
-  private:
+private:
 
     /**
      * Create a new empty file
@@ -61,7 +60,7 @@ class CreateFile : public POSIXApplication
      *
      * @return Result code
      */
-    Result createFile(const String & file) const;
+    Result createFile(const String &file) const;
 };
 
 /**

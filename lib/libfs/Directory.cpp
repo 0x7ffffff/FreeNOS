@@ -21,36 +21,30 @@
 #include "Directory.h"
 
 Directory::Directory(const u32 inode)
-    : File(inode, FileSystem::DirectoryFile)
-{
+        : File(inode, FileSystem::DirectoryFile) {
     insert(FileSystem::DirectoryFile, ".");
     insert(FileSystem::DirectoryFile, "..");
 }
 
-Directory::~Directory()
-{
-    for (ListIterator<Dirent *> i(entries); i.hasCurrent(); i++)
+Directory::~Directory() {
+    for (ListIterator < Dirent * > i(entries); i.hasCurrent(); i++)
         delete i.current();
 
     entries.clear();
 }
 
-FileSystem::Result Directory::read(IOBuffer & buffer,
-                                   Size & size,
-                                   const Size offset)
-{
+FileSystem::Result Directory::read(IOBuffer &buffer,
+                                   Size &size,
+                                   const Size offset) {
     Size bytes = 0;
 
     // Loop our list of Dirents
-    for (ListIterator<Dirent *> i(&entries); i.hasCurrent(); i++)
-    {
+    for (ListIterator < Dirent * > i(&entries); i.hasCurrent(); i++) {
         // Can we read another entry?
-        if (bytes + sizeof(Dirent) <= size)
-        {
+        if (bytes + sizeof(Dirent) <= size) {
             buffer.write(i.current(), sizeof(Dirent), bytes);
             bytes += sizeof(Dirent);
-        }
-        else break;
+        } else break;
     }
 
     // Report results
@@ -58,36 +52,30 @@ FileSystem::Result Directory::read(IOBuffer & buffer,
     return FileSystem::Success;
 }
 
-File * Directory::lookup(const char *name)
-{
+File *Directory::lookup(const char *name) {
     return ZERO;
 }
 
-void Directory::insert(FileSystem::FileType type, const char *name)
-{
+void Directory::insert(FileSystem::FileType type, const char *name) {
     Dirent *d;
 
     // Only insert if not already in
-    if (!get(name))
-    {
+    if (!get(name)) {
         // Create an fill entry object
         d = new Dirent;
         assert(d != NULL);
-        MemoryBlock::copy(d->name, (char *)name, DIRENT_LEN);
+        MemoryBlock::copy(d->name, (char *) name, DIRENT_LEN);
         d->type = type;
         entries.append(d);
         m_size += sizeof(*d);
     }
 }
 
-void Directory::remove(const char *name)
-{
+void Directory::remove(const char *name) {
     const String str(name, false);
 
-    for (ListIterator<Dirent *> i(&entries); i.hasCurrent(); i++)
-    {
-        if (str.compareTo(i.current()->name) == 0)
-        {
+    for (ListIterator < Dirent * > i(&entries); i.hasCurrent(); i++) {
+        if (str.compareTo(i.current()->name) == 0) {
             delete i.current();
             i.remove();
             m_size -= sizeof(Dirent);
@@ -96,22 +84,18 @@ void Directory::remove(const char *name)
     }
 }
 
-void Directory::clear()
-{
-    for (ListIterator<Dirent *> i(entries); i.hasCurrent(); i++)
+void Directory::clear() {
+    for (ListIterator < Dirent * > i(entries); i.hasCurrent(); i++)
         delete i.current();
 
     entries.clear();
 }
 
-Dirent * Directory::get(const char *name)
-{
+Dirent *Directory::get(const char *name) {
     const String str(name, false);
 
-    for (ListIterator<Dirent *> i(&entries); i.hasCurrent(); i++)
-    {
-        if (str.compareTo(i.current()->name) == 0)
-        {
+    for (ListIterator < Dirent * > i(&entries); i.hasCurrent(); i++) {
+        if (str.compareTo(i.current()->name) == 0) {
             return i.current();
         }
     }

@@ -33,9 +33,8 @@
  *
  * @see ProcessCtl
  */
-class KernelTimer : public Timer
-{
-  public:
+class KernelTimer : public Timer {
+public:
 
     /**
      * Process timer tick.

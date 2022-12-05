@@ -25,111 +25,111 @@
 #include <ChannelRegistry.h>
 
 TestCase(ChannelRegistryConstruct)
-{
-    ChannelRegistry reg;
+        {
+                ChannelRegistry reg;
 
-    testAssert(reg.getConsumers().count() == 0);
-    testAssert(reg.getProducers().count() == 0);
+        testAssert(reg.getConsumers().count() == 0);
+        testAssert(reg.getProducers().count() == 0);
 
-    return OK;
-}
+        return OK;
+        }
 
 TestCase(ChannelRegistryConsumer)
-{
-    ChannelRegistry reg;
-    Channel *cons1 = new Channel(Channel::Consumer, sizeof(u32));
-    Channel *cons2 = new Channel(Channel::Consumer, sizeof(u32));
+        {
+                ChannelRegistry reg;
+        Channel *cons1 = new Channel(Channel::Consumer, sizeof(u32));
+        Channel *cons2 = new Channel(Channel::Consumer, sizeof(u32));
 
-    // Initially we should be empty
-    testAssert(reg.getConsumers().count() == 0);
-    testAssert(reg.getConsumer(1) == NULL);
+        // Initially we should be empty
+        testAssert(reg.getConsumers().count() == 0);
+        testAssert(reg.getConsumer(1) == NULL);
 
-    // Add consumers
-    testAssert(reg.registerConsumer(1, cons1) == ChannelRegistry::Success);
-    testAssert(reg.getConsumer(1) == cons1);
-    testAssert(reg.registerConsumer(2, cons2) == ChannelRegistry::Success);
-    testAssert(reg.getConsumer(2) == cons2);
-    testAssert(reg.getConsumer(3) == NULL);
+        // Add consumers
+        testAssert(reg.registerConsumer(1, cons1) == ChannelRegistry::Success);
+        testAssert(reg.getConsumer(1) == cons1);
+        testAssert(reg.registerConsumer(2, cons2) == ChannelRegistry::Success);
+        testAssert(reg.getConsumer(2) == cons2);
+        testAssert(reg.getConsumer(3) == NULL);
 
-    // We should not have touched any producers
-    testAssert(reg.getProducers().count() == 0);
+        // We should not have touched any producers
+        testAssert(reg.getProducers().count() == 0);
 
-    // Iterate over the consumers
-    HashTable<ProcessID, Channel *> & getConsumers();
-    for (HashIterator<ProcessID, Channel *> it(reg.getConsumers()); it.hasCurrent(); it++)
-    {
-        testAssert(it.key() == 1 || it.key() == 2);
-        testAssert(it.current() == cons1 || it.current() == cons2);
-    }
+        // Iterate over the consumers
+        HashTable<ProcessID, Channel *> & getConsumers();
+        for (HashIterator<ProcessID, Channel *> it(reg.getConsumers()); it.hasCurrent(); it++)
+        {
+            testAssert(it.key() == 1 || it.key() == 2);
+            testAssert(it.current() == cons1 || it.current() == cons2);
+        }
 
-    // Try to remove non-existing consumer
-    testAssert(reg.unregisterConsumer(3) == ChannelRegistry::NotFound);
-    testAssert(reg.getConsumer(1) == cons1);
-    testAssert(reg.getConsumer(2) == cons2);
+        // Try to remove non-existing consumer
+        testAssert(reg.unregisterConsumer(3) == ChannelRegistry::NotFound);
+        testAssert(reg.getConsumer(1) == cons1);
+        testAssert(reg.getConsumer(2) == cons2);
 
-    // Only remove first consumer
-    testAssert(reg.unregisterConsumer(1) == ChannelRegistry::Success);
-    testAssert(reg.getConsumer(1) == NULL);
-    testAssert(reg.getConsumer(2) == cons2);
+        // Only remove first consumer
+        testAssert(reg.unregisterConsumer(1) == ChannelRegistry::Success);
+        testAssert(reg.getConsumer(1) == NULL);
+        testAssert(reg.getConsumer(2) == cons2);
 
-    // Remove the second consumer
-    testAssert(reg.unregisterConsumer(2) == ChannelRegistry::Success);
-    testAssert(reg.getConsumer(1) == NULL);
-    testAssert(reg.getConsumer(2) == NULL);
+        // Remove the second consumer
+        testAssert(reg.unregisterConsumer(2) == ChannelRegistry::Success);
+        testAssert(reg.getConsumer(1) == NULL);
+        testAssert(reg.getConsumer(2) == NULL);
 
-    // Now we should be empty
-    testAssert(reg.getConsumers().count() == 0);
-    testAssert(reg.getProducers().count() == 0);
+        // Now we should be empty
+        testAssert(reg.getConsumers().count() == 0);
+        testAssert(reg.getProducers().count() == 0);
 
-    return OK;
-}
+        return OK;
+        }
 
 TestCase(ChannelRegistryProducer)
-{
-    ChannelRegistry reg;
-    Channel *prod1 = new Channel(Channel::Producer, sizeof(u32));
-    Channel *prod2 = new Channel(Channel::Producer, sizeof(u32));
+        {
+                ChannelRegistry reg;
+        Channel *prod1 = new Channel(Channel::Producer, sizeof(u32));
+        Channel *prod2 = new Channel(Channel::Producer, sizeof(u32));
 
-    // Initially we should be empty
-    testAssert(reg.getProducers().count() == 0);
-    testAssert(reg.getProducer(1) == NULL);
+        // Initially we should be empty
+        testAssert(reg.getProducers().count() == 0);
+        testAssert(reg.getProducer(1) == NULL);
 
-    // Add producers
-    testAssert(reg.registerProducer(1, prod1) == ChannelRegistry::Success);
-    testAssert(reg.getProducer(1) == prod1);
-    testAssert(reg.registerProducer(2, prod2) == ChannelRegistry::Success);
-    testAssert(reg.getProducer(2) == prod2);
-    testAssert(reg.getProducer(3) == NULL);
+        // Add producers
+        testAssert(reg.registerProducer(1, prod1) == ChannelRegistry::Success);
+        testAssert(reg.getProducer(1) == prod1);
+        testAssert(reg.registerProducer(2, prod2) == ChannelRegistry::Success);
+        testAssert(reg.getProducer(2) == prod2);
+        testAssert(reg.getProducer(3) == NULL);
 
-    // We should not have touched any consumers
-    testAssert(reg.getConsumers().count() == 0);
+        // We should not have touched any consumers
+        testAssert(reg.getConsumers().count() == 0);
 
-    // Iterate over the producers
-    HashTable<ProcessID, Channel *> & getProducers();
-    for (HashIterator<ProcessID, Channel *> it(reg.getProducers()); it.hasCurrent(); it++)
-    {
-        testAssert(it.key() == 1 || it.key() == 2);
-        testAssert(it.current() == prod1 || it.current() == prod2);
-    }
+        // Iterate over the producers
+        HashTable<ProcessID, Channel *> & getProducers();
+        for (HashIterator<ProcessID, Channel *> it(reg.getProducers()); it.hasCurrent(); it++)
+        {
+            testAssert(it.key() == 1 || it.key() == 2);
+            testAssert(it.current() == prod1 || it.current() == prod2);
+        }
 
-    // Try to remove non-existing producer
-    testAssert(reg.unregisterProducer(3) == ChannelRegistry::NotFound);
-    testAssert(reg.getProducer(1) == prod1);
-    testAssert(reg.getProducer(2) == prod2);
+        // Try to remove non-existing producer
+        testAssert(reg.unregisterProducer(3) == ChannelRegistry::NotFound);
+        testAssert(reg.getProducer(1) == prod1);
+        testAssert(reg.getProducer(2) == prod2);
 
-    // Only remove first producer
-    testAssert(reg.unregisterProducer(1) == ChannelRegistry::Success);
-    testAssert(reg.getProducer(1) == NULL);
-    testAssert(reg.getProducer(2) == prod2);
+        // Only remove first producer
+        testAssert(reg.unregisterProducer(1) == ChannelRegistry::Success);
+        testAssert(reg.getProducer(1) == NULL);
+        testAssert(reg.getProducer(2) == prod2);
 
-    // Remove the second producer
-    testAssert(reg.unregisterProducer(2) == ChannelRegistry::Success);
-    testAssert(reg.getProducer(1) == NULL);
-    testAssert(reg.getProducer(2) == NULL);
+        // Remove the second producer
+        testAssert(reg.unregisterProducer(2) == ChannelRegistry::Success);
+        testAssert(reg.getProducer(1) == NULL);
+        testAssert(reg.getProducer(2) == NULL);
 
-    // Now we should be empty
-    testAssert(reg.getProducers().count() == 0);
-    testAssert(reg.getProducers().count() == 0);
+        // Now we should be empty
+        testAssert(reg.getProducers().count() == 0);
+        testAssert(reg.getProducers().count() == 0);
 
-    return OK;
-}
+        return OK;
+        }

@@ -21,8 +21,7 @@
 #include "string.h"
 #include "unistd.h"
 
-int unlink(const char *path)
-{
+int unlink(const char *path) {
     const FileSystemClient filesystem;
 
     // Ask for the unlink
@@ -35,5 +34,5 @@ int unlink(const char *path)
         errno = EIO;
 
     // Done
-    return errno == ESUCCESS ? 0 : (off_t) -1;
+    return errno == ESUCCESS ? 0 : (off_t) - 1;
 }

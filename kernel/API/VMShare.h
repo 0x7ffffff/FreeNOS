@@ -40,8 +40,7 @@
  */
 inline API::Result VMShare(const ProcessID pid,
                            const API::Operation op,
-                           ProcessShares::MemoryShare *share)
-{
+                           ProcessShares::MemoryShare *share) {
     return (API::Result) trapKernel3(API::VMShareNumber, pid, op, (Address) share);
 }
 

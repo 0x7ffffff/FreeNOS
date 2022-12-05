@@ -31,15 +31,14 @@
  *
  * @see PrivExec
  */
-typedef enum PrivOperation
-{
-    Idle           = 0,
-    RebootSystem   = 1,
+typedef enum PrivOperation {
+    Idle = 0,
+    RebootSystem = 1,
     ShutdownSystem = 2,
-    WriteConsole   = 3,
-    Panic          = 4
+    WriteConsole = 3,
+    Panic = 4
 }
-PrivOperation;
+        PrivOperation;
 
 /**
  * Prototype for user applications. Performs various privileged operations.
@@ -50,8 +49,7 @@ PrivOperation;
  * @return API::Success on success and other API::ErrorCode on failure.
  */
 inline API::Result PrivExec(const PrivOperation op,
-                            const Address param = 0)
-{
+                            const Address param = 0) {
     return (API::Result) trapKernel2(API::PrivExecNumber, op, param);
 }
 

@@ -17,11 +17,9 @@
 
 #include "CoreManager.h"
 
-CoreManager::CoreManager()
-{
+CoreManager::CoreManager() {
 }
 
-List<uint> & CoreManager::getCores()
-{
+List <uint> &CoreManager::getCores() {
     return m_cores;
 }

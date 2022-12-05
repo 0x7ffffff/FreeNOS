@@ -208,10 +208,9 @@
 /**
  * Describes an ELF executable and must be placed at the beginning of executable programs.
  */
-typedef struct ELFHeader
-{
+typedef struct ELFHeader {
     /** Magic number and other info. */
-    u8  ident[ELF_INDEX_NIDENT];
+    u8 ident[ELF_INDEX_NIDENT];
 
     /** Object file type. */
     u16 type;
@@ -252,7 +251,7 @@ typedef struct ELFHeader
     /** Section header string table index. */
     u16 sectionHeaderStringsIndex;
 }
-ELFHeader;
+        ELFHeader;
 
 /**
  * @name Segment types
@@ -293,8 +292,7 @@ ELFHeader;
 /**
  * ELF program segment in the executable file.
  */
-typedef struct ELFSegment
-{
+typedef struct ELFSegment {
     /** Segment type. */
     u32 type;
 
@@ -319,7 +317,7 @@ typedef struct ELFSegment
     /** Memory alignment when loaded into memory. */
     u32 alignment;
 }
-ELFSegment;
+        ELFSegment;
 
 /**
  * @}

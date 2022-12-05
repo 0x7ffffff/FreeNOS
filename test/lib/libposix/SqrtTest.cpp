@@ -22,18 +22,18 @@
 #include <math.h>
 
 TestCase(SqrtPositive)
-{
-    testAssert(sqrt(1) == 1);
-    testAssert(sqrt(16) == 4);
-    testAssert(sqrt(100) == 10);
-    testAssert(sqrt(32) == 5);
-    testAssert(sqrt(91) == 9);
-    testAssert(sqrt(99999) == 316);
-    return OK;
-}
+        {
+                testAssert(sqrt(1) == 1);
+        testAssert(sqrt(16) == 4);
+        testAssert(sqrt(100) == 10);
+        testAssert(sqrt(32) == 5);
+        testAssert(sqrt(91) == 9);
+        testAssert(sqrt(99999) == 316);
+        return OK;
+        }
 
 TestCase(SqrtZero)
-{
-    testAssert(sqrt(0) == 0);
-    return OK;
-}
+        {
+                testAssert(sqrt(0) == 0);
+        return OK;
+        }

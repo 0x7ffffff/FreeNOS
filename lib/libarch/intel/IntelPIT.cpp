@@ -18,24 +18,21 @@
 #include "IntelPIT.h"
 
 IntelPIT::IntelPIT()
-    : Timer()
-{
+        : Timer() {
     m_int = InterruptNumber;
 }
 
-uint IntelPIT::getCounter()
-{
+uint IntelPIT::getCounter() {
     uint count = 0;
 
     setControl(LatchedRead | Channel0);
-    count  = m_io.inb(Channel0Data);
+    count = m_io.inb(Channel0Data);
     count |= m_io.inb(Channel0Data) << 8;
 
     return count;
 }
 
-IntelPIT::Result IntelPIT::setFrequency(uint hertz)
-{
+IntelPIT::Result IntelPIT::setFrequency(uint hertz) {
     uint divisor;
 
     // Frequency must be non-zero and cannot exceed the oscillator
@@ -55,26 +52,22 @@ IntelPIT::Result IntelPIT::setFrequency(uint hertz)
     return Success;
 }
 
-IntelPIT::Result IntelPIT::waitTrigger()
-{
+IntelPIT::Result IntelPIT::waitTrigger() {
     uint previous, current;
 
     // Wait until the 16-bit counter restarts
     // at its initial counter value.
     current = getCounter();
-    do
-    {
+    do {
         previous = current;
-        current  = getCounter();
-    }
-    while (previous >= current);
- 
+        current = getCounter();
+    } while (previous >= current);
+
     // Now at the trigger moment.
     return Success;
 }
 
-IntelPIT::Result IntelPIT::setControl(IntelPIT::ControlFlags flags)
-{
+IntelPIT::Result IntelPIT::setControl(IntelPIT::ControlFlags flags) {
     m_io.outb(Control, flags);
     return Success;
 }

@@ -126,8 +126,7 @@
 /**
  * Structure of a group descriptor.
  */
-typedef struct LinnGroup
-{
+typedef struct LinnGroup {
     /** The number of free blocks in this group. */
     le32 freeBlocksCount;
 
@@ -143,7 +142,7 @@ typedef struct LinnGroup
     /** Inode table contains pre-allocated inodes. */
     le32 inodeTable;
 }
-LinnGroup;
+        LinnGroup;
 
 /**
  * @}

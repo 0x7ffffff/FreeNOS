@@ -31,21 +31,19 @@
 /**
  * Provides a buffered abstract interface to a file.
  */
-class BufferedFile
-{
-  public:
+class BufferedFile {
+public:
 
     /**
      * Result codes
      */
-    enum Result
-    {
+    enum Result {
         Success,
         NotFound,
         IOError,
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -62,14 +60,14 @@ class BufferedFile
      *
      * @return File path pointer
      */
-    const char * path() const;
+    const char *path() const;
 
     /**
      * Get file buffer
      *
      * @return File buffer
      */
-    const void * buffer() const;
+    const void *buffer() const;
 
     /**
      * Get file size
@@ -97,7 +95,7 @@ class BufferedFile
      */
     Result write(const void *data, const Size size) const;
 
-  private:
+private:
 
     /** Path to the file */
     const char *m_path;

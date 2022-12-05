@@ -22,20 +22,20 @@
 #include <Channel.h>
 
 TestCase(ChannelConstruct)
-{
-    Channel ch(Channel::Consumer, sizeof(u32));
+        {
+                Channel ch(Channel::Consumer, sizeof(u32));
 
-    testAssert(ch.m_mode == Channel::Consumer);
-    testAssert(ch.m_messageSize == sizeof(u32));
+        testAssert(ch.m_mode == Channel::Consumer);
+        testAssert(ch.m_messageSize == sizeof(u32));
 
-    return OK;
-}
+        return OK;
+        }
 
 TestCase(ChannelMessageSize)
-{
-    Channel ch(Channel::Consumer, sizeof(u32));
+        {
+                Channel ch(Channel::Consumer, sizeof(u32));
 
-    testAssert(ch.getMessageSize() == sizeof(u32));
+        testAssert(ch.getMessageSize() == sizeof(u32));
 
-    return OK;
-}
+        return OK;
+        }

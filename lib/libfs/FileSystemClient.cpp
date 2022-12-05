@@ -24,29 +24,24 @@
 
 FileSystemMount FileSystemClient::m_mounts[MaximumFileSystemMounts] = {};
 
-String * FileSystemClient::m_currentDirectory = (String *) NULL;
+String *FileSystemClient::m_currentDirectory = (String *) NULL;
 
 FileSystemClient::FileSystemClient(const ProcessID pid)
-    : m_pid(pid)
-{
+        : m_pid(pid) {
 }
 
 inline FileSystem::Result FileSystemClient::request(const char *path,
-                                                    FileSystemMessage &msg) const
-{
+                                                    FileSystemMessage &msg) const {
     const ProcessID mnt = m_pid == ANY ? findMount(path) : m_pid;
     char fullpath[FileSystemPath::MaximumLength];
 
     // Use the current directory as prefix for relative paths
-    if (path[0] != '/' && m_currentDirectory != NULL)
-    {
+    if (path[0] != '/' && m_currentDirectory != NULL) {
         const Size copied = MemoryBlock::copy(fullpath, **m_currentDirectory, sizeof(fullpath));
 
         if (copied < sizeof(fullpath))
             MemoryBlock::copy(fullpath + copied, path, sizeof(fullpath) - copied);
-    }
-    else
-    {
+    } else {
         MemoryBlock::copy(fullpath, path, sizeof(fullpath));
     }
 
@@ -56,17 +51,13 @@ inline FileSystem::Result FileSystemClient::request(const char *path,
 }
 
 inline FileSystem::Result FileSystemClient::request(const ProcessID pid,
-                                                    FileSystemMessage &msg) const
-{
+                                                    FileSystemMessage &msg) const {
     ChannelClient::Result r = ChannelClient::instance()->syncSendReceive(&msg, sizeof(msg), pid);
-    if (r != ChannelClient::Success)
-    {
+    if (r != ChannelClient::Success) {
         ERROR("failed to send request to PID " << pid <<
-              " for path " << msg.buffer << ": result = " << (int) r);
+                                               " for path " << msg.buffer << ": result = " << (int) r);
         return FileSystem::IpcError;
-    }
-    else if (msg.result != FileSystem::RedirectRequest)
-    {
+    } else if (msg.result != FileSystem::RedirectRequest) {
         return msg.result;
     }
 
@@ -77,13 +68,11 @@ inline FileSystem::Result FileSystemClient::request(const ProcessID pid,
     assert(msg.action != FileSystem::WriteFile);
 
     // Extend mounts table
-    for (Size i = 0; i < MaximumFileSystemMounts; i++)
-    {
-        if (m_mounts[i].path[0] == ZERO)
-        {
+    for (Size i = 0; i < MaximumFileSystemMounts; i++) {
+        if (m_mounts[i].path[0] == ZERO) {
             assert(msg.pathMountLength + 1 <= sizeof(m_mounts[i].path));
             MemoryBlock::copy(m_mounts[i].path, msg.buffer, msg.pathMountLength + 1);
-            m_mounts[i].procID  = msg.pid;
+            m_mounts[i].procID = msg.pid;
             m_mounts[i].options = ZERO;
             break;
         }
@@ -91,48 +80,40 @@ inline FileSystem::Result FileSystemClient::request(const ProcessID pid,
 
     msg.type = ChannelMessage::Request;
     r = ChannelClient::instance()->syncSendReceive(&msg, sizeof(msg), msg.pid);
-    if (r != ChannelClient::Success)
-    {
+    if (r != ChannelClient::Success) {
         ERROR("failed to redirect request to PID " << msg.pid <<
-              " for path " << msg.buffer << ": result = " << (int) r);
+                                                   " for path " << msg.buffer << ": result = " << (int) r);
         return FileSystem::IpcError;
     }
 
-    assert (msg.result != FileSystem::RedirectRequest);
+    assert(msg.result != FileSystem::RedirectRequest);
     return msg.result;
 }
 
-ProcessID FileSystemClient::findMount(const char *path) const
-{
+ProcessID FileSystemClient::findMount(const char *path) const {
     FileSystemMount *m = ZERO;
     Size length = 0;
     char fullpath[FileSystemPath::MaximumLength];
 
     // Use the current directory as prefix for relative paths
-    if (path[0] != '/' && m_currentDirectory != NULL)
-    {
+    if (path[0] != '/' && m_currentDirectory != NULL) {
         const Size copied = MemoryBlock::copy(fullpath, **m_currentDirectory, sizeof(fullpath));
 
         if (copied < sizeof(fullpath))
             MemoryBlock::copy(fullpath + copied, path, sizeof(fullpath) - copied);
-    }
-    else
-    {
+    } else {
         MemoryBlock::copy(fullpath, path, sizeof(fullpath));
     }
 
     // Find the longest match
-    for (Size i = 0; i < MaximumFileSystemMounts; i++)
-    {
-        if (m_mounts[i].path[0])
-        {
+    for (Size i = 0; i < MaximumFileSystemMounts; i++) {
+        if (m_mounts[i].path[0]) {
             String str(m_mounts[i].path, false);
             Size len = str.length();
 
             // Only choose this mount, if it matches,
             // and is longer than the last match.
-            if (str.compareTo(fullpath, true, len) == 0 && len > length)
-            {
+            if (str.compareTo(fullpath, true, len) == 0 && len > length) {
                 length = len;
                 m = &m_mounts[i];
             }
@@ -143,71 +124,60 @@ ProcessID FileSystemClient::findMount(const char *path) const
     return m ? m->procID : ROOTFS_PID;
 }
 
-const String * FileSystemClient::getCurrentDirectory() const
-{
+const String *FileSystemClient::getCurrentDirectory() const {
     return m_currentDirectory;
 }
 
-void FileSystemClient::setCurrentDirectory(const String &directory)
-{
+void FileSystemClient::setCurrentDirectory(const String &directory) {
     assert(m_currentDirectory != NULL);
     *m_currentDirectory = directory;
 }
 
-void FileSystemClient::setCurrentDirectory(String *directory)
-{
-    if (m_currentDirectory != NULL)
-    {
+void FileSystemClient::setCurrentDirectory(String *directory) {
+    if (m_currentDirectory != NULL) {
         *m_currentDirectory = *directory;
-    }
-    else
-    {
+    } else {
         m_currentDirectory = directory;
     }
 }
 
 FileSystem::Result FileSystemClient::createFile(const char *path,
                                                 const FileSystem::FileType type,
-                                                const FileSystem::FileModes mode) const
-{
+                                                const FileSystem::FileModes mode) const {
     FileSystem::FileStat st;
-    st.type    = type;
-    st.access  = mode;
+    st.type = type;
+    st.access = mode;
 
     FileSystemMessage msg;
-    msg.type   = ChannelMessage::Request;
+    msg.type = ChannelMessage::Request;
     msg.action = FileSystem::CreateFile;
-    msg.buffer = (char *)path;
-    msg.stat   = &st;
+    msg.buffer = (char *) path;
+    msg.stat = &st;
 
     return request(path, msg);
 }
 
 FileSystem::Result FileSystemClient::statFile(const char *path,
-                                              FileSystem::FileStat *st) const
-{
+                                              FileSystem::FileStat *st) const {
     FileSystemMessage msg;
-    msg.type   = ChannelMessage::Request;
+    msg.type = ChannelMessage::Request;
     msg.action = FileSystem::StatFile;
-    msg.buffer = (char *)path;
-    msg.stat   = st;
+    msg.buffer = (char *) path;
+    msg.stat = st;
 
     return request(path, msg);
 }
 
 FileSystem::Result FileSystemClient::openFile(const char *path,
-                                              Size & descriptor) const
-{
+                                              Size &descriptor) const {
     FileSystem::FileStat st;
 
     const FileSystem::Result result = statFile(path, &st);
-    if (result == FileSystem::Success)
-    {
+    if (result == FileSystem::Success) {
         FileDescriptor *fd = FileDescriptor::instance();
 
         const FileDescriptor::Result fdResult = fd->openEntry(st.inode, st.pid, descriptor);
-        if (fdResult != FileDescriptor::Success)
-        {
+        if (fdResult != FileDescriptor::Success) {
             return FileSystem::IOError;
         }
     }
@@ -215,11 +185,9 @@ FileSystem::Result FileSystemClient::openFile(const char *path,
     return result;
 }
 
-FileSystem::Result FileSystemClient::closeFile(const Size descriptor) const
-{
+FileSystem::Result FileSystemClient::closeFile(const Size descriptor) const {
     const FileDescriptor::Result result = FileDescriptor::instance()->closeEntry(descriptor);
-    if (result != FileDescriptor::Success)
-    {
+    if (result != FileDescriptor::Success) {
         return FileSystem::IOError;
     }
 
@@ -228,25 +196,22 @@ FileSystem::Result FileSystemClient::closeFile(const Size descriptor) const
 
 FileSystem::Result FileSystemClient::readFile(const Size descriptor,
                                               void *buf,
-                                              Size *size) const
-{
+                                              Size *size) const {
     FileDescriptor::Entry *fd = FileDescriptor::instance()->getEntry(descriptor);
-    if (!fd || !fd->open)
-    {
+    if (!fd || !fd->open) {
         return FileSystem::NotFound;
     }
 
     FileSystemMessage msg;
-    msg.type     = ChannelMessage::Request;
-    msg.action   = FileSystem::ReadFile;
-    msg.inode    = fd->inode;
-    msg.buffer   = (char *)buf;
-    msg.size     = *size;
-    msg.offset   = fd->position;
+    msg.type = ChannelMessage::Request;
+    msg.action = FileSystem::ReadFile;
+    msg.inode = fd->inode;
+    msg.buffer = (char *) buf;
+    msg.size = *size;
+    msg.offset = fd->position;
 
     const FileSystem::Result result = request(fd->pid, msg);
-    if (result == FileSystem::Success)
-    {
+    if (result == FileSystem::Success) {
         *size = msg.size;
         fd->position += msg.size;
     }
@@ -256,25 +221,22 @@ FileSystem::Result FileSystemClient::readFile(const Size descriptor,
 
 FileSystem::Result FileSystemClient::writeFile(const Size descriptor,
                                                const void *buf,
-                                               Size *size) const
-{
+                                               Size *size) const {
     FileDescriptor::Entry *fd = FileDescriptor::instance()->getEntry(descriptor);
-    if (!fd || !fd->open)
-    {
+    if (!fd || !fd->open) {
         return FileSystem::NotFound;
     }
 
     FileSystemMessage msg;
-    msg.type     = ChannelMessage::Request;
-    msg.action   = FileSystem::WriteFile;
-    msg.inode    = fd->inode;
-    msg.buffer   = (char *)buf;
-    msg.size     = *size;
-    msg.offset   = fd->position;
+    msg.type = ChannelMessage::Request;
+    msg.action = FileSystem::WriteFile;
+    msg.inode = fd->inode;
+    msg.buffer = (char *) buf;
+    msg.size = *size;
+    msg.offset = fd->position;
 
     const FileSystem::Result result = request(fd->pid, msg);
-    if (result == FileSystem::Success)
-    {
+    if (result == FileSystem::Success) {
         *size = msg.size;
         fd->position += msg.size;
     }
@@ -283,12 +245,11 @@ FileSystem::Result FileSystemClient::writeFile(const Size descriptor,
 }
 
 
-FileSystem::Result FileSystemClient::deleteFile(const char *path) const
-{
+FileSystem::Result FileSystemClient::deleteFile(const char *path) const {
     FileSystemMessage msg;
-    msg.type   = ChannelMessage::Request;
+    msg.type = ChannelMessage::Request;
     msg.action = FileSystem::DeleteFile;
-    msg.buffer = (char *)path;
+    msg.buffer = (char *) path;
 
     return request(path, msg);
 }
@@ -296,8 +257,7 @@ FileSystem::Result FileSystemClient::deleteFile(const char *path) const
 FileSystem::Result FileSystemClient::waitFile(const char *filesystemPath,
                                               const FileSystem::WaitSet *waitSet,
                                               const Size count,
-                                              const Size msecTimeout) const
-{
+                                              const Size msecTimeout) const {
     const ProcessID pid = findMount(filesystemPath);
 
     FileSystemMessage msg;
@@ -306,14 +266,11 @@ FileSystem::Result FileSystemClient::waitFile(const char *filesystemPath,
     msg.buffer = (char *) waitSet;
     msg.size = count * sizeof(FileSystem::WaitSet);
 
-    if (msecTimeout != 0)
-    {
+    if (msecTimeout != 0) {
         KernelTimer timer;
         timer.tick();
         timer.getCurrent(&msg.timeout, 500);
-    }
-    else
-    {
+    } else {
         msg.timeout.ticks = 0;
         msg.timeout.frequency = 0;
     }
@@ -321,37 +278,33 @@ FileSystem::Result FileSystemClient::waitFile(const char *filesystemPath,
     return request(pid, msg);
 }
 
-FileSystem::Result FileSystemClient::mountFileSystem(const char *mountPath) const
-{
+FileSystem::Result FileSystemClient::mountFileSystem(const char *mountPath) const {
     FileSystemMessage msg;
-    msg.type   = ChannelMessage::Request;
+    msg.type = ChannelMessage::Request;
     msg.action = FileSystem::MountFileSystem;
     msg.buffer = (char *) mountPath;
 
     return request(ROOTFS_PID, msg);
 }
 
-FileSystem::Result FileSystemClient::waitFileSystem(const char *path) const
-{
+FileSystem::Result FileSystemClient::waitFileSystem(const char *path) const {
     FileSystemMessage msg;
-    msg.type   = ChannelMessage::Request;
+    msg.type = ChannelMessage::Request;
     msg.action = FileSystem::WaitFileSystem;
     msg.buffer = (char *) path;
 
     return request(ROOTFS_PID, msg);
 }
 
-FileSystemMount * FileSystemClient::getFileSystems(Size &numberOfMounts) const
-{
+FileSystemMount *FileSystemClient::getFileSystems(Size &numberOfMounts) const {
     FileSystemMessage msg;
-    msg.type   = ChannelMessage::Request;
+    msg.type = ChannelMessage::Request;
     msg.action = FileSystem::GetFileSystems;
     msg.buffer = (char *) m_mounts;
-    msg.size   = sizeof(m_mounts);
+    msg.size = sizeof(m_mounts);
 
     const FileSystem::Result result = request(ROOTFS_PID, msg);
-    if (result == FileSystem::Success)
-    {
+    if (result == FileSystem::Success) {
         numberOfMounts = MaximumFileSystemMounts;
         return m_mounts;
     }

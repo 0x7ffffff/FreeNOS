@@ -33,20 +33,18 @@
 /**
  * Responsible for deciding which Process may execute on the local Core.
  */
-class Scheduler
-{
-  public:
+class Scheduler {
+public:
 
     /**
      * Result code
      */
-    enum Result
-    {
+    enum Result {
         Success,
         InvalidArgument
     };
 
-  public:
+public:
 
     /**
      * Constructor function.
@@ -85,9 +83,9 @@ class Scheduler
      *
      * @return Process pointer or NULL if no matching process found
      */
-    Process * select();
+    Process *select();
 
-  private:
+private:
 
     /** Contains processes ready to run */
     Queue<Process *, MAX_PROCS> m_queue;

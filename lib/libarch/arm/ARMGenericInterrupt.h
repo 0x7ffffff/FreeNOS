@@ -35,9 +35,8 @@
 /**
  * ARM Generic Interrupt Controller (GIC) version 2.
  */
-class ARMGenericInterrupt : public IntController
-{
-  private:
+class ARMGenericInterrupt : public IntController {
+private:
 
     /** Total number of software generated interrupts (SGI) */
     static const Size NumberOfSoftwareInterrupts = 16;
@@ -45,60 +44,54 @@ class ARMGenericInterrupt : public IntController
     /**
      * Distributor register interface
      */
-    enum DistRegisters
-    {
-        GICD_CTRL       = 0x0000,
-        GICD_TYPER      = 0x0004,
-        GICD_GROUPR     = 0x0080,
-        GICD_ISENABLER  = 0x0100,
-        GICD_ICENABLER  = 0x0180,
-        GICD_ICPENDR    = 0x0280,
-        GICD_ISACTIVER  = 0x0300,
-        GICD_ICACTIVER  = 0x0380,
+    enum DistRegisters {
+        GICD_CTRL = 0x0000,
+        GICD_TYPER = 0x0004,
+        GICD_GROUPR = 0x0080,
+        GICD_ISENABLER = 0x0100,
+        GICD_ICENABLER = 0x0180,
+        GICD_ICPENDR = 0x0280,
+        GICD_ISACTIVER = 0x0300,
+        GICD_ICACTIVER = 0x0380,
         GICD_IPRIORITYR = 0x0400,
-        GICD_ITARGETSR  = 0x0800,
-        GICD_ICFGR      = 0x0C00,
-        GICD_SGIR       = 0x0F00,
-        GICD_CPENDSGIR  = 0x0F10,
-        GICD_ID2        = 0x0FE8
+        GICD_ITARGETSR = 0x0800,
+        GICD_ICFGR = 0x0C00,
+        GICD_SGIR = 0x0F00,
+        GICD_CPENDSGIR = 0x0F10,
+        GICD_ID2 = 0x0FE8
     };
 
-    enum DistCtrlFlags
-    {
+    enum DistCtrlFlags {
         DistCtrlGroup0 = (1 << 0),
         DistCtrlGroup1 = (1 << 1)
     };
 
-    enum DistTypeFlags
-    {
+    enum DistTypeFlags {
         DistTypeIrqsMask = (0xf)
     };
 
     /**
      * CPU register interface
      */
-    enum CpuRegisters
-    {
-        GICC_CTRL      = 0x0000,
-        GICC_PMR       = 0x0004,
-        GICC_IAR       = 0x000C,
-        GICC_EOIR      = 0x0010,
-        GICC_IDR       = 0x00FC,
-        GICC_DIR       = 0x1000
+    enum CpuRegisters {
+        GICC_CTRL = 0x0000,
+        GICC_PMR = 0x0004,
+        GICC_IAR = 0x000C,
+        GICC_EOIR = 0x0010,
+        GICC_IDR = 0x00FC,
+        GICC_DIR = 0x1000
     };
 
-    enum CpuCtrlFlags
-    {
+    enum CpuCtrlFlags {
         CpuCtrlGroup0 = (1 << 0),
         CpuCtrlGroup1 = (1 << 1)
     };
 
-    enum CpuIrqAckFlags
-    {
-        CpuIrqAckMask  = (0x3ff),
+    enum CpuIrqAckFlags {
+        CpuIrqAckMask = (0x3ff),
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -166,7 +159,7 @@ class ARMGenericInterrupt : public IntController
      *
      * @return Result code.
      */
-    virtual Result nextPending(uint & irq);
+    virtual Result nextPending(uint &irq);
 
     /**
      * Check if an IRQ vector is set.
@@ -177,7 +170,7 @@ class ARMGenericInterrupt : public IntController
      */
     virtual bool isTriggered(uint irq);
 
-  private:
+private:
 
     /**
      * Calculate the number of 32-bit registers needed to represent given number of bits per IRQ.
@@ -195,7 +188,7 @@ class ARMGenericInterrupt : public IntController
      */
     bool isSoftwareInterrupt(const uint irq) const;
 
-  private:
+private:
 
     /** ARM Generic Interrupt Controller Distributor Interface */
     ARMIO m_dist;

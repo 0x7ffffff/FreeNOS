@@ -34,19 +34,18 @@
 /**
  * Simple filesystem path parser.
  */
-class FileSystemPath
-{
-  private:
+class FileSystemPath {
+private:
 
     /** The default path separator character */
     static const char DefaultSeparator = '/';
 
-  public:
+public:
 
     /** Maximum length of a filesystem path in bytes */
     static const Size MaximumLength = 64u;
 
-  public:
+public:
 
     /**
      * Constructor using char pointer.
@@ -62,28 +61,28 @@ class FileSystemPath
      *
      * @return Path of our parent.
      */
-    const String & parent() const;
+    const String &parent() const;
 
     /**
      * The name of the last element in the path.
      *
      * @return Name of the base.
      */
-    const String & base() const;
+    const String &base() const;
 
     /**
      * Get the full path as a String
      *
      * @return String instance.
      */
-    const String & full() const;
+    const String &full() const;
 
     /**
      * Returns a List of separate path elements.
      *
      * @return Pointer to a List.
      */
-    const List<String> & split() const;
+    const List <String> &split() const;
 
     /**
      * Get Length of our full path.
@@ -92,7 +91,7 @@ class FileSystemPath
      */
     Size length() const;
 
-  private:
+private:
 
     /** Separator character. */
     const char m_separator;
@@ -101,7 +100,7 @@ class FileSystemPath
     const String m_full;
 
     /** The path split in pieces by the separator. */
-    const List<String> m_path;
+    const List <String> m_path;
 
     /** Last element in the full path. */
     const String m_base;

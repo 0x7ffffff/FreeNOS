@@ -17,8 +17,7 @@
 
 #include "Application.h"
 
-Application::Application(int argc, char **argv)
-{
+Application::Application(int argc, char **argv) {
     m_argc = argc;
     m_argv = argv;
     m_parser.registerFlag('h', "help", "show program help");
@@ -26,51 +25,42 @@ Application::Application(int argc, char **argv)
     m_parser.registerFlag('d', "debug", "set log level to debug");
 }
 
-Application::~Application()
-{
+Application::~Application() {
 }
 
-Application::Result Application::initialize()
-{
+Application::Result Application::initialize() {
     return Success;
 }
 
-int Application::run()
-{
+int Application::run() {
     // Set application name
-    if (m_argc < 1)
-    {
+    if (m_argc < 1) {
         usage();
         return ExitFailure;
-    }
-    else
+    } else
         m_parser.setName(m_argv[0]);
 
     // Parse commandline arguments
-    if (m_parser.parse(m_argc, m_argv, m_arguments) != ArgumentParser::Success)
-    {
+    if (m_parser.parse(m_argc, m_argv, m_arguments) != ArgumentParser::Success) {
         usage();
         return ExitFailure;
     }
 
     // If the help argument is given, show the usage
-    if (m_arguments.get("help"))
-    {
+    if (m_arguments.get("help")) {
         usage();
         return ExitFailure;
     }
 
     // If the version argument is given, show version
-    if (m_arguments.get("version"))
-    {
+    if (m_arguments.get("version")) {
         output(m_version);
         output("\n");
         return ExitSuccess;
     }
 
     // Enable debug logging if specified
-    if (m_arguments.get("debug") && Log::instance())
-    {
+    if (m_arguments.get("debug") && Log::instance()) {
         Log::instance()->setMinimumLogLevel(Log::Debug);
     }
 
@@ -88,33 +78,27 @@ int Application::run()
         return ExitFailure;
 }
 
-void Application::usage() const
-{
+void Application::usage() const {
     String s = m_parser.getUsage();
     output(s);
 }
 
-Application::Result Application::output(String & string) const
-{
+Application::Result Application::output(String &string) const {
     return output(*string);
 }
 
-ArgumentParser & Application::parser()
-{
+ArgumentParser &Application::parser() {
     return m_parser;
 }
 
-const ArgumentParser & Application::parser() const
-{
+const ArgumentParser &Application::parser() const {
     return m_parser;
 }
 
-const ArgumentContainer & Application::arguments() const
-{
+const ArgumentContainer &Application::arguments() const {
     return m_arguments;
 }
 
-void Application::setVersion(const String & version)
-{
+void Application::setVersion(const String &version) {
     m_version = version;
 }

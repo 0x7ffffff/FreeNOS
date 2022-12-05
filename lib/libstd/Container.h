@@ -32,9 +32,8 @@
 /**
  * Containers provide access to stored items.
  */
-class Container
-{
-  public:
+class Container {
+public:
 
     /**
      * Constructor.

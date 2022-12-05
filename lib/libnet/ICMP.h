@@ -25,7 +25,9 @@
 #include "IPV4.h"
 
 class ICMPFactory;
+
 class ICMPSocket;
+
 class ARP;
 
 /**
@@ -39,19 +41,17 @@ class ARP;
 /**
  * Internet Control Message Protocol (ICMP)
  */
-class ICMP : public NetworkProtocol
-{
-  private:
+class ICMP : public NetworkProtocol {
+private:
 
     static const Size MaxIcmpSockets = 128u;
 
-  public:
+public:
 
     /**
      * Packet types
      */
-    enum Type
-    {
+    enum Type {
         EchoReply = 0,
         DestinationUnreachable = 3,
         Redirect = 5,
@@ -61,17 +61,16 @@ class ICMP : public NetworkProtocol
     /**
      * Packet header format
      */
-    typedef struct Header
-    {
+    typedef struct Header {
         u8 type;
         u8 code;
         u16 checksum;
         u16 id;
         u16 sequence;
     }
-    Header;
+            Header;
 
-  public:
+public:
 
     /**
      * Constructor
@@ -106,8 +105,8 @@ class ICMP : public NetworkProtocol
      *
      * @return ICMPSocket object instance
      */
-    ICMPSocket * createSocket(String & path,
-                              const ProcessID pid);
+    ICMPSocket *createSocket(String &path,
+                             const ProcessID pid);
 
     /**
      * Remove sockets for a process
@@ -142,11 +141,11 @@ class ICMP : public NetworkProtocol
                                   const void *payload,
                                   const Size payloadSize);
 
-  private:
+private:
 
     ICMPFactory *m_factory;
 
-    Index<ICMPSocket, MaxIcmpSockets> m_sockets;
+    Index <ICMPSocket, MaxIcmpSockets> m_sockets;
 };
 
 /**

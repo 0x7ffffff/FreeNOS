@@ -21,31 +21,22 @@
 #include "MemoryChannel.h"
 
 MemoryChannel::MemoryChannel(const Channel::Mode mode, const Size messageSize)
-    : Channel(mode, messageSize)
-    , m_maximumMessages((PAGESIZE / messageSize) - 1U)
-{
+        : Channel(mode, messageSize), m_maximumMessages((PAGESIZE / messageSize) - 1U) {
     assert(messageSize >= sizeof(RingHead));
     assert(messageSize < (PAGESIZE / 2));
 
     reset(true);
 }
 
-MemoryChannel::~MemoryChannel()
-{
+MemoryChannel::~MemoryChannel() {
 }
 
-MemoryChannel::Result MemoryChannel::reset(const bool hardReset)
-{
-    if (hardReset)
-    {
+MemoryChannel::Result MemoryChannel::reset(const bool hardReset) {
+    if (hardReset) {
         MemoryBlock::set(&m_head, 0, sizeof(m_head));
-    }
-    else if (m_mode == Channel::Producer)
-    {
+    } else if (m_mode == Channel::Producer) {
         m_data.read(0, sizeof(m_head), &m_head);
-    }
-    else if (m_mode == Channel::Consumer)
-    {
+    } else if (m_mode == Channel::Consumer) {
         m_feedback.read(0, sizeof(m_head), &m_head);
     }
     return Success;
@@ -53,8 +44,7 @@ MemoryChannel::Result MemoryChannel::reset(const bool hardReset)
 
 MemoryChannel::Result MemoryChannel::setVirtual(const Address data,
                                                 const Address feedback,
-                                                const bool hardReset)
-{
+                                                const bool hardReset) {
     m_data.setBase(data);
     m_feedback.setBase(feedback);
 
@@ -63,13 +53,11 @@ MemoryChannel::Result MemoryChannel::setVirtual(const Address data,
 
 MemoryChannel::Result MemoryChannel::setPhysical(const Address data,
                                                  const Address feedback,
-                                                 const bool hardReset)
-{
+                                                 const bool hardReset) {
     Memory::Access dataAccess = Memory::User | Memory::Readable;
     Memory::Access feedAccess = Memory::User | Memory::Readable;
 
-    switch (m_mode)
-    {
+    switch (m_mode) {
         case Consumer:
             feedAccess |= Memory::Writable;
             break;
@@ -80,41 +68,35 @@ MemoryChannel::Result MemoryChannel::setPhysical(const Address data,
     }
 
     IO::Result result = m_data.map(data, PAGESIZE, dataAccess);
-    if (result != IO::Success)
-    {
-        ERROR("failed to map data physical address " << (void*)data << ": " << (int)result);
+    if (result != IO::Success) {
+        ERROR("failed to map data physical address " << (void *) data << ": " << (int) result);
         return IOError;
     }
 
     result = m_feedback.map(feedback, PAGESIZE, feedAccess);
-    if (result != IO::Success)
-    {
-        ERROR("failed to map feedback physical address " << (void*)feedback << ": " << (int)result);
+    if (result != IO::Success) {
+        ERROR("failed to map feedback physical address " << (void *) feedback << ": " << (int) result);
         return IOError;
     }
 
     return reset(hardReset);
 }
 
-MemoryChannel::Result MemoryChannel::unmap()
-{
+MemoryChannel::Result MemoryChannel::unmap() {
     Result result = Success;
 
-    if (m_data.unmap() != IO::Success)
-    {
+    if (m_data.unmap() != IO::Success) {
         result = IOError;
     }
 
-    if (m_feedback.unmap() != IO::Success)
-    {
+    if (m_feedback.unmap() != IO::Success) {
         result = IOError;
     }
 
     return result;
 }
 
-MemoryChannel::Result MemoryChannel::read(void *buffer)
-{
+MemoryChannel::Result MemoryChannel::read(void *buffer) {
     RingHead head;
 
     // Read the current ring head
@@ -125,7 +107,7 @@ MemoryChannel::Result MemoryChannel::read(void *buffer)
         return NotFound;
 
     // Read one message
-    m_data.read((m_head.index+1) * m_messageSize, m_messageSize, buffer);
+    m_data.read((m_head.index + 1) * m_messageSize, m_messageSize, buffer);
 
     // Increment head index
     m_head.index = (m_head.index + 1) % m_maximumMessages;
@@ -135,8 +117,7 @@ MemoryChannel::Result MemoryChannel::read(void *buffer)
     return Success;
 }
 
-MemoryChannel::Result MemoryChannel::write(const void *buffer)
-{
+MemoryChannel::Result MemoryChannel::write(const void *buffer) {
     RingHead reader;
 
     // Read current ring head
@@ -147,7 +128,7 @@ MemoryChannel::Result MemoryChannel::write(const void *buffer)
         return ChannelFull;
 
     // write the message
-    m_data.write((m_head.index+1) * m_messageSize, m_messageSize, buffer);
+    m_data.write((m_head.index + 1) * m_messageSize, m_messageSize, buffer);
 
     // Increment write index
     m_head.index = (m_head.index + 1) % m_maximumMessages;
@@ -155,8 +136,7 @@ MemoryChannel::Result MemoryChannel::write(const void *buffer)
     return Success;
 }
 
-MemoryChannel::Result MemoryChannel::flush()
-{
+MemoryChannel::Result MemoryChannel::flush() {
 #ifndef INTEL
     if (m_mode == Producer)
         flushPage(m_data.getBase());
@@ -167,27 +147,23 @@ MemoryChannel::Result MemoryChannel::flush()
     return Success;
 }
 
-MemoryChannel::Result MemoryChannel::flushPage(const Address page) const
-{
+MemoryChannel::Result MemoryChannel::flushPage(const Address page) const {
     // Flush caches in usermode via the kernel.
-    if (!isKernel)
-    {
+    if (!isKernel) {
 #ifndef __HOST__
         Memory::Range range;
         range.virt = page;
 
         const API::Result result = VMCtl(SELF, CacheClean, &range);
-        if (result != API::Success)
-        {
+        if (result != API::Success) {
             ERROR("failed to clean data cache at " << (void *) page <<
-                  ": result = " << (int) result);
+                                                   ": result = " << (int) result);
             return IOError;
         }
 #endif /* __HOST__ */
     }
-    // Clean both pages from the cache directly
-    else
-    {
+        // Clean both pages from the cache directly
+    else {
         Arch::Cache cache;
         cache.cleanData(page);
     }

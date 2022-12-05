@@ -23,18 +23,15 @@
 #include "RecoveryServer.h"
 
 RecoveryServer::RecoveryServer()
-    : ChannelServer<RecoveryServer, RecoveryMessage>(this)
-{
+        : ChannelServer<RecoveryServer, RecoveryMessage>(this) {
     addIPCHandler(Recovery::RestartProcess, &RecoveryServer::restartProcess);
 }
 
-void RecoveryServer::restartProcess(RecoveryMessage *msg)
-{
+void RecoveryServer::restartProcess(RecoveryMessage *msg) {
     DEBUG("pid = " << msg->pid);
 
     // The identifier must be in range of allowed values
-    if (msg->pid >= MAX_PROCS)
-    {
+    if (msg->pid >= MAX_PROCS) {
         ERROR("invalid PID " << msg->pid);
         msg->result = Recovery::InvalidArgument;
         return;
@@ -42,11 +39,10 @@ void RecoveryServer::restartProcess(RecoveryMessage *msg)
 
     // Retrieve state information of the given process
     ProcessInfo pinfo;
-    API::Result result = ProcessCtl(msg->pid, InfoPID, (Address) &pinfo);
-    if (result != API::Success)
-    {
+    API::Result result = ProcessCtl(msg->pid, InfoPID, (Address) & pinfo);
+    if (result != API::Success) {
         ERROR("failed to retrieve ProcessInfo for PID " << msg->pid <<
-              ": result = " << (int)result);
+                                                        ": result = " << (int) result);
         msg->result = Recovery::NotFound;
         return;
     }
@@ -55,10 +51,9 @@ void RecoveryServer::restartProcess(RecoveryMessage *msg)
     // and also prevents other processes from waking it up while
     // it is being restarted by us.
     result = ProcessCtl(msg->pid, Stop);
-    if (result != API::Success)
-    {
+    if (result != API::Success) {
         ERROR("failed to stop PID " << msg->pid <<
-              ": result = " << (int) result);
+                                    ": result = " << (int) result);
         msg->result = Recovery::IOError;
         return;
     }
@@ -69,40 +64,36 @@ void RecoveryServer::restartProcess(RecoveryMessage *msg)
     const Memory::Range argRange = map.range(MemoryMap::UserArgs);
 
     result = VMCopy(msg->pid, API::Read, (Address) cmd, argRange.virt, sizeof(cmd));
-    if (result != API::Success)
-    {
+    if (result != API::Success) {
         ERROR("failed to read command string from PID " << msg->pid <<
-              ": result = " << (int) result);
+                                                        ": result = " << (int) result);
         msg->result = Recovery::IOError;
         return;
     }
     cmd[sizeof(cmd) - 1] = 0;
 
     // Fetch program path from command string
-    List<String> progpath = String(cmd).split(' ');
-    if (progpath.count() == 0)
-    {
+    List <String> progpath = String(cmd).split(' ');
+    if (progpath.count() == 0) {
         ERROR("failed to find program path for PID " << msg->pid);
         msg->result = Recovery::IOError;
         return;
     }
 
     // Write fresh copy of the program inside
-    if (!reloadProgram(msg->pid, *progpath[0]))
-    {
+    if (!reloadProgram(msg->pid, *progpath[0])) {
         ERROR("failed to reload PID " << msg->pid <<
-              " from " << *progpath[0] <<
-              ": result = " << (int) result);
+                                      " from " << *progpath[0] <<
+                                      ": result = " << (int) result);
         msg->result = Recovery::IOError;
         return;
     }
 
     // Continue program
     result = ProcessCtl(msg->pid, Resume);
-    if (result != API::Success)
-    {
+    if (result != API::Success) {
         ERROR("failed to resume PID " << msg->pid <<
-              ": result = " << (int) result);
+                                      ": result = " << (int) result);
         msg->result = Recovery::IOError;
         return;
     }
@@ -112,8 +103,7 @@ void RecoveryServer::restartProcess(RecoveryMessage *msg)
 }
 
 bool RecoveryServer::reloadProgram(const ProcessID pid,
-                                   const char *path) const
-{
+                                   const char *path) const {
     const FileSystemClient fs;
     FileSystem::FileStat st;
     Size fd;
@@ -122,33 +112,30 @@ bool RecoveryServer::reloadProgram(const ProcessID pid,
 
     // Retrieve file information
     const FileSystem::Result statResult = fs.statFile(path, &st);
-    if (statResult != FileSystem::Success)
-    {
+    if (statResult != FileSystem::Success) {
         ERROR("failed to statFile() for " << path << ": result = " << (int) statResult);
         return false;
     }
 
     // Map memory buffer for the compressed program image
     Memory::Range compressed;
-    compressed.virt   = ZERO;
-    compressed.phys   = ZERO;
-    compressed.size   = st.size;
-    compressed.access = Memory::User|Memory::Readable|Memory::Writable;
+    compressed.virt = ZERO;
+    compressed.phys = ZERO;
+    compressed.size = st.size;
+    compressed.access = Memory::User | Memory::Readable | Memory::Writable;
 
     // Create memory mapping
     API::Result mapResult = VMCtl(SELF, MapContiguous, &compressed);
-    if (mapResult != API::Success)
-    {
+    if (mapResult != API::Success) {
         ERROR("failed to map compressed memory: result = " << (int) mapResult);
         return false;
     }
 
     // Open file
     const FileSystem::Result openResult = fs.openFile(path, fd);
-    if (openResult != FileSystem::Success)
-    {
+    if (openResult != FileSystem::Success) {
         ERROR("failed to openFile() for " << path <<
-              ": result = " << (int) openResult);
+                                          ": result = " << (int) openResult);
         VMCtl(SELF, Release, &compressed);
         return false;
     }
@@ -156,20 +143,18 @@ bool RecoveryServer::reloadProgram(const ProcessID pid,
     // Read the program image
     Size num = st.size;
     const FileSystem::Result readResult = fs.readFile(fd, (void *) compressed.virt, &num);
-    if (readResult != FileSystem::Success || num != st.size)
-    {
+    if (readResult != FileSystem::Success || num != st.size) {
         ERROR("failed to readFile() for " << path <<
-              ": result = " << (int) readResult << ", num = " << num);
+                                          ": result = " << (int) readResult << ", num = " << num);
         VMCtl(SELF, Release, &compressed);
         return false;
     }
 
     // Close file
     const FileSystem::Result closeResult = fs.closeFile(fd);
-    if (closeResult != FileSystem::Success)
-    {
+    if (closeResult != FileSystem::Success) {
         ERROR("failed to closeFile() for " << path <<
-              ": result = " << (int) closeResult);
+                                           ": result = " << (int) closeResult);
         VMCtl(SELF, Release, &compressed);
         return false;
     }
@@ -177,8 +162,7 @@ bool RecoveryServer::reloadProgram(const ProcessID pid,
     // Initialize decompressor
     Lz4Decompressor lz4((const void *) compressed.virt, st.size);
     Lz4Decompressor::Result lz4Result = lz4.initialize();
-    if (lz4Result != Lz4Decompressor::Success)
-    {
+    if (lz4Result != Lz4Decompressor::Success) {
         ERROR("failed to initialize LZ4 decompressor: result = " << (int) lz4Result);
         VMCtl(SELF, Release, &compressed);
         return false;
@@ -186,24 +170,22 @@ bool RecoveryServer::reloadProgram(const ProcessID pid,
 
     // Map memory buffer for the uncompressed program image
     Memory::Range uncompressed;
-    uncompressed.virt   = ZERO;
-    uncompressed.phys   = ZERO;
-    uncompressed.size   = lz4.getUncompressedSize();
-    uncompressed.access = Memory::User|Memory::Readable|Memory::Writable;
+    uncompressed.virt = ZERO;
+    uncompressed.phys = ZERO;
+    uncompressed.size = lz4.getUncompressedSize();
+    uncompressed.access = Memory::User | Memory::Readable | Memory::Writable;
 
     // Create memory mapping
     mapResult = VMCtl(SELF, MapContiguous, &uncompressed);
-    if (mapResult != API::Success)
-    {
+    if (mapResult != API::Success) {
         ERROR("failed to map uncompressed memory: result = " << (int) mapResult);
         VMCtl(SELF, Release, &compressed);
         return false;
     }
 
     // Decompress entire file
-    lz4Result = lz4.read((void *)uncompressed.virt, lz4.getUncompressedSize());
-    if (lz4Result != Lz4Decompressor::Success)
-    {
+    lz4Result = lz4.read((void *) uncompressed.virt, lz4.getUncompressedSize());
+    if (lz4Result != Lz4Decompressor::Success) {
         ERROR("failed to decompress file: result = " << (int) lz4Result);
         VMCtl(SELF, Release, &compressed);
         VMCtl(SELF, Release, &uncompressed);
@@ -211,8 +193,7 @@ bool RecoveryServer::reloadProgram(const ProcessID pid,
     }
 
     // Release current memory pages
-    if (!cleanupProgram(pid))
-    {
+    if (!cleanupProgram(pid)) {
         ERROR("failed to cleanup program data for PID " << pid);
         VMCtl(SELF, Release, &compressed);
         VMCtl(SELF, Release, &uncompressed);
@@ -220,8 +201,7 @@ bool RecoveryServer::reloadProgram(const ProcessID pid,
     }
 
     // Write to program
-    if (!rewriteProgram(pid, uncompressed.virt, num))
-    {
+    if (!rewriteProgram(pid, uncompressed.virt, num)) {
         ERROR("failed to reset data for PID " << pid);
         VMCtl(SELF, Release, &compressed);
         VMCtl(SELF, Release, &uncompressed);
@@ -230,16 +210,14 @@ bool RecoveryServer::reloadProgram(const ProcessID pid,
 
     // Cleanup program buffers
     API::Result releaseResult = VMCtl(SELF, Release, &compressed);
-    if (releaseResult != API::Success)
-    {
+    if (releaseResult != API::Success) {
         DEBUG("failed to release compressed memory: result = " << (int) releaseResult);
         VMCtl(SELF, Release, &uncompressed);
         return false;
     }
 
     releaseResult = VMCtl(SELF, Release, &uncompressed);
-    if (releaseResult != API::Success)
-    {
+    if (releaseResult != API::Success) {
         DEBUG("failed to release uncompressed memory: result = " << (int) releaseResult);
         return false;
     }
@@ -248,8 +226,7 @@ bool RecoveryServer::reloadProgram(const ProcessID pid,
     return true;
 }
 
-bool RecoveryServer::cleanupProgram(const ProcessID pid) const
-{
+bool RecoveryServer::cleanupProgram(const ProcessID pid) const {
     const Arch::MemoryMap map;
     Memory::Range range;
 
@@ -257,28 +234,25 @@ bool RecoveryServer::cleanupProgram(const ProcessID pid) const
 
     range = map.range(MemoryMap::UserData);
     const API::Result dataResult = VMCtl(pid, ReleaseSections, &range);
-    if (dataResult != API::Success)
-    {
+    if (dataResult != API::Success) {
         ERROR("failed to release UserData region in PID " << pid <<
-              ": result = " << (int) dataResult);
+                                                          ": result = " << (int) dataResult);
         return false;
     }
 
     range = map.range(MemoryMap::UserHeap);
     const API::Result heapResult = VMCtl(pid, ReleaseSections, &range);
-    if (heapResult != API::Success)
-    {
+    if (heapResult != API::Success) {
         ERROR("failed to release UserHeap region in PID " << pid <<
-              ": result = " << (int) heapResult);
+                                                          ": result = " << (int) heapResult);
         return false;
     }
 
     range = map.range(MemoryMap::UserPrivate);
     const API::Result privResult = VMCtl(pid, ReleaseSections, &range);
-    if (privResult != API::Success)
-    {
+    if (privResult != API::Success) {
         ERROR("failed to release UserPrivate region in PID " << pid <<
-              ": result = " << (int) privResult);
+                                                             ": result = " << (int) privResult);
         return false;
     }
 
@@ -287,8 +261,7 @@ bool RecoveryServer::cleanupProgram(const ProcessID pid) const
 
 bool RecoveryServer::rewriteProgram(const ProcessID pid,
                                     const Address program,
-                                    const Size size) const
-{
+                                    const Size size) const {
     ExecutableFormat *fmt;
     ExecutableFormat::Region regions[16];
     Arch::MemoryMap map;
@@ -300,18 +273,16 @@ bool RecoveryServer::rewriteProgram(const ProcessID pid,
 
     // Attempt to read executable format
     const ExecutableFormat::Result execResult =
-        ExecutableFormat::find((u8 *) program, size, &fmt);
+            ExecutableFormat::find((u8 *) program, size, &fmt);
 
-    if (execResult != ExecutableFormat::Success)
-    {
+    if (execResult != ExecutableFormat::Success) {
         ERROR("failed to parse executable: result = " << (int) execResult);
         return false;
     }
 
     // Find entry point
     const ExecutableFormat::Result entryResult = fmt->entry(&entry);
-    if (entryResult != ExecutableFormat::Success)
-    {
+    if (entryResult != ExecutableFormat::Success) {
         ERROR("failed to retrieve entry point: result = " << (int) entryResult);
         delete fmt;
         return false;
@@ -319,8 +290,7 @@ bool RecoveryServer::rewriteProgram(const ProcessID pid,
 
     // Retrieve memory regions
     const ExecutableFormat::Result regionResult = fmt->regions(regions, &numRegions);
-    if (regionResult != ExecutableFormat::Success)
-    {
+    if (regionResult != ExecutableFormat::Success) {
         ERROR("failed to retrieve regions: result = " << (int) regionResult);
         delete fmt;
         return false;
@@ -330,60 +300,54 @@ bool RecoveryServer::rewriteProgram(const ProcessID pid,
     delete fmt;
 
     // Map program regions into virtual memory of the new process
-    for (Size i = 0; i < numRegions; i++)
-    {
+    for (Size i = 0; i < numRegions; i++) {
         // Setup memory range to copy region data
-        range.virt   = regions[i].virt;
-        range.phys   = ZERO;
-        range.size   = regions[i].memorySize;
+        range.virt = regions[i].virt;
+        range.phys = ZERO;
+        range.size = regions[i].memorySize;
         range.access = regions[i].access;
 
         // Create mapping in the process
         const API::Result mapResult = VMCtl(pid, MapContiguous, &range);
-        if (mapResult != API::Success)
-        {
+        if (mapResult != API::Success) {
             ERROR("failed to map " << (void *) regions[i].virt <<
-                  " in PID " << pid << ": result = " << (int) mapResult);
+                                   " in PID " << pid << ": result = " << (int) mapResult);
             return false;
         }
 
         // Map inside our process
         range.virt = ZERO;
         const API::Result selfResult = VMCtl(SELF, MapContiguous, &range);
-        if (selfResult != API::Success)
-        {
+        if (selfResult != API::Success) {
             ERROR("failed to map " << (void *) regions[i].virt <<
-                  ": result = " << (int) selfResult);
+                                   ": result = " << (int) selfResult);
             return false;
         }
 
         // Copy data bytes
-        MemoryBlock::copy((void *)range.virt, (const void *)(program + regions[i].dataOffset),
+        MemoryBlock::copy((void *) range.virt, (const void *) (program + regions[i].dataOffset),
                           regions[i].dataSize);
 
         // Nulify remaining space
-        if (regions[i].memorySize > regions[i].dataSize)
-        {
-            MemoryBlock::set((void *)(range.virt + regions[i].dataSize), 0,
+        if (regions[i].memorySize > regions[i].dataSize) {
+            MemoryBlock::set((void *) (range.virt + regions[i].dataSize), 0,
                              regions[i].memorySize - regions[i].dataSize);
         }
 
         // Remove temporary mapping
         const API::Result unmapResult = VMCtl(SELF, UnMap, &range);
-        if (unmapResult != API::Success)
-        {
+        if (unmapResult != API::Success) {
             ERROR("failed to unmap " << (void *) regions[i].virt <<
-                  ": result = " << (int) unmapResult);
+                                     ": result = " << (int) unmapResult);
             return false;
         }
     }
 
     // Reset program registers
     const API::Result resetResult = ProcessCtl(pid, Reset, entry);
-    if (resetResult != API::Success)
-    {
+    if (resetResult != API::Success) {
         ERROR("failed to reset PID " << pid <<
-              ": result = " << (int) resetResult);
+                                     ": result = " << (int) resetResult);
         return false;
     }
 

@@ -28,9 +28,8 @@
 /**
  * List files on the filesystem.
  */
-class ListFiles : public POSIXApplication
-{
-  public:
+class ListFiles : public POSIXApplication {
+public:
 
     /**
      * Constructor
@@ -52,7 +51,7 @@ class ListFiles : public POSIXApplication
      */
     virtual Result exec();
 
-  private:
+private:
 
     /**
      * List files on the filesystem
@@ -61,7 +60,7 @@ class ListFiles : public POSIXApplication
      *
      * @return Result code
      */
-    Result printFiles(const String & path) const;
+    Result printFiles(const String &path) const;
 
     /**
      * List single file on the filesystem
@@ -71,7 +70,7 @@ class ListFiles : public POSIXApplication
      *
      * @return Result code
      */
-    Result printSingleFile(const String & path, String & out) const;
+    Result printSingleFile(const String &path, String &out) const;
 };
 
 /**

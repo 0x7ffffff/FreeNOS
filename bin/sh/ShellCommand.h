@@ -35,9 +35,8 @@
  *
  * @see Shell
  */
-class ShellCommand
-{
-  public:
+class ShellCommand {
+public:
 
     /**
      * Constructor.
@@ -57,14 +56,14 @@ class ShellCommand
      *
      * @return Command name
      */
-    const char * getName() const;
+    const char *getName() const;
 
     /**
      * Get command help.
      *
      * @return Command help
      */
-    const char * getHelp() const;
+    const char *getHelp() const;
 
     /**
      * Get the minimum number of parameters required.
@@ -82,7 +81,7 @@ class ShellCommand
      */
     virtual int execute(const Size nparams, const char **params) = 0;
 
-  protected:
+protected:
 
     /** Unique name of the command. */
     const char *m_name;

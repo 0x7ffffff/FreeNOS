@@ -32,9 +32,8 @@
 /**
  * Provides a File abstraction of the current Log::Level
  */
-class LogLevelFile : public File
-{
-  public:
+class LogLevelFile : public File {
+public:
 
     /**
      * Default constructor.
@@ -58,8 +57,8 @@ class LogLevelFile : public File
      *
      * @return Result code
      */
-    virtual FileSystem::Result read(IOBuffer & buffer,
-                                    Size & size,
+    virtual FileSystem::Result read(IOBuffer &buffer,
+                                    Size &size,
                                     const Size offset);
 
     /**
@@ -72,8 +71,8 @@ class LogLevelFile : public File
      *
      * @return Result code
      */
-    virtual FileSystem::Result write(IOBuffer & buffer,
-                                     Size & size,
+    virtual FileSystem::Result write(IOBuffer &buffer,
+                                     Size &size,
                                      const Size offset);
 };
 

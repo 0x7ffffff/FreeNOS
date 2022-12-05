@@ -85,7 +85,7 @@
  *
  * @return Ceiled number.
  */
-#define CEIL(number,divisor) \
+#define CEIL(number, divisor) \
     ( (number) % (divisor) ?  \
      ((number) / (divisor)) + 1 : (number) / (divisor))
 

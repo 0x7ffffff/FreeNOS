@@ -26,17 +26,11 @@
 #include "ARMFirstTable.h"
 
 ARMPaging::ARMPaging(MemoryMap *map, SplitAllocator *alloc)
-    : MemoryContext(map, alloc)
-    , m_firstTable(0)
-    , m_firstTableAddr(0)
-    , m_kernelBaseAddr(coreInfo.memory.phys)
-{
+        : MemoryContext(map, alloc), m_firstTable(0), m_firstTableAddr(0), m_kernelBaseAddr(coreInfo.memory.phys) {
 }
 
-ARMPaging::~ARMPaging()
-{
-    if (m_firstTableAddr != 0)
-    {
+ARMPaging::~ARMPaging() {
+    if (m_firstTableAddr != 0) {
         for (Size i = 0; i < sizeof(ARMFirstTable); i += PAGESIZE)
             m_alloc->release(m_firstTableAddr + i);
     }
@@ -45,26 +39,20 @@ ARMPaging::~ARMPaging()
 ARMPaging::ARMPaging(MemoryMap *map,
                      Address firstTableAddress,
                      Address kernelBaseAddress)
-    : MemoryContext(map, ZERO)
-    , m_firstTable((ARMFirstTable *) firstTableAddress)
-    , m_firstTableAddr(firstTableAddress)
-    , m_kernelBaseAddr(kernelBaseAddress)
-{
+        : MemoryContext(map, ZERO), m_firstTable((ARMFirstTable *) firstTableAddress),
+          m_firstTableAddr(firstTableAddress), m_kernelBaseAddr(kernelBaseAddress) {
 }
 
-MemoryContext::Result ARMPaging::initialize()
-{
+MemoryContext::Result ARMPaging::initialize() {
     // Allocate first page table if needed
-    if (m_firstTable == 0)
-    {
+    if (m_firstTable == 0) {
         Allocator::Range phys, virt;
         phys.address = 0;
         phys.size = sizeof(ARMFirstTable);
         phys.alignment = sizeof(ARMFirstTable);
 
         // Allocate page directory
-        if (m_alloc->allocate(phys, virt) != Allocator::Success)
-        {
+        if (m_alloc->allocate(phys, virt) != Allocator::Success) {
             return MemoryContext::OutOfMemory;
         }
 
@@ -89,7 +77,7 @@ MemoryContext::Result ARMPaging::initialize()
     m_firstTable->unmap(TMPSTACKADDR, m_alloc);
 
     const Memory::Range tmpStackRange = {
-        TMPSTACKADDR, TMPSTACKADDR, MegaByte(1), Memory::Readable|Memory::Writable
+            TMPSTACKADDR, TMPSTACKADDR, MegaByte(1), Memory::Readable | Memory::Writable
     };
     m_firstTable->mapLarge(tmpStackRange, m_alloc);
 #endif /* BCM2835 */
@@ -195,18 +183,15 @@ MemoryContext::Result ARMPaging::enableMMU()
 }
 #endif /* ARMV7 */
 
-MemoryContext::Result ARMPaging::activate(bool initializeMMU)
-{
+MemoryContext::Result ARMPaging::activate(bool initializeMMU) {
     ARMControl ctrl;
 
     // Do we need to (re)enable the MMU?
-    if (initializeMMU)
-    {
+    if (initializeMMU) {
         enableMMU();
     }
-    // MMU already enabled, we only need to change first level table and flush caches.
-    else
-    {
+        // MMU already enabled, we only need to change first level table and flush caches.
+    else {
 #ifdef ARMV6
         mcr(p15, 0, 0, c7, c5,  0);    // flush entire instruction cache
         mcr(p15, 0, 0, c7, c10, 0);    // flush entire data cache
@@ -219,8 +204,8 @@ MemoryContext::Result ARMPaging::activate(bool initializeMMU)
 
         // Switch first page table and re-enable L1 caching
         ctrl.write(ARMControl::TranslationTable0, (((u32) m_firstTableAddr) |
-            (1 << 3) | /* outer write-back, write-allocate */
-            (1 << 6)   /* inner write-back, write-allocate */
+                                                   (1 << 3) | /* outer write-back, write-allocate */
+                                                   (1 << 6)   /* inner write-back, write-allocate */
         ));
 
         // Flush TLB caches
@@ -234,8 +219,7 @@ MemoryContext::Result ARMPaging::activate(bool initializeMMU)
     return Success;
 }
 
-MemoryContext::Result ARMPaging::map(Address virt, Address phys, Memory::Access acc)
-{
+MemoryContext::Result ARMPaging::map(Address virt, Address phys, Memory::Access acc) {
     // Modify page tables
     Result r = m_firstTable->map(virt, phys, acc, m_alloc);
 
@@ -248,8 +232,7 @@ MemoryContext::Result ARMPaging::map(Address virt, Address phys, Memory::Access 
     return r;
 }
 
-MemoryContext::Result ARMPaging::unmap(Address virt)
-{
+MemoryContext::Result ARMPaging::unmap(Address virt) {
     // Clean the given data page in cache
     if (m_current == this)
         m_cache.cleanInvalidateAddress(Cache::Data, virt);
@@ -266,23 +249,19 @@ MemoryContext::Result ARMPaging::unmap(Address virt)
     return r;
 }
 
-MemoryContext::Result ARMPaging::lookup(Address virt, Address *phys) const
-{
+MemoryContext::Result ARMPaging::lookup(Address virt, Address *phys) const {
     return m_firstTable->translate(virt, phys, m_alloc);
 }
 
-MemoryContext::Result ARMPaging::access(Address virt, Memory::Access *access) const
-{
+MemoryContext::Result ARMPaging::access(Address virt, Memory::Access *access) const {
     return m_firstTable->access(virt, access, m_alloc);
 }
 
-MemoryContext::Result ARMPaging::releaseSection(const Memory::Range & range,
-                                                const bool tablesOnly)
-{
+MemoryContext::Result ARMPaging::releaseSection(const Memory::Range &range,
+                                                const bool tablesOnly) {
     return m_firstTable->releaseSection(range, m_alloc, tablesOnly);
 }
 
-MemoryContext::Result ARMPaging::releaseRange(Memory::Range *range)
-{
+MemoryContext::Result ARMPaging::releaseRange(Memory::Range *range) {
     return m_firstTable->releaseRange(*range, m_alloc);
 }

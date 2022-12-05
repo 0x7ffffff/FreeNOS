@@ -37,9 +37,8 @@
  * in same sized parts called chunks. 1 in the BitArray means
  * the chunk is used, 0 means unused.
  */
-class BitAllocator : public Allocator
-{
-  public:
+class BitAllocator : public Allocator {
+public:
 
     /**
      * Constructor function.
@@ -76,7 +75,7 @@ class BitAllocator : public Allocator
      *
      * @return Result value.
      */
-    virtual Result allocate(Range & args);
+    virtual Result allocate(Range &args);
 
     /**
      * Allocate memory from defined starting address.
@@ -88,7 +87,7 @@ class BitAllocator : public Allocator
      *
      * @return Result value.
      */
-    Result allocateFrom(Range & args, const Size startBit);
+    Result allocateFrom(Range &args, const Size startBit);
 
     /**
      * Allocate a specific address.
@@ -114,7 +113,7 @@ class BitAllocator : public Allocator
      */
     virtual Result release(const Address chunk);
 
-  private:
+private:
 
     /** Marks which chunks are (un)used. */
     BitArray m_array;

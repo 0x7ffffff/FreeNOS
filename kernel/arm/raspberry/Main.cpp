@@ -30,10 +30,10 @@
 
 extern Address __start, __end, __bootimg;
 
-static u32 ALIGN(16 * 1024) SECTION(".data") tmpPageDir[4096];
+static u32 ALIGN(16 * 1024)
+SECTION(".data") tmpPageDir[4096];
 
-extern C int kernel_main(void)
-{
+extern C int kernel_main(void) {
     // Invalidate all caches now
     Arch::Cache cache;
     cache.invalidate(Cache::Unified);
@@ -45,18 +45,18 @@ extern C int kernel_main(void)
 #endif
 
     // Fill coreInfo
-    BootImage *bootimage = (BootImage *) &__bootimg;
+    BootImage *bootimage = (BootImage * ) & __bootimg;
     MemoryBlock::set(&coreInfo, 0, sizeof(CoreInfo));
-    coreInfo.bootImageAddress = (Address) (bootimage);
-    coreInfo.bootImageSize    = bootimage->bootImageSize;
-    coreInfo.kernel.phys      = (Address) &__start;
-    coreInfo.kernel.size      = ((Address) &__end - (Address) &__start);
-    coreInfo.memory.phys      = RAM_ADDR;
-    coreInfo.memory.size      = RAM_SIZE;
+    coreInfo.bootImageAddress = (Address)(bootimage);
+    coreInfo.bootImageSize = bootimage->bootImageSize;
+    coreInfo.kernel.phys = (Address) & __start;
+    coreInfo.kernel.size = ((Address) & __end - (Address) & __start);
+    coreInfo.memory.phys = RAM_ADDR;
+    coreInfo.memory.size = RAM_SIZE;
 
     // Prepare early page tables
     Arch::MemoryMap mem;
-    ARMPaging paging(&mem, (Address) &tmpPageDir, RAM_ADDR);
+    ARMPaging paging(&mem, (Address) & tmpPageDir, RAM_ADDR);
 
     // Activate MMU
     paging.initialize();

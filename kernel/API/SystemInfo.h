@@ -37,8 +37,7 @@ struct SystemInformation;
  *
  * @return API::Success on success and other API::ErrorCode on failure.
  */
-inline API::Result SystemInfo(SystemInformation *info)
-{
+inline API::Result SystemInfo(SystemInformation *info) {
     return (API::Result) trapKernel1(API::SystemInfoNumber, (Address) info);
 }
 
@@ -76,13 +75,11 @@ extern API::Result SystemInfoHandler(SystemInformation *info);
 /**
  * System information structure.
  */
-typedef struct SystemInformation
-{
+typedef struct SystemInformation {
     /**
      * Constructor function.
      */
-    SystemInformation()
-    {
+    SystemInformation() {
         SystemInfo(this);
     }
 
@@ -116,7 +113,7 @@ typedef struct SystemInformation
     /** Timer counter */
     uint timerCounter;
 }
-SystemInformation;
+        SystemInformation;
 
 /**
  * @}

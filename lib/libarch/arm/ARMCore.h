@@ -155,13 +155,14 @@
     ctrl.write(ARMControl::UnifiedTLBClear, 0); \
 })
 #else
+
 /**
  * Flush the entire Translation Lookaside Buffer.
  */
-inline void tlb_flush_all()
-{
-    asm volatile ("mcr p15, 0, %0, c8, c7, 0" :: "r"(0) : "memory");
+inline void tlb_flush_all() {
+    asm volatile ("mcr p15, 0, %0, c8, c7, 0"::"r"(0) : "memory");
 }
+
 #endif /* ARMV6 */
 
 #define tlb_invalidate(page) \
@@ -177,8 +178,7 @@ inline void tlb_flush_all()
  * a memory instruction, it is allowed to run out of order.
  * The DMB provides slightly looser memory barrier than DSB on ARM.
  */
-inline void dmb()
-{
+inline void dmb() {
 #ifdef ARMV7
     asm volatile ("dmb" ::: "memory");
 #else
@@ -195,8 +195,7 @@ inline void dmb()
  *
  * @see ARM1176JZF-S Technical Reference Manual, page 342, Data Synchronization Barrier
  */
-inline void dsb()
-{
+inline void dsb() {
 #ifdef ARMV7
     asm volatile ("dsb" ::: "memory");
 #else
@@ -207,16 +206,14 @@ inline void dsb()
 /**
  * Flush branch prediction
  */
-inline void flushBranchPrediction()
-{
+inline void flushBranchPrediction() {
     asm volatile ("mcr p15, 0, %0, c7, c5, 6" : : "r" (0) : "memory");
 }
 
 /**
  * Instruction Synchronisation Barrier (ARMv7 and above)
  */
-inline void isb()
-{
+inline void isb() {
 #ifdef ARMV7
     asm volatile ("isb" ::: "memory");
 #else
@@ -227,8 +224,7 @@ inline void isb()
 /**
  * Flush Prefetch Buffer.
  */
-inline void flushPrefetchBuffer()
-{
+inline void flushPrefetchBuffer() {
 #ifdef ARMV7
     isb();
 #else
@@ -240,32 +236,30 @@ inline void flushPrefetchBuffer()
 /** 
  * Contains all the CPU registers.
  */
-typedef struct CPUState
-{
+typedef struct CPUState {
     u32 padding[4];
     u32 cpsr;
     u32 sp, lr;
     u32 r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12;
     u32 pc;
 }
-ALIGN(4) CPUState;
+        ALIGN(4)
+CPUState;
 
 /**
  * Class representing an ARM processor core
  */
-class ARMCore
-{
-  public:
+class ARMCore {
+public:
 
     /**
      * Result codes
      */
-    enum Result
-    {
+    enum Result {
         Success = 0,
     };
 
-  public:
+public:
 
     /**
      * Log a CPU exception.

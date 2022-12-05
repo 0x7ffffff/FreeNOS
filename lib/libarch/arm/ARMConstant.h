@@ -118,7 +118,7 @@
 #define PAGETAB_SPAN    (PAGETAB_MAX*PAGESIZE)
 
 /** Mask to find the page. */
-#define PAGEMASK        0xfffff000 
+#define PAGEMASK        0xfffff000
 
 /** Mask for large 1MiB section mappings. */
 #define SECTIONMASK     0xfff00000

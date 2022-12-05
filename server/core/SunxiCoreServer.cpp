@@ -21,53 +21,46 @@
 #include <Factory.h>
 #include "SunxiCoreServer.h"
 
-template<> CoreServer* AbstractFactory<CoreServer>::create()
-{
+template<>
+CoreServer *AbstractFactory<CoreServer>::create() {
     return new SunxiCoreServer();
 }
 
 SunxiCoreServer::SunxiCoreServer()
-    : CoreServer()
-    , m_cpuConfig()
-{
+        : CoreServer(), m_cpuConfig() {
     m_cores = &m_cpuConfig;
 }
 
-SunxiCoreServer::Result SunxiCoreServer::initialize()
-{
+SunxiCoreServer::Result SunxiCoreServer::initialize() {
     SunxiCpuConfig::Result cpuResult;
     SystemInformation info;
 
     API::Result r = ProcessCtl(SELF, WatchIRQ, SoftwareInterruptNumber);
-    if (r != API::Success)
-    {
+    if (r != API::Success) {
         ERROR("failed to register SGI vector: "
-              "ProcessCtl(WatchIRQ) returned: " << (uint)r);
+              "ProcessCtl(WatchIRQ) returned: " << (uint) r);
         return IOError;
     }
 
     cpuResult = m_cpuConfig.initialize();
-    if (cpuResult != SunxiCpuConfig::Success)
-    {
+    if (cpuResult != SunxiCpuConfig::Success) {
         ERROR("failed to initialize CPU configuration module: " <<
-              (uint) cpuResult);
+                                                                (uint) cpuResult);
         return IOError;
     }
 
     // When running as a secondary core, flag ourselves as booted
-    if (info.coreId != 0)
-    {
+    if (info.coreId != 0) {
         CoreInfo tmpInfo;
-        VMCopy(SELF, API::Read, (Address) &tmpInfo, SecondaryCoreInfoAddress, sizeof(tmpInfo));
+        VMCopy(SELF, API::Read, (Address) & tmpInfo, SecondaryCoreInfoAddress, sizeof(tmpInfo));
         tmpInfo.booted = 1;
-        VMCopy(SELF, API::Write, (Address) &tmpInfo, SecondaryCoreInfoAddress, sizeof(tmpInfo));
+        VMCopy(SELF, API::Write, (Address) & tmpInfo, SecondaryCoreInfoAddress, sizeof(tmpInfo));
     }
 
     return CoreServer::initialize();
 }
 
-Core::Result SunxiCoreServer::bootCore(uint coreId, CoreInfo *info)
-{
+Core::Result SunxiCoreServer::bootCore(uint coreId, CoreInfo *info) {
     // Calculate the memory location of the CoreInfo structure passed to the
     // secondary core. Note that the location is relative to the info->memory.phys address
     const Address secondaryCoreInfoRelAddr = info->memory.phys + SecondaryCoreInfoOffset;
@@ -79,18 +72,16 @@ Core::Result SunxiCoreServer::bootCore(uint coreId, CoreInfo *info)
     VMCopy(SELF, API::Write, (Address) info, secondaryCoreInfoRelAddr, sizeof(*info));
 
     // Reset the secondary core
-    if (m_cpuConfig.boot(info) != SunxiCpuConfig::Success)
-    {
+    if (m_cpuConfig.boot(info) != SunxiCpuConfig::Success) {
         ERROR("failed to boot coreId" << coreId);
         return Core::BootError;
     }
 
     // Wait until the core raises the 'booted' flag in CoreInfo
-    while (1)
-    {
+    while (1) {
         CoreInfo check;
 
-        VMCopy(SELF, API::Read, (Address) &check, secondaryCoreInfoRelAddr, sizeof(check));
+        VMCopy(SELF, API::Read, (Address) & check, secondaryCoreInfoRelAddr, sizeof(check));
 
         if (check.booted)
             break;
@@ -99,10 +90,8 @@ Core::Result SunxiCoreServer::bootCore(uint coreId, CoreInfo *info)
     return Core::Success;
 }
 
-Core::Result SunxiCoreServer::discoverCores()
-{
-    if (m_cpuConfig.discover() != SunxiCpuConfig::Success)
-    {
+Core::Result SunxiCoreServer::discoverCores() {
+    if (m_cpuConfig.discover() != SunxiCpuConfig::Success) {
         ERROR("failed to discover cores");
         return Core::IOError;
     }
@@ -110,19 +99,16 @@ Core::Result SunxiCoreServer::discoverCores()
     return Core::Success;
 }
 
-void SunxiCoreServer::waitIPI() const
-{
+void SunxiCoreServer::waitIPI() const {
     // Wait for IPI which will wake us
     ProcessCtl(SELF, EnableIRQ, SoftwareInterruptNumber);
     ProcessCtl(SELF, EnterSleep, 0, 0);
 }
 
-Core::Result SunxiCoreServer::sendIPI(uint coreId)
-{
+Core::Result SunxiCoreServer::sendIPI(uint coreId) {
     API::Result r = ProcessCtl(SELF, SendIRQ, (coreId << 16) | SoftwareInterruptNumber);
-    if (r != API::Success)
-    {
-        ERROR("failed to send IPI to core" << coreId << ": " << (uint)r);
+    if (r != API::Success) {
+        ERROR("failed to send IPI to core" << coreId << ": " << (uint) r);
         return Core::IOError;
     }
 

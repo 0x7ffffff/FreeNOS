@@ -19,16 +19,13 @@
 #include "TestInstance.h"
 
 TestInstance::TestInstance(const char *name)
-    : m_name(name, true)
-{
+        : m_name(name, true) {
     TestSuite::instance()->addTest(this);
 }
 
-TestInstance::~TestInstance()
-{
+TestInstance::~TestInstance() {
 }
 
-const String & TestInstance::getName() const
-{
+const String &TestInstance::getName() const {
     return m_name;
 }

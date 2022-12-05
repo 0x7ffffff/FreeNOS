@@ -20,36 +20,29 @@
 #include "CoreInfo.h"
 #include "IO.h"
 
-IO::IO()
-{
+IO::IO() {
     m_base = IO_BASE;
 }
 
-Address IO::getBase() const
-{
+Address IO::getBase() const {
     return m_base;
 }
 
-void IO::setBase(const Address base)
-{
+void IO::setBase(const Address base) {
     m_base = base;
 }
 
-IO::Result IO::map(Address phys, Size size, Memory::Access access)
-{
+IO::Result IO::map(Address phys, Size size, Memory::Access access) {
 #ifndef __HOST__
-    m_range.virt   = 0;
-    m_range.phys   = phys;
+    m_range.virt = 0;
+    m_range.phys = phys;
     m_range.access = access;
-    m_range.size   = size;
+    m_range.size = size;
 
-    if (!isKernel)
-    {
+    if (!isKernel) {
         if (VMCtl(SELF, MapContiguous, &m_range) != API::Success)
             return MapFailure;
-    }
-    else
-    {
+    } else {
         m_range.access &= ~Memory::User;
 
         MemoryContext *ctx = MemoryContext::getCurrent();
@@ -67,16 +60,12 @@ IO::Result IO::map(Address phys, Size size, Memory::Access access)
     return Success;
 }
 
-IO::Result IO::unmap()
-{
+IO::Result IO::unmap() {
 #ifndef __HOST__
-    if (!isKernel)
-    {
+    if (!isKernel) {
         if (VMCtl(SELF, UnMap, &m_range) != API::Success)
             return MapFailure;
-    }
-    else
-    {
+    } else {
         MemoryContext *ctx = MemoryContext::getCurrent();
         if (!ctx)
             return MapFailure;

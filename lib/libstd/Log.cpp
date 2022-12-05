@@ -19,49 +19,35 @@
 #include "String.h"
 
 Log::Log()
-    : WeakSingleton<Log>(this)
-    , m_minimumLogLevel(Notice)
-    , m_ident(ZERO)
-    , m_outputBufferWritten(0)
-{
+        : WeakSingleton<Log>(this), m_minimumLogLevel(Notice), m_ident(ZERO), m_outputBufferWritten(0) {
 }
 
-Log::~Log()
-{
+Log::~Log() {
 }
 
-Log::Level Log::getMinimumLogLevel()
-{
+Log::Level Log::getMinimumLogLevel() {
     return m_minimumLogLevel;
 }
 
-void Log::setMinimumLogLevel(Log::Level level)
-{
+void Log::setMinimumLogLevel(Log::Level level) {
     m_minimumLogLevel = level;
 }
 
-const char * Log::getIdent() const
-{
+const char *Log::getIdent() const {
     return (m_ident);
 }
 
-void Log::setIdent(const char *ident)
-{
+void Log::setIdent(const char *ident) {
     m_ident = ident;
 }
 
-void Log::append(const char *str)
-{
+void Log::append(const char *str) {
     // Copy input. Note that we need to reserve 1 byte for the NULL-terminator
-    while (*str)
-    {
-        if (m_outputBufferWritten < LogBufferSize-1)
-        {
+    while (*str) {
+        if (m_outputBufferWritten < LogBufferSize - 1) {
             m_outputBuffer[m_outputBufferWritten++] = *str;
             str++;
-        }
-        else
-        {
+        } else {
             flush(true);
         }
     }
@@ -69,57 +55,48 @@ void Log::append(const char *str)
     flush();
 }
 
-void Log::flush(const bool force)
-{
-    if (m_outputBufferWritten > 0 && (m_outputBuffer[m_outputBufferWritten-1] == '\n' || force))
-    {
+void Log::flush(const bool force) {
+    if (m_outputBufferWritten > 0 && (m_outputBuffer[m_outputBufferWritten - 1] == '\n' || force)) {
         m_outputBuffer[m_outputBufferWritten] = 0;
         write(m_outputBuffer);
         m_outputBufferWritten = 0;
     }
 }
 
-void Log::terminate() const
-{
+void Log::terminate() const {
     for (;;);
 }
 
-Log & operator << (Log &log, const char *str)
-{
+Log &operator<<(Log &log, const char *str) {
     log.append(str);
     return log;
 }
 
-Log & operator << (Log &log, int number)
-{
+Log &operator<<(Log &log, int number) {
     String s = number;
     log.append(*s);
     return log;
 }
 
-Log & operator << (Log &log, const char character)
-{
-    const char tmp[2] = { character, 0 };
+Log &operator<<(Log &log, const char character) {
+    const char tmp[2] = {character, 0};
     log.append(tmp);
     return log;
 }
 
-Log & operator << (Log &log, unsigned number)
-{
+Log &operator<<(Log &log, unsigned number) {
     String s = number;
     log.append(*s);
     return log;
 }
 
-Log & operator << (Log &log, unsigned long number)
-{
+Log &operator<<(Log &log, unsigned long number) {
     String s = number;
     log.append(*s);
     return log;
 }
 
-Log & operator << (Log &log, void *ptr)
-{
+Log &operator<<(Log &log, void *ptr) {
     String s;
     s << Number::Hex << ptr;
     log.append(*s);

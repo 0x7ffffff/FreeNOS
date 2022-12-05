@@ -106,41 +106,37 @@
 
 MemoryContext::Result ARMSecondTable::map(Address virt,
                                           Address phys,
-                                          Memory::Access access)
-{
+                                          Memory::Access access) {
     Arch::Cache cache;
 
     // Check if the address is already mapped
-    if (m_pages[ TABENTRY(virt) ] & PAGE2_PRESENT)
+    if (m_pages[TABENTRY(virt)] & PAGE2_PRESENT)
         return MemoryContext::AlreadyExists;
 
     // Insert mapping
-    m_pages[ TABENTRY(virt) ] = (phys & PAGEMASK) | PAGE2_PRESENT | flags(access);
+    m_pages[TABENTRY(virt)] = (phys & PAGEMASK) | PAGE2_PRESENT | flags(access);
     cache.cleanData(&m_pages[TABENTRY(virt)]);
     return MemoryContext::Success;
 }
 
-MemoryContext::Result ARMSecondTable::unmap(Address virt)
-{
+MemoryContext::Result ARMSecondTable::unmap(Address virt) {
     Arch::Cache cache;
 
-    m_pages[ TABENTRY(virt) ] = PAGE2_NONE;
+    m_pages[TABENTRY(virt)] = PAGE2_NONE;
     cache.cleanData(&m_pages[TABENTRY(virt)]);
     return MemoryContext::Success;
 }
 
-MemoryContext::Result ARMSecondTable::translate(Address virt, Address *phys) const
-{
-    if (!(m_pages[ TABENTRY(virt) ] & PAGE2_PRESENT))
+MemoryContext::Result ARMSecondTable::translate(Address virt, Address *phys) const {
+    if (!(m_pages[TABENTRY(virt)] & PAGE2_PRESENT))
         return MemoryContext::InvalidAddress;
 
-    *phys = (m_pages[ TABENTRY(virt) ] & PAGEMASK);
+    *phys = (m_pages[TABENTRY(virt)] & PAGEMASK);
     return MemoryContext::Success;
 }
 
-MemoryContext::Result ARMSecondTable::access(Address virt, Memory::Access *access) const
-{
-    u32 entry = m_pages[ TABENTRY(virt) ];
+MemoryContext::Result ARMSecondTable::access(Address virt, Memory::Access *access) const {
+    u32 entry = m_pages[TABENTRY(virt)];
 
     if (!(entry & PAGE2_PRESENT))
         return MemoryContext::InvalidAddress;
@@ -165,19 +161,18 @@ MemoryContext::Result ARMSecondTable::access(Address virt, Memory::Access *acces
     return MemoryContext::Success;
 }
 
-u32 ARMSecondTable::flags(Memory::Access access) const
-{
+u32 ARMSecondTable::flags(Memory::Access access) const {
     u32 f = PAGE2_AP_SYS;
 
     // Permissions
     if (!(access & Memory::Executable)) f |= PAGE2_NOEXEC;
-    if ((access & Memory::User))        f |= PAGE2_AP_USER;
-    if (!(access & Memory::Writable))   f |= PAGE2_APX;
+    if ((access & Memory::User)) f |= PAGE2_AP_USER;
+    if (!(access & Memory::Writable)) f |= PAGE2_APX;
 
     // Caching
-    if (access & Memory::Device)        f |= PAGE2_DEVICE_SHARED;
+    if (access & Memory::Device) f |= PAGE2_DEVICE_SHARED;
     else if (access & Memory::Uncached) f |= PAGE2_UNCACHED;
-    else                                f |= PAGE2_CACHE_WRITEBACK;
+    else f |= PAGE2_CACHE_WRITEBACK;
 
     return f;
 }

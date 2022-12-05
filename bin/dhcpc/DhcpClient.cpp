@@ -31,24 +31,18 @@
 #include "DhcpClient.h"
 
 DhcpClient::DhcpClient(int argc, char **argv)
-    : POSIXApplication(argc, argv)
-    , m_client(ZERO)
-    , m_socket(0)
-    , m_transactionId(1)
-{
+        : POSIXApplication(argc, argv), m_client(ZERO), m_socket(0), m_transactionId(1) {
     MemoryBlock::set(&m_etherAddress, 0, sizeof(m_etherAddress));
 
     parser().setDescription("Dynamic Host Configuration Protocol (DHCP) client");
     parser().registerPositional("DEVICE", "device name of network adapter");
 }
 
-DhcpClient::~DhcpClient()
-{
+DhcpClient::~DhcpClient() {
     delete m_client;
 }
 
-DhcpClient::Result DhcpClient::initialize()
-{
+DhcpClient::Result DhcpClient::initialize() {
     const char *device = arguments().get("DEVICE");
     NetworkClient::Result result;
 
@@ -60,10 +54,9 @@ DhcpClient::Result DhcpClient::initialize()
     BufferedFile ethFile(*ethFilePath);
 
     const BufferedFile::Result readResult = ethFile.read();
-    if (readResult != BufferedFile::Success)
-    {
+    if (readResult != BufferedFile::Success) {
         ERROR("failed to read ethernet device address of " <<
-               device << ": result = " << (int) readResult);
+                                                           device << ": result = " << (int) readResult);
         return IOError;
     }
     MemoryBlock::copy(&m_etherAddress, ethFile.buffer(), sizeof(m_etherAddress));
@@ -74,28 +67,25 @@ DhcpClient::Result DhcpClient::initialize()
 
     // Initialize networking client
     result = m_client->initialize();
-    if (result != NetworkClient::Success)
-    {
+    if (result != NetworkClient::Success) {
         ERROR("failed to initialize network client for device "
-               << device << ": result = " << (int) result);
+                      << device << ": result = " << (int) result);
         return IOError;
     }
 
     // Create an UDP socket
     result = m_client->createSocket(NetworkClient::UDP, &m_socket);
-    if (result != NetworkClient::Success)
-    {
+    if (result != NetworkClient::Success) {
         ERROR("failed to create UDP socket on device " << device <<
-              ": result = " << (int) result);
+                                                       ": result = " << (int) result);
         return IOError;
     }
 
     // Bind to a local port.
     result = m_client->bindSocket(m_socket, 0, ClientPort);
-    if (result != NetworkClient::Success)
-    {
+    if (result != NetworkClient::Success) {
         ERROR("failed to bind socket to UDP port " << ClientPort <<
-              " on device " << device << ": result = " << (int) result);
+                                                   " on device " << device << ": result = " << (int) result);
         return IOError;
     }
 
@@ -103,13 +93,11 @@ DhcpClient::Result DhcpClient::initialize()
     return Success;
 }
 
-DhcpClient::Result DhcpClient::exec()
-{
+DhcpClient::Result DhcpClient::exec() {
     DEBUG("");
 
     // Keep retrying until we have an address
-    for (Size i = 0; i < MaximumRetries; i++)
-    {
+    for (Size i = 0; i < MaximumRetries; i++) {
         IPV4::Address ipAddr, ipServer, ipGateway;
         DhcpClient::Result result;
 
@@ -119,36 +107,32 @@ DhcpClient::Result DhcpClient::exec()
         ipAddr = ipServer = ipGateway = 0;
 
         result = discover(ipAddr, ipServer, ipGateway);
-        if (result != DhcpClient::Success)
-        {
+        if (result != DhcpClient::Success) {
             ERROR("failed to send discover: result = " << (int) result);
             continue;
         }
 
         result = offer(ipAddr, ipServer, ipGateway);
-        if (result != DhcpClient::Success)
-        {
+        if (result != DhcpClient::Success) {
             ERROR("failed to receive offer: result = " << (int) result);
             continue;
         }
 
         result = request(ipAddr, ipServer, ipGateway);
-        if (result != DhcpClient::Success)
-        {
+        if (result != DhcpClient::Success) {
             ERROR("failed to send request: result = " << (int) result);
             continue;
         }
 
         result = acknowledge(ipAddr, ipServer, ipGateway);
-        if (result != DhcpClient::Success)
-        {
+        if (result != DhcpClient::Success) {
             ERROR("failed to receive acknowledge: result = " << (int) result);
             continue;
         }
 
         DEBUG("ipAddr = " << *IPV4::toString(ipAddr) <<
-              " ipServer = " << *IPV4::toString(ipServer) <<
-              " ipGateway = " << *IPV4::toString(ipGateway));
+                          " ipServer = " << *IPV4::toString(ipServer) <<
+                          " ipGateway = " << *IPV4::toString(ipGateway));
 
         return setIpAddress(arguments().get("DEVICE"), ipAddr);
     }
@@ -157,8 +141,7 @@ DhcpClient::Result DhcpClient::exec()
 }
 
 DhcpClient::Result DhcpClient::setIpAddress(const char *device,
-                                            const IPV4::Address ipAddr) const
-{
+                                            const IPV4::Address ipAddr) const {
     DEBUG("device = " << device << " ipAddr = " << *IPV4::toString(ipAddr));
 
     // Apply the IP address on the device
@@ -167,61 +150,55 @@ DhcpClient::Result DhcpClient::setIpAddress(const char *device,
     BufferedFile ipFile(*ipFilePath);
 
     const BufferedFile::Result writeResult = ipFile.write(&ipAddr, sizeof(ipAddr));
-    if (writeResult != BufferedFile::Success)
-    {
+    if (writeResult != BufferedFile::Success) {
         ERROR("failed to set IPV4 address for device " <<
-               device << ": result = " << (int) writeResult);
+                                                       device << ": result = " << (int) writeResult);
         return IOError;
     }
 
     return Success;
 }
 
-DhcpClient::Result DhcpClient::discover(const IPV4::Address & ipAddr,
-                                        const IPV4::Address & ipServer,
-                                        const IPV4::Address & ipGateway) const
-{
+DhcpClient::Result DhcpClient::discover(const IPV4::Address &ipAddr,
+                                        const IPV4::Address &ipServer,
+                                        const IPV4::Address &ipGateway) const {
     DEBUG("");
     return sendBootRequest(Discover, ipAddr, ipServer, ipGateway);
 }
 
-DhcpClient::Result DhcpClient::offer(IPV4::Address & ipAddr,
-                                     IPV4::Address & ipServer,
-                                     IPV4::Address & ipGateway) const
-{
+DhcpClient::Result DhcpClient::offer(IPV4::Address &ipAddr,
+                                     IPV4::Address &ipServer,
+                                     IPV4::Address &ipGateway) const {
     DEBUG("");
     return receiveBootResponse(Offer, ipAddr, ipServer, ipGateway);
 }
 
 
-DhcpClient::Result DhcpClient::request(const IPV4::Address & ipAddr,
-                                       const IPV4::Address & ipServer,
-                                       const IPV4::Address & ipGateway) const
-{
+DhcpClient::Result DhcpClient::request(const IPV4::Address &ipAddr,
+                                       const IPV4::Address &ipServer,
+                                       const IPV4::Address &ipGateway) const {
     DEBUG("");
     return sendBootRequest(Request, ipAddr, ipServer, ipGateway);
 }
 
-DhcpClient::Result DhcpClient::acknowledge(IPV4::Address & ipAddr,
-                                           IPV4::Address & ipServer,
-                                           IPV4::Address & ipGateway) const
-{
+DhcpClient::Result DhcpClient::acknowledge(IPV4::Address &ipAddr,
+                                           IPV4::Address &ipServer,
+                                           IPV4::Address &ipGateway) const {
     DEBUG("");
     return receiveBootResponse(Ack, ipAddr, ipServer, ipGateway);
 }
 
 DhcpClient::Result DhcpClient::sendBootRequest(const DhcpClient::MessageType messageType,
-                                               const IPV4::Address & ipAddr,
-                                               const IPV4::Address & ipServer,
-                                               const IPV4::Address & ipGateway) const
-{
+                                               const IPV4::Address &ipAddr,
+                                               const IPV4::Address &ipServer,
+                                               const IPV4::Address &ipGateway) const {
     u8 pkt[1024];
     DhcpClient::Header *hdr = (DhcpClient::Header *) &pkt;
 
     DEBUG("messageType = " << (int) messageType <<
-          " ipAddr = " << *IPV4::toString(ipAddr) <<
-          " ipServer = " << *IPV4::toString(ipServer) <<
-          " ipGateway = " << *IPV4::toString(ipGateway));
+                           " ipAddr = " << *IPV4::toString(ipAddr) <<
+                           " ipServer = " << *IPV4::toString(ipServer) <<
+                           " ipGateway = " << *IPV4::toString(ipGateway));
 
     // Prepare request packet
     MemoryBlock::set(&pkt, 0, sizeof(pkt));
@@ -233,14 +210,13 @@ DhcpClient::Result DhcpClient::sendBootRequest(const DhcpClient::MessageType mes
     writeBe32(&hdr->magic, MagicValue);
 
     // Add message type
-    u8 *opt = (u8 *) (hdr + 1);
+    u8 *opt = (u8 * )(hdr + 1);
     *opt++ = DhcpMessageType;
     *opt++ = sizeof(u8);
     *opt++ = messageType;
 
     // Add requested IP
-    if (ipAddr != ZERO)
-    {
+    if (ipAddr != ZERO) {
         *opt++ = RequestedIP;
         *opt++ = sizeof(IPV4::Address);
         writeBe32(opt, ipAddr);
@@ -254,8 +230,7 @@ DhcpClient::Result DhcpClient::sendBootRequest(const DhcpClient::MessageType mes
     *opt++ = DomainNameServer;
 
     // Add server IP
-    if (ipServer != ZERO)
-    {
+    if (ipServer != ZERO) {
         *opt++ = ServerIdentifier;
         *opt++ = sizeof(IPV4::Address);
         writeBe32(opt, ipServer);
@@ -270,10 +245,9 @@ DhcpClient::Result DhcpClient::sendBootRequest(const DhcpClient::MessageType mes
 }
 
 DhcpClient::Result DhcpClient::receiveBootResponse(const DhcpClient::MessageType messageType,
-                                                   IPV4::Address & ipAddr,
-                                                   IPV4::Address & ipServer,
-                                                   IPV4::Address & ipGateway) const
-{
+                                                   IPV4::Address &ipAddr,
+                                                   IPV4::Address &ipServer,
+                                                   IPV4::Address &ipGateway) const {
     u8 pkt[1024];
     Size size = sizeof(pkt);
     DhcpClient::Header *hdr = (DhcpClient::Header *) &pkt;
@@ -281,32 +255,28 @@ DhcpClient::Result DhcpClient::receiveBootResponse(const DhcpClient::MessageType
     DEBUG("");
 
     const DhcpClient::Result result = udpReceive(&pkt, size);
-    if (result != DhcpClient::Success)
-    {
+    if (result != DhcpClient::Success) {
         ERROR("failed to receive UDP packet: result = " << (int) result);
         return IOError;
     }
 
     // The packet must be targeted at our ethernet address
     if (!MemoryBlock::compare(&hdr->clientHardware,
-                              &m_etherAddress, sizeof(Ethernet::Address)))
-    {
-        ERROR("invalid ethernet address: " << *(Ethernet::Address *) &hdr->clientHardware);
+                              &m_etherAddress, sizeof(Ethernet::Address))) {
+        ERROR("invalid ethernet address: " << *(Ethernet::Address * ) & hdr->clientHardware);
         return InvalidArgument;
     }
 
     // The packet operation must be a DHCP response
-    if (hdr->operation != BootResponse)
-    {
+    if (hdr->operation != BootResponse) {
         ERROR("invalid operation: " << hdr->operation << " != " << (int) BootResponse);
         return InvalidArgument;
     }
 
     // The packet must have the correct transaction number
-    if (readBe32(&hdr->transactionId) != m_transactionId)
-    {
+    if (readBe32(&hdr->transactionId) != m_transactionId) {
         ERROR("invalid transaction: " << readBe32(&hdr->transactionId) <<
-              " != " << m_transactionId);
+                                      " != " << m_transactionId);
         return InvalidArgument;
     }
 
@@ -314,18 +284,15 @@ DhcpClient::Result DhcpClient::receiveBootResponse(const DhcpClient::MessageType
     ipAddr = readBe32(&hdr->yourAddress);
 
     // Parse options
-    for (u8 *option = (u8 *) (hdr + 1); option < &pkt[size - 2]; )
-    {
+    for (u8 *option = (u8 * )(hdr + 1); option < &pkt[size - 2];) {
         const Options optionValue = (const Options) *option++;
         const Size optionLength = *option++;
 
         if (option + optionLength > &pkt[size])
             break;
 
-        switch (optionValue)
-        {
-            case Router:
-            {
+        switch (optionValue) {
+            case Router: {
                 ipGateway = readBe32(option);
                 break;
             }
@@ -336,10 +303,8 @@ DhcpClient::Result DhcpClient::receiveBootResponse(const DhcpClient::MessageType
             case RequestedIP:
                 break;
 
-            case DhcpMessageType:
-            {
-                if (messageType != (DhcpClient::MessageType) (*option))
-                {
+            case DhcpMessageType: {
+                if (messageType != (DhcpClient::MessageType) (*option)) {
                     ERROR("invalid message type: " << (int) (*option) << " != " << (int) messageType);
                     return InvalidArgument;
                 }
@@ -348,8 +313,7 @@ DhcpClient::Result DhcpClient::receiveBootResponse(const DhcpClient::MessageType
             case ParameterRequestList:
                 break;
 
-            case ServerIdentifier:
-            {
+            case ServerIdentifier: {
                 ipServer = readBe32(option);
                 break;
             }
@@ -366,16 +330,15 @@ DhcpClient::Result DhcpClient::receiveBootResponse(const DhcpClient::MessageType
     }
 
     DEBUG("messageType = " << (int) messageType <<
-          " ipAddr = " << *IPV4::toString(ipAddr) <<
-          " ipServer = " << *IPV4::toString(ipServer) <<
-          " ipGateway = " << *IPV4::toString(ipGateway));
+                           " ipAddr = " << *IPV4::toString(ipAddr) <<
+                           " ipServer = " << *IPV4::toString(ipServer) <<
+                           " ipGateway = " << *IPV4::toString(ipGateway));
 
     return DhcpClient::Success;
 }
 
 DhcpClient::Result DhcpClient::udpSend(const void *packet,
-                                       const Size size) const
-{
+                                       const Size size) const {
     DEBUG("size = " << size);
 
     // Prepare UDP broadcast datagram
@@ -386,8 +349,7 @@ DhcpClient::Result DhcpClient::udpSend(const void *packet,
     // Send the packet
     int result = ::sendto(m_socket, packet, size, 0,
                           &addr, sizeof(addr));
-    if (result <= 0)
-    {
+    if (result <= 0) {
         ERROR("failed to send UDP datagram: " << strerror(errno));
         return IOError;
     }
@@ -396,16 +358,14 @@ DhcpClient::Result DhcpClient::udpSend(const void *packet,
 }
 
 DhcpClient::Result DhcpClient::udpReceive(void *packet,
-                                          Size & size) const
-{
+                                          Size &size) const {
     DEBUG("");
 
     struct sockaddr addr;
 
     // Wait for a packet in the UDP socket
     const NetworkClient::Result result = m_client->waitSocket(NetworkClient::UDP, m_socket, ReceiveTimeoutMs);
-    if (result != NetworkClient::Success)
-    {
+    if (result != NetworkClient::Success) {
         ERROR("failed to wait for UDP socket " << m_socket << ": result = " << (int) result);
         return IOError;
     }
@@ -413,15 +373,14 @@ DhcpClient::Result DhcpClient::udpReceive(void *packet,
     // Receive UDP datagram
     int r = recvfrom(m_socket, packet, size, 0,
                      &addr, sizeof(addr));
-    if (r < 0)
-    {
+    if (r < 0) {
         ERROR("failed to receive UDP datagram: " << strerror(errno));
         return IOError;
     }
 
     size = r;
     DEBUG("received " << r << " bytes from " << *IPV4::toString(addr.addr) <<
-          " at port " << addr.port);
+                      " at port " << addr.port);
 
     return Success;
 }

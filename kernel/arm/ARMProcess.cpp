@@ -26,27 +26,23 @@ static bool firstProcess = true;
 extern u8 svcStack[PAGESIZE * 4];
 
 ARMProcess::ARMProcess(ProcessID id, Address entry, bool privileged, const MemoryMap &map)
-    : Process(id, entry, privileged, map)
-{
+        : Process(id, entry, privileged, map) {
 }
 
-Process::Result ARMProcess::initialize()
-{
+Process::Result ARMProcess::initialize() {
     Memory::Range range;
     Allocator::Range alloc_args;
 
     // Create MMU context
     m_memoryContext = new ARMPaging(&m_map, Kernel::instance()->getAllocator());
-    if (!m_memoryContext)
-    {
+    if (!m_memoryContext) {
         ERROR("failed to create memory context");
         return OutOfMemory;
     }
 
     // Initialize MMU context
     const MemoryContext::Result memResult = m_memoryContext->initialize();
-    if (memResult != MemoryContext::Success)
-    {
+    if (memResult != MemoryContext::Success) {
         ERROR("failed to initialize MemoryContext: result = " << (int) memResult);
         return OutOfMemory;
     }
@@ -58,16 +54,14 @@ Process::Result ARMProcess::initialize()
     alloc_args.size = range.size;
     alloc_args.alignment = PAGESIZE;
 
-    if (Kernel::instance()->getAllocator()->allocate(alloc_args) != Allocator::Success)
-    {
+    if (Kernel::instance()->getAllocator()->allocate(alloc_args) != Allocator::Success) {
         ERROR("failed to allocate user stack");
         return OutOfMemory;
     }
     range.phys = alloc_args.address;
 
     // Map User stack
-    if (m_memoryContext->mapRangeContiguous(&range) != MemoryContext::Success)
-    {
+    if (m_memoryContext->mapRangeContiguous(&range) != MemoryContext::Success) {
         ERROR("failed to map user stack");
         return MemoryMapError;
     }
@@ -79,33 +73,27 @@ Process::Result ARMProcess::initialize()
     return Process::initialize();
 }
 
-ARMProcess::~ARMProcess()
-{
+ARMProcess::~ARMProcess() {
 }
 
-const CPUState * ARMProcess::cpuState() const
-{
+const CPUState *ARMProcess::cpuState() const {
     return &m_cpuState;
 }
 
-void ARMProcess::setCpuState(const CPUState *cpuState)
-{
+void ARMProcess::setCpuState(const CPUState *cpuState) {
     MemoryBlock::copy(&m_cpuState, cpuState, sizeof(*cpuState));
 }
 
-ARMProcess::Result ARMProcess::join(const uint result)
-{
+ARMProcess::Result ARMProcess::join(const uint result) {
     const Result r = Process::join(result);
-    if (r == Success)
-    {
+    if (r == Success) {
         m_cpuState.r0 = API::Success | (result << 16);
     }
 
     return r;
 }
 
-void ARMProcess::reset(const Address entry)
-{
+void ARMProcess::reset(const Address entry) {
     const Memory::Range range = m_map.range(MemoryMap::UserStack);
 
     MemoryBlock::set(&m_cpuState, 0, sizeof(m_cpuState));
@@ -114,24 +102,22 @@ void ARMProcess::reset(const Address entry)
     m_cpuState.cpsr = (m_privileged ? SYS_MODE : USR_MODE); // current program status (CPSR)
 }
 
-void ARMProcess::execute(Process *previous)
-{
+void ARMProcess::execute(Process *previous) {
     // Activates memory context of this process
     m_memoryContext->activate();
 
     // First process starts from loadCoreState0
-    if (firstProcess)
-    {
+    if (firstProcess) {
         firstProcess = false;
 
         // Kernel stacks are currently 16KiB (see ARMBoot.S)
-        CPUState *ptr = ((CPUState *) (svcStack + sizeof(svcStack))) - 1;
+        CPUState *ptr = ((CPUState * )(svcStack + sizeof(svcStack))) - 1;
         MemoryBlock::copy(ptr, &m_cpuState, sizeof(*ptr));
 
         // Switch to the actual SVC stack and switch to usermode
         asm volatile ("ldr sp, =(svcStack + (4096*4))\n"
                       "sub sp, sp, %0\n"
                       "ldr r0, =loadCoreState0\n"
-                      "bx r0\n" : : "i" (sizeof(m_cpuState) - sizeof(m_cpuState.padding)) );
+                      "bx r0\n" : : "i" (sizeof(m_cpuState) - sizeof(m_cpuState.padding)));
     }
 }

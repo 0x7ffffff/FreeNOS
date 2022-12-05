@@ -31,9 +31,8 @@
 /**
  * Represents a callback function
  */
-class CallbackFunction
-{
-  public:
+class CallbackFunction {
+public:
 
     /**
      * Execute the callback
@@ -46,14 +45,14 @@ class CallbackFunction
 /**
  * Abstraction for providing a callback function to a object instance.
  */
-template <class Base, class ParamType> class Callback : public CallbackFunction
-{
-  private:
+template<class Base, class ParamType>
+class Callback : public CallbackFunction {
+private:
 
     /** Callback function prototype */
     typedef void (Base::*Function)(ParamType *param);
 
-  public:
+public:
 
     /**
      * Constructor
@@ -61,9 +60,8 @@ template <class Base, class ParamType> class Callback : public CallbackFunction
      * @param object Object pointer
      * @param func Callback function
      */
-    Callback(Base *object, Function func)
-    {
-        m_object   = object;
+    Callback(Base *object, Function func) {
+        m_object = object;
         m_function = func;
     }
 
@@ -72,24 +70,22 @@ template <class Base, class ParamType> class Callback : public CallbackFunction
      *
      * @param parameter Optional parameter to pass
      */
-    virtual void execute(void *parameter)
-    {
+    virtual void execute(void *parameter) {
         executeOnObject((ParamType *) parameter);
     }
 
-  private:
+private:
 
     /**
      * Execute the callback.
      *
      * @param parameter One parameter which is passed to the callback function.
      */
-    virtual void executeOnObject(ParamType *parameter)
-    {
+    virtual void executeOnObject(ParamType *parameter) {
         (m_object->*m_function)(parameter);
     }
 
-  private:
+private:
 
     /** Object instance */
     Base *m_object;

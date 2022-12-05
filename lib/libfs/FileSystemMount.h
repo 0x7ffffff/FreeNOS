@@ -32,8 +32,7 @@
 /**
  * Represents a mounted filesystem.
  */
-typedef struct FileSystemMount
-{
+typedef struct FileSystemMount {
     /** Path of the mount. */
     char path[FileSystemPath::MaximumLength];
 
@@ -43,7 +42,7 @@ typedef struct FileSystemMount
     /** Mount options. */
     ulong options;
 }
-FileSystemMount;
+        FileSystemMount;
 
 /**
  * @}

@@ -37,9 +37,8 @@
 /**
  * Intel 8259 Programmable Interrupt Controller (PIC).
  */
-class IntelPIC : public IntController
-{
-  private:
+class IntelPIC : public IntController {
+private:
 
     /**
      * Base offset for interrupt vectors from the PIC.
@@ -53,30 +52,28 @@ class IntelPIC : public IntController
     static const uint MasterBase = 0x20;
 
     /** Slave PIC I/O port base offset */
-    static const uint SlaveBase  = 0xa0;
+    static const uint SlaveBase = 0xa0;
 
     /**
      * Hardware registers.
      */
-    enum Registers
-    {
+    enum Registers {
         Command = 0x0,
-        Data    = 0x1
+        Data = 0x1
     };
 
     /**
      * Command Register Flags.
      */
-    enum CommandFlags
-    {
-        Init1          = (1 << 4) | (1 << 0),
-        CascadeMode    = (0),
+    enum CommandFlags {
+        Init1 = (1 << 4) | (1 << 0),
+        CascadeMode = (0),
         LevelTriggered = (0),
-        Mode8086       = (1),
+        Mode8086 = (1),
         EndOfInterrupt = (0x20)
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -121,7 +118,7 @@ class IntelPIC : public IntController
      */
     virtual Result clear(uint irq);
 
-  private:
+private:
 
     /** I/O instance for master. */
     IntelIO m_master;

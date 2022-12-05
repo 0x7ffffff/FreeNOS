@@ -32,20 +32,18 @@
 /**
  * Time value information.
  */
-struct timeval
-{
+struct timeval {
     /** Seconds */
     time_t tv_sec;
 
     /** Microseconds */
-    uint   tv_usec;
+    uint tv_usec;
 };
 
 /**
  * Time zone information.
  */
-struct timezone
-{
+struct timezone {
     /** minutes west of Greenwich */
     int tz_minuteswest;
 

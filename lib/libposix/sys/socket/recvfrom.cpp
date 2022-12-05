@@ -23,8 +23,7 @@
 #include <errno.h>
 
 extern C int recvfrom(int sockfd, void *buf, size_t len, int flags,
-                      struct sockaddr *addr, socklen_t addrlen)
-{
+                      struct sockaddr *addr, socklen_t addrlen) {
     char packet[2048];
     NetworkClient::SocketInfo info;
 

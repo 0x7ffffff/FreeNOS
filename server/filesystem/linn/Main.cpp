@@ -23,8 +23,7 @@
 #include <BootSymbolStorage.h>
 #include "LinnFileSystem.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     KernelLog log;
     Storage *storage = ZERO;
     const char *path = "/";
@@ -35,25 +34,21 @@ int main(int argc, char **argv)
         return 0;
 
     // Mount the given file, or try to use the BootImage embedded rootfs
-    if (argc > 3)
-    {
+    if (argc > 3) {
         const String offsetStr(argv[2], false);
         const Size offset = offsetStr.toLong();
         NOTICE("file storage: " << argv[1] << " at offset " << offset);
         storage = new FileStorage(argv[1], offset);
         assert(storage != NULL);
         path = argv[3];
-    }
-    else
-    {
+    } else {
         // Allocate BootImage
         BootImageStorage *bm = new BootImageStorage();
         assert(bm != NULL);
 
         // Load BootImage
         const FileSystem::Result imageResult = bm->initialize();
-        if (imageResult != FileSystem::Success)
-        {
+        if (imageResult != FileSystem::Success) {
             FATAL("unable to load BootImage: result = " << (int) imageResult);
         }
 
@@ -63,10 +58,9 @@ int main(int argc, char **argv)
 
         // Load BootSymbol
         const FileSystem::Result symbolResult = bs->initialize();
-        if (symbolResult != FileSystem::Success)
-        {
+        if (symbolResult != FileSystem::Success) {
             FATAL("unable to load BootSymbol '" << LINNFS_ROOTFS_FILE <<
-                  "': result = " << (int) symbolResult);
+                                                "': result = " << (int) symbolResult);
         }
 
         storage = bs;
@@ -74,8 +68,7 @@ int main(int argc, char **argv)
     }
 
     // Mount, then start serving requests.
-    if (storage)
-    {
+    if (storage) {
         LinnFileSystem server(path, storage);
         server.mount();
         return server.run();

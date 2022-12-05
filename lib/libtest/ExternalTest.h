@@ -31,9 +31,8 @@
 /**
  * Represents external test program
  */
-class ExternalTest : public TestInstance
-{
-  public:
+class ExternalTest : public TestInstance {
+public:
 
     /**
      * Class constructor
@@ -56,13 +55,13 @@ class ExternalTest : public TestInstance
      */
     virtual TestResult run();
 
-  private:
+private:
 
     /** Program argument count */
     int m_argc;
 
     /** Program argument values */
-    char ** m_argv;
+    char **m_argv;
 };
 
 /**

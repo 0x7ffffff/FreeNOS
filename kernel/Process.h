@@ -27,10 +27,15 @@
 
 /** @see IPCMessage.h. */
 struct Message;
+
 class MemoryContext;
+
 class MemoryChannel;
+
 struct ProcessEvent;
+
 class ProcessManager;
+
 class Scheduler;
 
 /**
@@ -41,18 +46,17 @@ class Scheduler;
 /**
  * Represents a process which may run on the host.
  */
-class Process
-{
-  friend class ProcessManager;
-  friend class Scheduler;
+class Process {
+    friend class ProcessManager;
 
-  public:
+    friend class Scheduler;
+
+public:
 
     /**
      * Result codes
      */
-    enum Result
-    {
+    enum Result {
         Success,
         InvalidArgument,
         MemoryMapError,
@@ -63,15 +67,14 @@ class Process
     /**
      * Represents the execution state of the Process
      */
-    enum State
-    {
+    enum State {
         Ready,
         Sleeping,
         Waiting,
         Stopped
     };
 
-  public:
+public:
 
     /**
      * Constructor function.
@@ -117,7 +120,7 @@ class Process
      *
      * @return Reference to memory shares.
      */
-    ProcessShares & getShares();
+    ProcessShares &getShares();
 
     /**
      * Retrieves the current state.
@@ -131,7 +134,7 @@ class Process
      *
      * @return MemoryContext pointer.
      */
-    MemoryContext * getMemoryContext();
+    MemoryContext *getMemoryContext();
 
     /**
      * Get privilege.
@@ -147,9 +150,9 @@ class Process
      *
      * @return True if equal, false otherwise.
      */
-    bool operator == (Process *proc);
+    bool operator==(Process *proc);
 
-  protected:
+protected:
 
     /**
      * Initialize the Process.
@@ -234,14 +237,14 @@ class Process
      *
      * @return Sleep timer value.
      */
-    const Timer::Info & getSleepTimer() const;
+    const Timer::Info &getSleepTimer() const;
 
     /**
      * Set parent process ID.
      */
     void setParent(ProcessID id);
 
-  protected:
+protected:
 
     /** Process Identifier */
     const ProcessID m_id;

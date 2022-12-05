@@ -18,12 +18,10 @@
 #include <Log.h>
 #include "SunxiSystemControl.h"
 
-SunxiSystemControl::Result SunxiSystemControl::initialize()
-{
+SunxiSystemControl::Result SunxiSystemControl::initialize() {
     if (m_io.map(IOBase & ~0xfff, PAGESIZE,
                  Memory::User | Memory::Readable |
-                 Memory::Writable | Memory::Device) != IO::Success)
-    {
+                 Memory::Writable | Memory::Device) != IO::Success) {
         ERROR("failed to map I/O memory");
         return IOError;
     }
@@ -32,9 +30,8 @@ SunxiSystemControl::Result SunxiSystemControl::initialize()
     return Success;
 }
 
-SunxiSystemControl::Result SunxiSystemControl::setupEmac(const uint phyAddr)
-{
-    DEBUG("phyAddr = " << (void *)phyAddr);
+SunxiSystemControl::Result SunxiSystemControl::setupEmac(const uint phyAddr) {
+    DEBUG("phyAddr = " << (void *) phyAddr);
 
     u32 val = m_io.read(EmacClock);
     val &= ~(u32)(EmacClockMask);

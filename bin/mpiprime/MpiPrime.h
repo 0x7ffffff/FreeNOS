@@ -29,11 +29,10 @@
 /**
  * Calculate prime numbers in parallel.
  */
-class MpiPrime : public SievePrime
-{
-  private:
+class MpiPrime : public SievePrime {
+private:
 
-  public:
+public:
 
     /**
      * Constructor
@@ -62,7 +61,7 @@ class MpiPrime : public SievePrime
      */
     virtual Result exec();
 
-  private:
+private:
 
     /**
      * Calculate prime numbers in parallel
@@ -87,7 +86,7 @@ class MpiPrime : public SievePrime
      */
     Result collect(int n, u8 *rootMap, u8 *map);
 
-  private:
+private:
 
     /** Result of MPI initialization */
     int m_mpiInitResult;

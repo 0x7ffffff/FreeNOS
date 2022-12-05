@@ -39,9 +39,8 @@ class ARPSocket;
 /**
  * Address Resolution Protocol
  */
-class ARP : public NetworkProtocol
-{
-  private:
+class ARP : public NetworkProtocol {
+private:
 
     /** Maximum number of retries for ARP lookup */
     static const Size MaxRetries = 3;
@@ -49,40 +48,36 @@ class ARP : public NetworkProtocol
     /**
      * ARP table cache entry
      */
-    typedef struct ARPCache
-    {
+    typedef struct ARPCache {
         Ethernet::Address ethAddr;
         Timer::Info time;
         Size retryCount;
         bool valid;
     }
-    ARPCache;
+            ARPCache;
 
-  public:
+public:
 
     /**
      * ARP hardware types
      */
-    enum HardwareType
-    {
+    enum HardwareType {
         Ethernet = 1
     };
 
     /**
      * ARP inter-network protocol types.
      */
-    enum ProtocolType
-    {
+    enum ProtocolType {
         IPV4 = 0x0800
     };
 
     /**
      * ARP message types (operation codes)
      */
-    enum Operation
-    {
+    enum Operation {
         Request = 1,
-        Reply   = 2
+        Reply = 2
     };
 
     /**
@@ -91,23 +86,23 @@ class ARP : public NetworkProtocol
      * This header is prepended to every
      * ARP packet send on the actual physical link.
      */
-    typedef struct Header
-    {
+    typedef struct Header {
         u16 hardwareType;
         u16 protocolType;
-        u8  hardwareLength;
-        u8  protocolLength;
+        u8 hardwareLength;
+        u8 protocolLength;
         u16 operation;
 
         Ethernet::Address etherSender;
-        IPV4::Address     ipSender;
+        IPV4::Address ipSender;
 
         Ethernet::Address etherTarget;
-        IPV4::Address     ipTarget;
+        IPV4::Address ipTarget;
     }
-    PACKED Header;
+            PACKED
+    Header;
 
-  public:
+public:
 
     /**
      * Constructor
@@ -181,7 +176,7 @@ class ARP : public NetworkProtocol
     virtual FileSystem::Result process(const NetworkQueue::Packet *pkt,
                                        const Size offset);
 
-  private:
+private:
 
     /**
      * Insert a new entry to the ARP cache
@@ -190,7 +185,7 @@ class ARP : public NetworkProtocol
      *
      * @return ARPCache object pointer
      */
-    ARPCache * insertCacheEntry(const IPV4::Address ipAddr);
+    ARPCache *insertCacheEntry(const IPV4::Address ipAddr);
 
     /**
      * Retrieve cache entry by IP
@@ -199,7 +194,7 @@ class ARP : public NetworkProtocol
      *
      * @return ARPCache object pointer or ZERO if not found
      */
-    ARPCache * getCacheEntry(const IPV4::Address ipAddr);
+    ARPCache *getCacheEntry(const IPV4::Address ipAddr);
 
     /**
      * Update cache entry
@@ -210,7 +205,7 @@ class ARP : public NetworkProtocol
     void updateCacheEntry(const IPV4::Address ipAddr,
                           const Ethernet::Address *ethAddr);
 
-  private:
+private:
 
     /** The single ARP socket */
     ARPSocket *m_sock;

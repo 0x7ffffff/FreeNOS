@@ -22,13 +22,12 @@
 
 extern Address __start, __end;
 
-void multibootToCoreInfo(MultibootInfo *info)
-{
+void multibootToCoreInfo(MultibootInfo *info) {
     // Fill coreId and memory info
     MemoryBlock::set(&coreInfo, 0, sizeof(CoreInfo));
     coreInfo.coreId = 0;
-    coreInfo.kernel.phys = (Address) &__start;
-    coreInfo.kernel.size = ((Address) &__end - (Address) &__start);
+    coreInfo.kernel.phys = (Address) & __start;
+    coreInfo.kernel.size = ((Address) & __end - (Address) & __start);
     coreInfo.memory.phys = 0;
 
     // Limit maximum supported memory to 1GiB minus 128MiB
@@ -44,20 +43,18 @@ void multibootToCoreInfo(MultibootInfo *info)
     }
 
     // Fill the kernel command line
-    MemoryBlock::copy(coreInfo.kernelCommand, (void *)info->cmdline, KERNEL_PATHLEN);
+    MemoryBlock::copy(coreInfo.kernelCommand, (void *) info->cmdline, KERNEL_PATHLEN);
 
     // Fill the bootimage address
-    for (Size n = 0; n < info->modsCount; n++)
-    {
+    for (Size n = 0; n < info->modsCount; n++) {
         MultibootModule *mod = (MultibootModule *) info->modsAddress;
         mod += n;
-        String str((char *)(mod->string), false);
+        String str((char *) (mod->string), false);
 
         // Is this the BootImage?
-        if (str.match("*.img"))
-        {
+        if (str.match("*.img")) {
             coreInfo.bootImageAddress = mod->modStart;
-            coreInfo.bootImageSize    = mod->modEnd - mod->modStart;
+            coreInfo.bootImageSize = mod->modEnd - mod->modStart;
             break;
         }
     }

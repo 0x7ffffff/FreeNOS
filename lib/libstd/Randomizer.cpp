@@ -19,13 +19,11 @@
 
 ulong Randomizer::m_value = 1;
 
-void Randomizer::seed(const ulong value)
-{
+void Randomizer::seed(const ulong value) {
     m_value = value;
 }
 
-ulong Randomizer::next()
-{
+ulong Randomizer::next() {
     m_value = (Multiplier * m_value + Constant) % Modulus;
     return m_value;
 }

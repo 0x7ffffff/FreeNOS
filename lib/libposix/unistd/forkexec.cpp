@@ -24,8 +24,7 @@
 #include <fcntl.h>
 #include "unistd.h"
 
-int forkexec(const char *path, const char *argv[])
-{
+int forkexec(const char *path, const char *argv[]) {
     int fd, ret = 0;
     struct stat st;
 
@@ -39,14 +38,13 @@ int forkexec(const char *path, const char *argv[])
 
     // Map memory buffer for the compressed program image
     Memory::Range compressed;
-    compressed.virt   = ZERO;
-    compressed.phys   = ZERO;
-    compressed.size   = st.st_size;
-    compressed.access = Memory::User|Memory::Readable|Memory::Writable;
+    compressed.virt = ZERO;
+    compressed.phys = ZERO;
+    compressed.size = st.st_size;
+    compressed.access = Memory::User | Memory::Readable | Memory::Writable;
 
     // Create mapping
-    if (VMCtl(SELF, MapContiguous, &compressed) != API::Success)
-    {
+    if (VMCtl(SELF, MapContiguous, &compressed) != API::Success) {
         errno = EFAULT;
         return -1;
     }
@@ -57,18 +55,16 @@ int forkexec(const char *path, const char *argv[])
     // Close file handle
     close(fd);
 
-    if (ret != st.st_size)
-    {
+    if (ret != st.st_size) {
         VMCtl(SELF, Release, &compressed);
         errno = EIO;
         return -1;
     }
 
     // Initialize decompressor
-    Lz4Decompressor lz4((const void *)compressed.virt, st.st_size);
+    Lz4Decompressor lz4((const void *) compressed.virt, st.st_size);
     const Lz4Decompressor::Result result = lz4.initialize();
-    if (result != Lz4Decompressor::Success)
-    {
+    if (result != Lz4Decompressor::Success) {
         VMCtl(SELF, Release, &compressed);
         errno = EFAULT;
         return -1;
@@ -76,23 +72,21 @@ int forkexec(const char *path, const char *argv[])
 
     // Map memory buffer for the uncompressed program image
     Memory::Range uncompressed;
-    uncompressed.virt   = ZERO;
-    uncompressed.phys   = ZERO;
-    uncompressed.size   = lz4.getUncompressedSize();
-    uncompressed.access = Memory::User|Memory::Readable|Memory::Writable;
+    uncompressed.virt = ZERO;
+    uncompressed.phys = ZERO;
+    uncompressed.size = lz4.getUncompressedSize();
+    uncompressed.access = Memory::User | Memory::Readable | Memory::Writable;
 
     // Create mapping
-    if (VMCtl(SELF, MapContiguous, &uncompressed) != API::Success)
-    {
+    if (VMCtl(SELF, MapContiguous, &uncompressed) != API::Success) {
         VMCtl(SELF, Release, &compressed);
         errno = EFAULT;
         return -1;
     }
 
     // Decompress entire file
-    const Lz4Decompressor::Result readResult = lz4.read((void *)uncompressed.virt, lz4.getUncompressedSize());
-    if (readResult != Lz4Decompressor::Success)
-    {
+    const Lz4Decompressor::Result readResult = lz4.read((void *) uncompressed.virt, lz4.getUncompressedSize());
+    if (readResult != Lz4Decompressor::Success) {
         VMCtl(SELF, Release, &compressed);
         VMCtl(SELF, Release, &uncompressed);
         errno = EFAULT;
@@ -100,8 +94,7 @@ int forkexec(const char *path, const char *argv[])
     }
 
     // Cleanup compressed program buffer
-    if (VMCtl(SELF, Release, &compressed) != API::Success)
-    {
+    if (VMCtl(SELF, Release, &compressed) != API::Success) {
         VMCtl(SELF, Release, &uncompressed);
         errno = EFAULT;
         return -1;
@@ -111,8 +104,7 @@ int forkexec(const char *path, const char *argv[])
     ret = spawn(uncompressed.virt, lz4.getUncompressedSize(), argv);
 
     // Cleanup uncompressed program buffer
-    if (VMCtl(SELF, Release, &uncompressed) != API::Success)
-    {
+    if (VMCtl(SELF, Release, &uncompressed) != API::Success) {
         errno = EFAULT;
         return -1;
     }

@@ -26,8 +26,7 @@
 #include "errno.h"
 #include "unistd.h"
 
-int spawn(Address program, Size programSize, const char *argv[])
-{
+int spawn(Address program, Size programSize, const char *argv[]) {
     const FileSystemClient filesystem;
     ExecutableFormat *fmt;
     ExecutableFormat::Region regions[16];
@@ -39,15 +38,13 @@ int spawn(Address program, Size programSize, const char *argv[])
     Address entry;
 
     // Attempt to read executable format
-    if (ExecutableFormat::find((u8 *) program, programSize, &fmt) != ExecutableFormat::Success)
-    {
+    if (ExecutableFormat::find((u8 *) program, programSize, &fmt) != ExecutableFormat::Success) {
         errno = ENOEXEC;
         return -1;
     }
 
     // Find entry point
-    if (fmt->entry(&entry) != ExecutableFormat::Success)
-    {
+    if (fmt->entry(&entry) != ExecutableFormat::Success) {
         delete fmt;
         errno = ENOEXEC;
         return -1;
@@ -55,8 +52,7 @@ int spawn(Address program, Size programSize, const char *argv[])
 
     // Create new process
     const ulong result = ProcessCtl(ANY, Spawn, entry);
-    if ((result & 0xffff) != API::Success)
-    {
+    if ((result & 0xffff) != API::Success) {
         delete fmt;
         errno = EIO;
         return -1;
@@ -64,8 +60,7 @@ int spawn(Address program, Size programSize, const char *argv[])
     pid = (result >> 16);
 
     // Retrieve memory regions
-    if (fmt->regions(regions, &numRegions) != ExecutableFormat::Success)
-    {
+    if (fmt->regions(regions, &numRegions) != ExecutableFormat::Success) {
         delete fmt;
         errno = ENOEXEC;
         ProcessCtl(pid, KillPID);
@@ -75,17 +70,15 @@ int spawn(Address program, Size programSize, const char *argv[])
     delete fmt;
 
     // Map program regions into virtual memory of the new process
-    for (Size i = 0; i < numRegions; i++)
-    {
+    for (Size i = 0; i < numRegions; i++) {
         // Setup memory range to copy region data
-        range.virt   = regions[i].virt;
-        range.phys   = ZERO;
-        range.size   = regions[i].memorySize;
+        range.virt = regions[i].virt;
+        range.phys = ZERO;
+        range.size = regions[i].memorySize;
         range.access = regions[i].access;
 
         // Create mapping first in the new process
-        if (VMCtl(pid, MapContiguous, &range) != API::Success)
-        {
+        if (VMCtl(pid, MapContiguous, &range) != API::Success) {
             errno = EFAULT;
             ProcessCtl(pid, KillPID);
             return -1;
@@ -93,27 +86,24 @@ int spawn(Address program, Size programSize, const char *argv[])
 
         // Map inside our process
         range.virt = ZERO;
-        if (VMCtl(SELF, MapContiguous, &range) != API::Success)
-        {
+        if (VMCtl(SELF, MapContiguous, &range) != API::Success) {
             errno = EFAULT;
             ProcessCtl(pid, KillPID);
             return -1;
         }
 
         // Copy data bytes
-        MemoryBlock::copy((void *)range.virt, (const void *)(program + regions[i].dataOffset),
+        MemoryBlock::copy((void *) range.virt, (const void *) (program + regions[i].dataOffset),
                           regions[i].dataSize);
 
         // Nulify remaining space
-        if (regions[i].memorySize > regions[i].dataSize)
-        {
-            MemoryBlock::set((void *)(range.virt + regions[i].dataSize), 0,
+        if (regions[i].memorySize > regions[i].dataSize) {
+            MemoryBlock::set((void *) (range.virt + regions[i].dataSize), 0,
                              regions[i].memorySize - regions[i].dataSize);
         }
 
         // Remove temporary mapping
-        if (VMCtl(SELF, UnMap, &range) != API::Success)
-        {
+        if (VMCtl(SELF, UnMap, &range) != API::Success) {
             errno = EFAULT;
             ProcessCtl(pid, KillPID);
             return -1;
@@ -124,20 +114,18 @@ int spawn(Address program, Size programSize, const char *argv[])
     range = map.range(MemoryMap::UserArgs);
     range.phys = ZERO;
     range.access = Memory::User | Memory::Readable | Memory::Writable;
-    if (VMCtl(pid, MapContiguous, &range) != API::Success)
-    {
+    if (VMCtl(pid, MapContiguous, &range) != API::Success) {
         errno = EFAULT;
         ProcessCtl(pid, KillPID);
         return -1;
     }
 
     // Allocate arguments and current working directory
-    char *arguments = new char[PAGESIZE*2];
-    memset(arguments, 0, PAGESIZE*2);
+    char *arguments = new char[PAGESIZE * 2];
+    memset(arguments, 0, PAGESIZE * 2);
 
     // Fill in arguments
-    while (argv[count] && count < PAGESIZE / ARGV_SIZE)
-    {
+    while (argv[count] && count < PAGESIZE / ARGV_SIZE) {
         strlcpy(arguments + (ARGV_SIZE * count), argv[count], ARGV_SIZE);
         count++;
     }
@@ -146,8 +134,7 @@ int spawn(Address program, Size programSize, const char *argv[])
     strlcpy(arguments + PAGESIZE, **filesystem.getCurrentDirectory(), PATH_MAX);
 
     // Copy argc/argv into the new process
-    if (VMCopy(pid, API::Write, (Address) arguments, range.virt, PAGESIZE * 2) != API::Success)
-    {
+    if (VMCopy(pid, API::Write, (Address) arguments, range.virt, PAGESIZE * 2) != API::Success) {
         delete[] arguments;
         errno = EFAULT;
         ProcessCtl(pid, KillPID);
@@ -156,8 +143,7 @@ int spawn(Address program, Size programSize, const char *argv[])
 
     // Copy fds into the new process.
     if (VMCopy(pid, API::Write, (Address) FileDescriptor::instance()->getArray(count),
-               range.virt + (PAGESIZE * 2), range.size - (PAGESIZE * 2)) != API::Success)
-    {
+               range.virt + (PAGESIZE * 2), range.size - (PAGESIZE * 2)) != API::Success) {
         delete[] arguments;
         errno = EFAULT;
         ProcessCtl(pid, KillPID);
@@ -165,8 +151,7 @@ int spawn(Address program, Size programSize, const char *argv[])
     }
 
     // Let the Child begin execution
-    if (ProcessCtl(pid, Resume) != API::Success)
-    {
+    if (ProcessCtl(pid, Resume) != API::Success) {
         delete[] arguments;
         errno = EIO;
         ProcessCtl(pid, KillPID);

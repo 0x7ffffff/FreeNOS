@@ -20,39 +20,32 @@
 #include "stdio.h"
 #include "stdlib.h"
 
-int vsnprintf(char *buffer, unsigned int size, const char *fmt, va_list args)
-{
+int vsnprintf(char *buffer, unsigned int size, const char *fmt, va_list args) {
     char buf[20], *ptr;
     int ch, length = -1, i;
     unsigned int written = 0;
     String s;
 
     // Loop formatted message
-    while ((ch = *fmt++) && written < size)
-    {
-        if (ch != '%')
-        {
+    while ((ch = *fmt++) && written < size) {
+        if (ch != '%') {
             *buffer++ = ch;
             written++;
-        }
-        else
-        {
+        } else {
             switch_again:
 
-            switch (*fmt)
-            {
+            switch (*fmt) {
                 // Length modifier
                 case '0' ... '9':
 
-                    for (i = 0; i < 19 && *fmt >= '0' && *fmt <= '9'; i++)
-                    {
-                        buf[i]   = *fmt++;
-                        buf[i+1] = ZERO;
+                    for (i = 0; i < 19 && *fmt >= '0' && *fmt <= '9'; i++) {
+                        buf[i] = *fmt++;
+                        buf[i + 1] = ZERO;
                     }
                     length = atoi(buf);
                     goto switch_again;
 
-                // Integer
+                    // Integer
                 case 'u':
                     s.setUnsigned(va_arg(args, unsigned), Number::Dec, buf);
                     ptr = buf;
@@ -63,43 +56,40 @@ int vsnprintf(char *buffer, unsigned int size, const char *fmt, va_list args)
                     ptr = buf;
                     goto string;
 
-                // Long integer
+                    // Long integer
                 case 'l':
                     itoa(buf, 10, va_arg(args, long));
                     ptr = buf;
                     goto string;
 
-                // Hexadecimal
+                    // Hexadecimal
                 case 'x':
                     s.setUnsigned(va_arg(args, unsigned), Number::Hex, buf);
                     ptr = buf;
                     goto string;
 
-                // Character
+                    // Character
                 case 'c':
                     buf[0] = va_arg(args, int);
                     buf[1] = ZERO;
-                    ptr    = buf;
+                    ptr = buf;
                     goto string;
 
-                // String
+                    // String
                 case 's':
-                    ptr = va_arg(args, char *);
+                    ptr = va_arg(args, char * );
 
-                    string:
-                    while( ((length == -1 && *ptr) ||
-                            (length > 0 && length--)) && written++ < size)
-                    {
-                        if (*ptr)
-                        {
+                string:
+                    while (((length == -1 && *ptr) ||
+                            (length > 0 && length--)) && written++ < size) {
+                        if (*ptr) {
                             *buffer++ = *ptr++;
-                        }
-                        else
+                        } else
                             *buffer++ = ' ';
                     }
                     break;
 
-                // Unsupported
+                    // Unsupported
                 default:
                     *buffer++ = ch;
                     written++;

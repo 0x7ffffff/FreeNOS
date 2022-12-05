@@ -21,39 +21,33 @@
 #include "PseudoFile.h"
 
 PseudoFile::PseudoFile(const u32 inode)
-    : File(inode, FileSystem::RegularFile)
-{
-    m_size   = ZERO;
+        : File(inode, FileSystem::RegularFile) {
+    m_size = ZERO;
     m_buffer = ZERO;
     m_access = FileSystem::OwnerRW;
 }
 
 PseudoFile::PseudoFile(const u32 inode,
                        const char *str)
-    : File(inode, FileSystem::RegularFile)
-{
+        : File(inode, FileSystem::RegularFile) {
     m_access = FileSystem::OwnerRW;
-    m_size   = String::length(str);
+    m_size = String::length(str);
     m_buffer = new char[m_size + 1];
     assert(m_buffer != NULL);
     MemoryBlock::copy(m_buffer, str, m_size + 1);
 }
 
-PseudoFile::~PseudoFile()
-{
-    if (m_buffer)
-    {
+PseudoFile::~PseudoFile() {
+    if (m_buffer) {
         delete[] m_buffer;
     }
 }
 
-FileSystem::Result PseudoFile::read(IOBuffer & buffer,
-                                    Size & size,
-                                    const Size offset)
-{
+FileSystem::Result PseudoFile::read(IOBuffer &buffer,
+                                    Size &size,
+                                    const Size offset) {
     // Bounds checking
-    if (offset >= m_size)
-    {
+    if (offset >= m_size) {
         size = 0;
         return FileSystem::Success;
     }
@@ -66,28 +60,25 @@ FileSystem::Result PseudoFile::read(IOBuffer & buffer,
     return buffer.write(m_buffer + offset, bytes);
 }
 
-FileSystem::Result PseudoFile::write(IOBuffer & buffer,
-                                     Size & size,
-                                     const Size offset)
-{
+FileSystem::Result PseudoFile::write(IOBuffer &buffer,
+                                     Size &size,
+                                     const Size offset) {
     // Check for the buffer size
-    if (!m_buffer || m_size < (size + offset))
-    {
+    if (!m_buffer || m_size < (size + offset)) {
         // Allocate a new buffer and copy the old data
-        char *new_buffer = new char[size+offset];
+        char *new_buffer = new char[size + offset];
         assert(new_buffer != NULL);
-        MemoryBlock::set(new_buffer, 0, sizeof(size+offset));
+        MemoryBlock::set(new_buffer, 0, sizeof(size + offset));
 
         // Inherit from the old buffer, if needed
-        if (m_buffer)
-        {
+        if (m_buffer) {
             MemoryBlock::copy(new_buffer, m_buffer, m_size);
             delete[] m_buffer;
         }
 
         // Assign buffer
         m_buffer = new_buffer;
-        m_size = size+offset;
+        m_size = size + offset;
     }
 
     // Copy the input data in the current buffer

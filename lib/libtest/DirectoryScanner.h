@@ -33,14 +33,13 @@ class ExternalTest;
 /**
  * Scan directory for automated tests
  */
-class DirectoryScanner
-{
-  private:
+class DirectoryScanner {
+private:
 
     /** Maximum number of external tests. */
     static const Size MaximumExternalTests = 512u;
 
-  public:
+public:
 
     /**
      * Constructor
@@ -64,7 +63,7 @@ class DirectoryScanner
      */
     int scan(const char *path);
 
-  private:
+private:
 
     /** Program argument count */
     int m_argc;
@@ -73,7 +72,7 @@ class DirectoryScanner
     char **m_argv;
 
     /** External tests that are detected. */
-    Index<ExternalTest, MaximumExternalTests> m_externalTests;
+    Index <ExternalTest, MaximumExternalTests> m_externalTests;
 };
 
 /**

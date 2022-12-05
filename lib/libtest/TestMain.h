@@ -38,8 +38,7 @@
  *
  * @return Zero on success or number of failed tests on failure
  */
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     StdioLog log;
     TestRunner tests(argc, argv);
     return tests.run();

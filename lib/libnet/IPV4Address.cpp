@@ -22,25 +22,20 @@
 
 IPV4Address::IPV4Address(const u32 inode,
                          IPV4 *ipv4)
-    : File(inode)
-    , m_ipv4(ipv4)
-{
+        : File(inode), m_ipv4(ipv4) {
     m_size = sizeof(IPV4::Address);
 }
 
-IPV4Address::~IPV4Address()
-{
+IPV4Address::~IPV4Address() {
 }
 
-FileSystem::Result IPV4Address::read(IOBuffer & buffer,
-                                     Size & size,
-                                     const Size offset)
-{
+FileSystem::Result IPV4Address::read(IOBuffer &buffer,
+                                     Size &size,
+                                     const Size offset) {
     IPV4::Address addr;
     m_ipv4->getAddress(&addr);
 
-    if (offset >= m_size)
-    {
+    if (offset >= m_size) {
         size = 0;
         return FileSystem::Success;
     }
@@ -51,10 +46,9 @@ FileSystem::Result IPV4Address::read(IOBuffer & buffer,
     return FileSystem::Success;
 }
 
-FileSystem::Result IPV4Address::write(IOBuffer & buffer,
-                                      Size & size,
-                                      const Size offset)
-{
+FileSystem::Result IPV4Address::write(IOBuffer &buffer,
+                                      Size &size,
+                                      const Size offset) {
     IPV4::Address addr;
     char tmp[32];
 
@@ -62,12 +56,9 @@ FileSystem::Result IPV4Address::write(IOBuffer & buffer,
     tmp[sizeof(tmp) - 1] = 0;
 
     // Address can be provided in 32-bit format or dotted text format
-    if (size == sizeof(IPV4::Address))
-    {
+    if (size == sizeof(IPV4::Address)) {
         MemoryBlock::copy(&addr, tmp, sizeof(addr));
-    }
-    else
-    {
+    } else {
         addr = IPV4::toAddress(tmp);
     }
 

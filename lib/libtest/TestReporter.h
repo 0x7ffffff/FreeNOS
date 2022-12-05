@@ -32,9 +32,8 @@
 /**
  * Responsible for outputting test results.
  */
-class TestReporter
-{
-  public:
+class TestReporter {
+public:
 
     /**
      * Constructor.
@@ -79,52 +78,52 @@ class TestReporter
     /**
      * Prepare for next test.
      */
-    virtual void prepare(TestInstance & test);
+    virtual void prepare(TestInstance &test);
 
     /**
      * Collect test statistics.
      */
-    virtual void collect(TestInstance & test, TestResult & result);
+    virtual void collect(TestInstance &test, TestResult &result);
 
     /**
      * Begin testing.
      */
-    virtual void begin(List<TestInstance *> & tests);
+    virtual void begin(List<TestInstance *> &tests);
 
     /**
      * Finish testing.
      */
-    virtual void finish(List<TestInstance *> & tests);
+    virtual void finish(List<TestInstance *> &tests);
 
-  protected:
+protected:
 
     /**
      * Report start of testing.
      */
-    virtual void reportBegin(List<TestInstance *> & tests) = 0;
+    virtual void reportBegin(List<TestInstance *> &tests) = 0;
 
     /**
      * Report start of a test.
      */
-    virtual void reportBefore(TestInstance & test) = 0;
+    virtual void reportBefore(TestInstance &test) = 0;
 
     /**
      * Report finish of a test.
      */
-    virtual void reportAfter(TestInstance & test, TestResult & result) = 0;
+    virtual void reportAfter(TestInstance &test, TestResult &result) = 0;
 
     /**
      * Report completion of all tests.
      */
-    virtual void reportFinish(List<TestInstance *> & tests) = 0;
+    virtual void reportFinish(List<TestInstance *> &tests) = 0;
 
-  protected:
+protected:
 
     /** Argument count */
     int m_argc;
 
     /** Argument values */
-    char ** m_argv;
+    char **m_argv;
 
     /** Report on/off */
     bool m_report;

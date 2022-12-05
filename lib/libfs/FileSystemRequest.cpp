@@ -18,18 +18,15 @@
 #include <MemoryBlock.h>
 #include "FileSystemRequest.h"
 
-FileSystemRequest::FileSystemRequest(FileSystemMessage *msg)
-{
+FileSystemRequest::FileSystemRequest(FileSystemMessage *msg) {
     MemoryBlock::copy(&m_msg, msg, sizeof(m_msg));
     m_ioBuffer.setMessage(&m_msg);
 }
 
-FileSystemMessage * FileSystemRequest::getMessage()
-{
+FileSystemMessage *FileSystemRequest::getMessage() {
     return &m_msg;
 }
 
-IOBuffer & FileSystemRequest::getBuffer()
-{
+IOBuffer &FileSystemRequest::getBuffer() {
     return m_ioBuffer;
 }

@@ -24,8 +24,7 @@
 
 API::Result VMShareHandler(const ProcessID procID,
                            const API::Operation op,
-                           ProcessShares::MemoryShare *share)
-{
+                           ProcessShares::MemoryShare *share) {
     ProcessManager *procs = Kernel::instance()->getProcessManager();
     Process *proc = ZERO;
     API::Result ret = API::Success;
@@ -33,35 +32,32 @@ API::Result VMShareHandler(const ProcessID procID,
     DEBUG("");
 
     // Find the given process
-    if (procID == SELF)
-    {
+    if (procID == SELF) {
         if (op != API::Read)
             return API::InvalidArgument;
         else
             proc = procs->current();
-    }
-    else if (op != API::Delete && !(proc = procs->get(procID)))
-    {
+    } else if (op != API::Delete && !(proc = procs->get(procID))) {
         return API::NotFound;
     }
 
-    switch (op)
-    {
-        case API::Create:
-        {
-            switch (procs->current()->getShares().createShare(proc->getShares(), share))
-            {
-                case ProcessShares::Success: return API::Success;
-                case ProcessShares::AlreadyExists: return API::AlreadyExists;
-                case ProcessShares::DetachInProgress: return API::TemporaryUnavailable;
-                default: return API::IOError;
+    switch (op) {
+        case API::Create: {
+            switch (procs->current()->getShares().createShare(proc->getShares(), share)) {
+                case ProcessShares::Success:
+                    return API::Success;
+                case ProcessShares::AlreadyExists:
+                    return API::AlreadyExists;
+                case ProcessShares::DetachInProgress:
+                    return API::TemporaryUnavailable;
+                default:
+                    return API::IOError;
             }
             break;
         }
 
         case API::Read:
-            if (procs->current()->getShares().readShare(share) != ProcessShares::Success)
-            {
+            if (procs->current()->getShares().readShare(share) != ProcessShares::Success) {
                 ret = API::IOError;
             }
             break;

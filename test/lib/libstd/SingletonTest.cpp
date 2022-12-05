@@ -24,11 +24,9 @@
 /**
  * Test class using a StrictSingleton
  */
-class StrictDummy : public StrictSingleton<StrictDummy>
-{
-  public:
-    StrictDummy()
-    {
+class StrictDummy : public StrictSingleton<StrictDummy> {
+public:
+    StrictDummy() {
         constructorCount++;
     }
 
@@ -40,34 +38,32 @@ Size StrictDummy::constructorCount = 0;
 /**
  * Test class using a WeakSingleton
  */
-class WeakDummy : public WeakSingleton<WeakDummy>
-{
-  public:
-    WeakDummy() : WeakSingleton<WeakDummy>(this)
-    {
+class WeakDummy : public WeakSingleton<WeakDummy> {
+public:
+    WeakDummy() : WeakSingleton<WeakDummy>(this) {
     }
 };
 
 TestCase(StrictSingletonInstance)
-{
-    // Verify that the instance is always the same
-    testAssert(StrictDummy::instance() == StrictDummy::instance());
+        {
+                // Verify that the instance is always the same
+                testAssert(StrictDummy::instance() == StrictDummy::instance());
 
-    // Object must be constructed only once
-    testAssert(StrictDummy::constructorCount == 1);
+        // Object must be constructed only once
+        testAssert(StrictDummy::constructorCount == 1);
 
-    return OK;
-}
+        return OK;
+        }
 
 TestCase(WeakSingletonInstance)
-{
-    testAssert(WeakDummy::instance() == ZERO);
+        {
+                testAssert(WeakDummy::instance() == ZERO);
 
-    WeakDummy dummy1;
-    testAssert(WeakDummy::instance() == &dummy1);
+        WeakDummy dummy1;
+        testAssert(WeakDummy::instance() == &dummy1);
 
-    WeakDummy dummy2;
-    testAssert(WeakDummy::instance() == &dummy2);
+        WeakDummy dummy2;
+        testAssert(WeakDummy::instance() == &dummy2);
 
-    return OK;
-}
+        return OK;
+        }

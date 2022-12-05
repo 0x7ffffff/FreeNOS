@@ -18,15 +18,13 @@
 #include <FreeNOS/System.h>
 #include "BroadcomMailbox.h"
 
-BroadcomMailbox::BroadcomMailbox()
-{
+BroadcomMailbox::BroadcomMailbox() {
 }
 
-BroadcomMailbox::Result BroadcomMailbox::initialize()
-{
+BroadcomMailbox::Result BroadcomMailbox::initialize() {
     // Map Mailbox registers
     if (m_io.map(IO_BASE + Base, PAGESIZE,
-                 Memory::User|Memory::Readable|Memory::Writable|Memory::Device) != IO::Success)
+                 Memory::User | Memory::Readable | Memory::Writable | Memory::Device) != IO::Success)
         return IOError;
 
     // Initialize registers
@@ -35,15 +33,13 @@ BroadcomMailbox::Result BroadcomMailbox::initialize()
 }
 
 BroadcomMailbox::Result BroadcomMailbox::read(
-    Channel channel,
-    u32 *message) const
-{
+        Channel channel,
+        u32 *message) const {
     // Busy wait until mailbox has data
     while (m_io.read(Status) & Empty);
 
     // Read message
-    for (;;)
-    {
+    for (;;) {
         if (((*message = m_io.read(Read)) & ChannelMask) == channel)
             break;
     }
@@ -52,9 +48,8 @@ BroadcomMailbox::Result BroadcomMailbox::read(
 }
 
 BroadcomMailbox::Result BroadcomMailbox::write(
-    Channel channel,
-    u32 message)
-{
+        Channel channel,
+        u32 message) {
     // Busy wait until mailbox becomes free
     while (m_io.read(Status) & Full);
 

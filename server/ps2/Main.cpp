@@ -19,8 +19,7 @@
 #include <DeviceServer.h>
 #include "Keyboard.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     KernelLog log;
     DeviceServer server("/dev/ps2");
 
@@ -33,8 +32,7 @@ int main(int argc, char **argv)
 
     // Initialize
     const FileSystem::Result result = server.initialize();
-    if (result != FileSystem::Success)
-    {
+    if (result != FileSystem::Success) {
         ERROR("failed to initialize: result = " << (int) result);
         return 1;
     }

@@ -28,9 +28,8 @@
 /**
  * Retrieve file status from the filesystem
  */
-class FileStatus : public POSIXApplication
-{
-  public:
+class FileStatus : public POSIXApplication {
+public:
 
     /**
      * Constructor
@@ -52,7 +51,7 @@ class FileStatus : public POSIXApplication
      */
     virtual Result exec();
 
-  private:
+private:
 
     /**
      * Concatenate a file
@@ -61,7 +60,7 @@ class FileStatus : public POSIXApplication
      *
      * @return Result code
      */
-    Result printStatus(const String & file) const;
+    Result printStatus(const String &file) const;
 };
 
 /**

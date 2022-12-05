@@ -33,9 +33,8 @@
 /**
  * Ethernet address file.
  */
-class EthernetAddress : public File
-{
-  public:
+class EthernetAddress : public File {
+public:
 
     /**
      * Constructor
@@ -61,8 +60,8 @@ class EthernetAddress : public File
      *
      * @return Result code
      */
-    virtual FileSystem::Result read(IOBuffer & buffer,
-                                    Size & size,
+    virtual FileSystem::Result read(IOBuffer &buffer,
+                                    Size &size,
                                     const Size offset);
 
     /**
@@ -75,11 +74,11 @@ class EthernetAddress : public File
      *
      * @return Result code
      */
-    virtual FileSystem::Result write(IOBuffer & buffer,
-                                     Size & size,
+    virtual FileSystem::Result write(IOBuffer &buffer,
+                                     Size &size,
                                      const Size offset);
 
-  private:
+private:
 
     /** Ethernet object pointer */
     Ethernet *m_eth;

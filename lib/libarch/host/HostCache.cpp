@@ -17,27 +17,22 @@
 
 #include "HostCache.h"
 
-HostCache::Result HostCache::invalidate(HostCache::Type type)
-{
+HostCache::Result HostCache::invalidate(HostCache::Type type) {
     return Success;
 }
 
-HostCache::Result HostCache::cleanInvalidate(HostCache::Type type)
-{
+HostCache::Result HostCache::cleanInvalidate(HostCache::Type type) {
     return Success;
 }
 
-HostCache::Result HostCache::cleanInvalidateAddress(Type type, Address addr)
-{
+HostCache::Result HostCache::cleanInvalidateAddress(Type type, Address addr) {
     return Success;
 }
 
-HostCache::Result HostCache::cleanAddress(HostCache::Type type, Address addr)
-{
+HostCache::Result HostCache::cleanAddress(HostCache::Type type, Address addr) {
     return Success;
 }
 
-HostCache::Result HostCache::invalidateAddress(HostCache::Type type, Address addr)
-{
+HostCache::Result HostCache::invalidateAddress(HostCache::Type type, Address addr) {
     return Success;
 }

@@ -26,6 +26,7 @@
 #include <sys/socket.h>
 
 class NetworkClient;
+
 class MemoryChannel;
 
 /**
@@ -47,9 +48,8 @@ class MemoryChannel;
  * @todo MpiProxy protocol currently uses UDP which does not protect against packet loss or corruption.
  *       A simple solution can be implemented by using retransmissions and acknowledge packets
  */
-class MpiProxy : public POSIXApplication
-{
-  private:
+class MpiProxy : public POSIXApplication {
+private:
 
     /** Port number for IP/UDP traffic */
     static const u16 UdpPort = 6660;
@@ -60,7 +60,7 @@ class MpiProxy : public POSIXApplication
     /** Maximum number of supported MPI channels */
     static const Size MaximumChannels = 128u;
 
-  public:
+public:
 
     /** Maximum size of packet payload */
     static const Size MaximumPacketSize = 1448;
@@ -68,8 +68,7 @@ class MpiProxy : public POSIXApplication
     /**
      * Encodes various MPI operations
      */
-    enum Operation
-    {
+    enum Operation {
         MpiOpSend = 0,
         MpiOpRecv,
         MpiOpExec,
@@ -79,22 +78,20 @@ class MpiProxy : public POSIXApplication
     /**
      * Packet payload header for MPI messages via IP/UDP
      */
-    struct Header
-    {
+    struct Header {
         u8 operation;
         u8 result;
         u16 rankId;
         u16 coreId;
 
-        union
-        {
+        union {
             u16 coreCount;
             u16 datatype;
         };
         u32 datacount;
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -123,7 +120,7 @@ class MpiProxy : public POSIXApplication
      */
     virtual Result exec();
 
-  private:
+private:
 
     /**
      * Send UDP packet
@@ -136,7 +133,7 @@ class MpiProxy : public POSIXApplication
      */
     Result udpSend(const void *packet,
                    const Size size,
-                   const struct sockaddr & addr) const;
+                   const struct sockaddr &addr) const;
 
     /**
      * Send multiple UDP packets
@@ -149,7 +146,7 @@ class MpiProxy : public POSIXApplication
      */
     Result udpSendMultiple(const struct iovec *vec,
                            const Size count,
-                           const struct sockaddr & addr) const;
+                           const struct sockaddr &addr) const;
 
     /**
      * Receive UDP packet
@@ -161,8 +158,8 @@ class MpiProxy : public POSIXApplication
      * @return Result code
      */
     Result udpReceive(void *packet,
-                      Size & size,
-                      struct sockaddr & addr) const;
+                      Size &size,
+                      struct sockaddr &addr) const;
 
     /**
      * Process incoming packet
@@ -175,7 +172,7 @@ class MpiProxy : public POSIXApplication
      */
     Result processRequest(const u8 *packet,
                           const Size size,
-                          const struct sockaddr & addr);
+                          const struct sockaddr &addr);
 
     /**
      * Process MPI send request
@@ -203,7 +200,7 @@ class MpiProxy : public POSIXApplication
     Result processRecv(const Header *header,
                        const u8 *packet,
                        const Size size,
-                       const struct sockaddr & addr);
+                       const struct sockaddr &addr);
 
     /**
      * Process execute request
@@ -220,7 +217,7 @@ class MpiProxy : public POSIXApplication
     Result processExec(const Header *header,
                        const u8 *packet,
                        const Size size,
-                       const struct sockaddr & addr);
+                       const struct sockaddr &addr);
 
     /**
      * Process MPI terminate request
@@ -235,7 +232,7 @@ class MpiProxy : public POSIXApplication
     Result processTerminate(const Header *header,
                             const u8 *packet,
                             const Size size,
-                            const struct sockaddr & addr);
+                            const struct sockaddr &addr);
 
     /**
      * Create communication channels
@@ -276,7 +273,7 @@ class MpiProxy : public POSIXApplication
                               const Size rankId,
                               const Size coreCount);
 
-  private:
+private:
 
     /** IP/UDP socket for external communication */
     int m_sock;
@@ -288,13 +285,13 @@ class MpiProxy : public POSIXApplication
     Memory::Range m_memChannelBase;
 
     /** Stores all channels for receiving data from processes */
-    Index<MemoryChannel, MaximumChannels> m_readChannels;
+    Index <MemoryChannel, MaximumChannels> m_readChannels;
 
     /** Stores all channels for sending data to processes */
-    Index<MemoryChannel, MaximumChannels> m_writeChannels;
+    Index <MemoryChannel, MaximumChannels> m_writeChannels;
 
     /** Records the PID of each process participating in the computation */
-    Array<ProcessID, MaximumChannels> m_pids;
+    Array <ProcessID, MaximumChannels> m_pids;
 };
 
 /**

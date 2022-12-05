@@ -33,15 +33,14 @@
 /**
  * Array of items as a First-In-First-Out (FIFO) datastructure.
  */
-template <class T, Size N> class Queue : public Container
-{
-  public:
+template<class T, Size N>
+class Queue : public Container {
+public:
 
     /**
      * Default constructor
      */
-    Queue()
-    {
+    Queue() {
         clear();
     }
 
@@ -52,10 +51,8 @@ template <class T, Size N> class Queue : public Container
      *
      * @return True if successful, false otherwise
      */
-    bool push(const T & item)
-    {
-        if (m_count >= N)
-        {
+    bool push(const T &item) {
+        if (m_count >= N) {
             return false;
         }
 
@@ -73,8 +70,7 @@ template <class T, Size N> class Queue : public Container
      *
      * @note Do not call this function if the Queue is empty
      */
-    T & pop()
-    {
+    T &pop() {
         uint idx = m_tail;
         m_tail = (m_tail + 1) % N;
         m_count--;
@@ -89,10 +85,8 @@ template <class T, Size N> class Queue : public Container
      *
      * @return True if the item exists, false otherwise
      */
-    bool contains(const T & item) const
-    {
-        for (Size i = 0; i < m_count; i++)
-        {
+    bool contains(const T &item) const {
+        for (Size i = 0; i < m_count; i++) {
             if (m_array[(m_tail + i) % N] == item)
                 return true;
         }
@@ -107,14 +101,12 @@ template <class T, Size N> class Queue : public Container
      *
      * @return Number of items removed.
      */
-    Size remove(T value)
-    {
+    Size remove(T value) {
         const Size numItems = m_count;
         Size numRemoved = 0;
 
-        for (Size i = 0; i < numItems; i++)
-        {
-            T & item = pop();
+        for (Size i = 0; i < numItems; i++) {
+            T &item = pop();
 
             if (item != value)
                 push(item);
@@ -128,8 +120,7 @@ template <class T, Size N> class Queue : public Container
     /**
      * Removes all items from the Queue.
      */
-    virtual void clear()
-    {
+    virtual void clear() {
         m_head = 0;
         m_tail = 0;
         m_count = 0;
@@ -140,8 +131,7 @@ template <class T, Size N> class Queue : public Container
      *
      * @return size The maximum size of the Queue.
      */
-    virtual Size size() const
-    {
+    virtual Size size() const {
         return N;
     }
 
@@ -150,12 +140,11 @@ template <class T, Size N> class Queue : public Container
      *
      * @return Number of items in the Queue.
      */
-    virtual Size count() const
-    {
+    virtual Size count() const {
         return m_count;
     }
 
-  private:
+private:
 
     /** The actual array where the data is stored. */
     T m_array[N];

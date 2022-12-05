@@ -24,14 +24,12 @@
 #include <BufferedFile.h>
 #include <ApplicationLauncher.h>
 
-static bool isRunningOnQemu()
-{
-    const Ethernet::Address qemuAddr = { .addr = { 0x52, 0x54, 0x0, 0x12, 0x34, 0x56 }};
+static bool isRunningOnQemu() {
+    const Ethernet::Address qemuAddr = {.addr = {0x52, 0x54, 0x0, 0x12, 0x34, 0x56}};
     BufferedFile ethernetAddr("/network/sun8i/ethernet/address");
 
     // Read address
-    if (ethernetAddr.read() != BufferedFile::Success)
-    {
+    if (ethernetAddr.read() != BufferedFile::Success) {
         ERROR("failed to read ethernet address on " << ethernetAddr.path());
         return false;
     }
@@ -40,26 +38,26 @@ static bool isRunningOnQemu()
 }
 
 TestCase(SunxiEmacDhcp)
-{
-    // Only run this test under Qemu
-    if (!isRunningOnQemu())
-    {
-        return SKIP;
-    }
+        {
+                // Only run this test under Qemu
+                if (!isRunningOnQemu())
+                {
+                    return SKIP;
+                }
 
-    // Launch dhcp program
-    const char *args[] = { "/bin/dhcpc", "sun8i", ZERO };
-    ApplicationLauncher dhcpc(TESTROOT "/bin/dhcpc", args);
+                // Launch dhcp program
+                const char *args[] = { "/bin/dhcpc", "sun8i", ZERO };
+                ApplicationLauncher dhcpc(TESTROOT "/bin/dhcpc", args);
 
-    // Start the program
-    const ApplicationLauncher::Result resultCode = dhcpc.exec();
-    testAssert(resultCode == ApplicationLauncher::Success);
+                // Start the program
+                const ApplicationLauncher::Result resultCode = dhcpc.exec();
+                testAssert(resultCode == ApplicationLauncher::Success);
 
-    // Wait for program to finish
-    const ApplicationLauncher::Result waitResult = dhcpc.wait();
-    testAssert(waitResult == ApplicationLauncher::Success || waitResult == ApplicationLauncher::NotFound);
-    testAssert(dhcpc.getExitCode() == 0);
+                // Wait for program to finish
+                const ApplicationLauncher::Result waitResult = dhcpc.wait();
+                testAssert(waitResult == ApplicationLauncher::Success || waitResult == ApplicationLauncher::NotFound);
+                testAssert(dhcpc.getExitCode() == 0);
 
-    // Done
-    return OK;
-}
+                // Done
+                return OK;
+        }

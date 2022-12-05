@@ -38,8 +38,7 @@
 #define MAX_ARGV 16
 
 Shell::Shell(int argc, char **argv)
-    : POSIXApplication(argc, argv)
-{
+        : POSIXApplication(argc, argv) {
     parser().setDescription("System command shell interpreter");
     parser().registerPositional("FILE", "File(s) containing shell commands to execute", 0);
 
@@ -51,39 +50,32 @@ Shell::Shell(int argc, char **argv)
     registerCommand(new TimeCommand(this));
 }
 
-Shell::~Shell()
-{
-    for (HashIterator<String, ShellCommand *> i(m_commands); i.hasCurrent(); i++)
-    {
+Shell::~Shell() {
+    for (HashIterator < String, ShellCommand * > i(m_commands); i.hasCurrent(); i++) {
         delete i.current();
     }
 }
 
-Shell::Result Shell::exec()
-{
-    const Vector<Argument *> & positionals = arguments().getPositionals();
+Shell::Result Shell::exec() {
+    const Vector<Argument *> &positionals = arguments().getPositionals();
     FILE *fp;
     struct stat st;
     char *contents;
 
     // Check if shell script was given as argument
-    if (positionals.count() > 0)
-    {
+    if (positionals.count() > 0) {
         // Execute commands in each file
-        for (Size i = 0; i < positionals.count(); i++)
-        {
+        for (Size i = 0; i < positionals.count(); i++) {
             const char *file = *(positionals[i]->getValue());
 
             // Query the file size
-            if (stat(file, &st) != 0)
-            {
+            if (stat(file, &st) != 0) {
                 ERROR("failed to stat() `" << file << "': " << strerror(errno));
                 continue;
             }
 
             // Open file
-            if ((fp = fopen(file, "r")) == NULL)
-            {
+            if ((fp = fopen(file, "r")) == NULL) {
                 ERROR("failed to fopen() `" << file << "': " << strerror(errno));
                 continue;
             }
@@ -92,8 +84,7 @@ Shell::Result Shell::exec()
             contents = new char[st.st_size + 1];
 
             // Read the entire file into memory
-            if (fread(contents, st.st_size, 1, fp) != (size_t) 1U)
-            {
+            if (fread(contents, st.st_size, 1, fp) != (size_t) 1U) {
                 ERROR("failed to fread() `" << file << "': " << strerror(errno));
                 fclose(fp);
                 continue;
@@ -103,11 +94,10 @@ Shell::Result Shell::exec()
 
             // Parse it into lines
             String contentString(contents);
-            List<String> lines = contentString.split('\n');
+            List <String> lines = contentString.split('\n');
 
             // Execute each command
-            for (ListIterator<String> i(lines); i.hasCurrent(); i++)
-            {
+            for (ListIterator <String> i(lines); i.hasCurrent(); i++) {
                 executeInput((char *) *i.current());
             }
 
@@ -116,13 +106,12 @@ Shell::Result Shell::exec()
             fclose(fp);
         }
     }
-    // Run an interactive Shell
-    else
-    {
+        // Run an interactive Shell
+    else {
         // Show the user where to get help
-        printf( "\r\n"
-                "Entering interactive Shell. Type 'help' for the command list.\r\n"
-                "\r\n");
+        printf("\r\n"
+               "Entering interactive Shell. Type 'help' for the command list.\r\n"
+               "\r\n");
 
         // Begin loop
         return runInteractive();
@@ -132,13 +121,11 @@ Shell::Result Shell::exec()
     return Success;
 }
 
-Shell::Result Shell::runInteractive()
-{
+Shell::Result Shell::runInteractive() {
     char *cmdStr;
 
     // Read commands
-    while (true)
-    {
+    while (true) {
         // Print the prompt
         prompt();
 
@@ -146,8 +133,7 @@ Shell::Result Shell::runInteractive()
         cmdStr = getInput();
 
         // Enough input?
-        if (!cmdStr || strlen(cmdStr) == 0)
-        {
+        if (!cmdStr || strlen(cmdStr) == 0) {
             continue;
         }
         // Execute the command
@@ -158,14 +144,12 @@ Shell::Result Shell::runInteractive()
     return Success;
 }
 
-int Shell::executeInput(const Size argc, const char **argv, const bool background)
-{
+int Shell::executeInput(const Size argc, const char **argv, const bool background) {
     char tmp[128];
     ShellCommand *cmd;
     int pid, status;
 
-    for (Size i = 0; i < argc; i++)
-    {
+    for (Size i = 0; i < argc; i++) {
         DEBUG("argv[" << i << "] = " << argv[i]);
     }
 
@@ -174,58 +158,47 @@ int Shell::executeInput(const Size argc, const char **argv, const bool backgroun
         return EXIT_SUCCESS;
 
     // Do we have a matching ShellCommand?
-    if (!(cmd = getCommand(argv[0])))
-    {
+    if (!(cmd = getCommand(argv[0]))) {
         // If not, try to execute it as a file directly
-        if ((pid = runProgram(argv[0], argv)) != -1)
-        {
-            if (!background)
-            {
+        if ((pid = runProgram(argv[0], argv)) != -1) {
+            if (!background) {
                 waitpid(pid, &status, 0);
                 return status;
             } else
                 return EXIT_SUCCESS;
         }
 
-        // Try to find it on the filesystem. (temporary hardcoded PATH)
+            // Try to find it on the filesystem. (temporary hardcoded PATH)
         else if (argv[0][0] != '/' && snprintf(tmp, sizeof(tmp), "/bin/%s", argv[0]) &&
-                (pid = runProgram(tmp, argv)) != -1)
-        {
-            if (!background)
-            {
+                 (pid = runProgram(tmp, argv)) != -1) {
+            if (!background) {
                 waitpid(pid, &status, 0);
                 return status;
             } else
                 return EXIT_SUCCESS;
-        }
-        else
-        {
+        } else {
             ERROR("exec `" << argv[0] << "' failed: " << strerror(errno));
         }
     }
-    // Enough arguments given?
-    else if (argc - 1 < cmd->getMinimumParams())
-    {
+        // Enough arguments given?
+    else if (argc - 1 < cmd->getMinimumParams()) {
         ERROR(cmd->getName() << ": not enough arguments (" << cmd->getMinimumParams() << " required)");
     }
-    // Execute it
-    else
-    {
+        // Execute it
+    else {
         return cmd->execute(argc - 1, argv + 1);
     }
     // Not successful
     return EXIT_FAILURE;
 }
 
-int Shell::executeInput(char *command)
-{
+int Shell::executeInput(char *command) {
     char *argv[MAX_ARGV];
     Size argc;
     bool background;
 
     // Valid argument?
-    if (!strlen(command))
-    {
+    if (!strlen(command)) {
         return EXIT_SUCCESS;
     }
 
@@ -233,11 +206,10 @@ int Shell::executeInput(char *command)
     argc = parse(command, argv, MAX_ARGV, &background);
 
     // Run command
-    return executeInput(argc, (const char **)argv, background);
+    return executeInput(argc, (const char **) argv, background);
 }
 
-char * Shell::getInput() const
-{
+char *Shell::getInput() const {
     static char line[1024];
     Size total = 0;
 #ifdef __HOST__
@@ -247,18 +219,15 @@ char * Shell::getInput() const
 #endif /* __HOST__ */
 
     // Read a line
-    while (total < sizeof(line) - 1)
-    {
+    while (total < sizeof(line) - 1) {
         // Read a character
         const ssize_t result = read(0, line + total, 1);
-        if (result == -1)
-        {
+        if (result == -1) {
             return (char *) NULL;
         }
 
         // Process character
-        switch (line[total])
-        {
+        switch (line[total]) {
             // Enter
             case '\r':
             case '\n':
@@ -266,11 +235,10 @@ char * Shell::getInput() const
                 line[total] = ZERO;
                 return line;
 
-            // Backspace
+                // Backspace
             case '\b':
             case 0x7F:
-                if (total > 0)
-                {
+                if (total > 0) {
                     total--;
                     if (echo) printf("\b \b");
                 }
@@ -286,57 +254,58 @@ char * Shell::getInput() const
     return line;
 }
 
-void Shell::prompt() const
-{
+void Shell::prompt() const {
     char host[128], cwd[128];
 
     // Retrieve current hostname
     gethostname(host, sizeof(host));
 
     // Retrieve current working directory
-    if (getcwd(cwd, sizeof(cwd)) == NULL)
-    {
+    if (getcwd(cwd, sizeof(cwd)) == NULL) {
         cwd[0] = '/';
         cwd[1] = 0;
     }
 
     // Print out the prompt
-    printf(WHITE "(" GREEN "%s" WHITE ") " BLUE "%s" WHITE " # ",
-           host, cwd);
+    printf(WHITE
+    "("
+    GREEN
+    "%s"
+    WHITE
+    ") "
+    BLUE
+    "%s"
+    WHITE
+    " # ",
+            host, cwd);
 
 #ifdef __HOST__
     fflush(stdout);
 #endif /* __HOST__ */
 }
 
-HashTable<String, ShellCommand *> & Shell::getCommands()
-{
+HashTable<String, ShellCommand *> &Shell::getCommands() {
     return m_commands;
 }
 
-ShellCommand * Shell::getCommand(const char *name)
-{
+ShellCommand *Shell::getCommand(const char *name) {
     return m_commands.get(name) ? *m_commands.get(name) : ZERO;
 }
 
-void Shell::registerCommand(ShellCommand *command)
-{
+void Shell::registerCommand(ShellCommand *command) {
     m_commands.insert(command->getName(), command);
 }
 
-Size Shell::parse(char *cmdline, char **argv, Size maxArgv, bool *background)
-{
+Size Shell::parse(char *cmdline, char **argv, Size maxArgv, bool *background) {
     Size argc;
 
     *background = false;
 
-    for (argc = 0; argc < maxArgv && *cmdline; argc++)
-    {
+    for (argc = 0; argc < maxArgv && *cmdline; argc++) {
         while (*cmdline && *cmdline == ' ')
             cmdline++;
 
-        if (*cmdline == '&')
-        {
+        if (*cmdline == '&') {
             *background = true;
             break;
         }

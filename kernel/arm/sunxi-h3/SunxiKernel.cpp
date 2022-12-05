@@ -26,17 +26,14 @@
 #include "SunxiKernel.h"
 
 SunxiKernel::SunxiKernel(CoreInfo *info)
-    : ARMKernel(info)
-    , m_gic(GIC_DIST_BASE, GIC_CPU_BASE)
-{
+        : ARMKernel(info), m_gic(GIC_DIST_BASE, GIC_CPU_BASE) {
     ARMControl ctrl;
 
     NOTICE("");
 
     // Initialize the IRQ controller
     ARMGenericInterrupt::Result r = m_gic.initialize(info->coreId == 0);
-    if (r != ARMGenericInterrupt::Success)
-    {
+    if (r != ARMGenericInterrupt::Success) {
         FATAL("failed to initialize the GIC: " << (uint) r);
     }
 
@@ -56,8 +53,7 @@ SunxiKernel::SunxiKernel(CoreInfo *info)
     }
 }
 
-void SunxiKernel::interrupt(volatile CPUState state)
-{
+void SunxiKernel::interrupt(volatile CPUState state) {
     SunxiKernel *kernel = (SunxiKernel *) Kernel::instance();
     ARMProcess *proc = (ARMProcess *) kernel->getProcessManager()->current(), *next;
     uint irq;
@@ -66,27 +62,24 @@ void SunxiKernel::interrupt(volatile CPUState state)
     DEBUG("procId = " << proc->getID());
 
     IntController::Result result = kernel->m_intControl->nextPending(irq);
-    if (result == IntController::Success)
-    {
+    if (result == IntController::Success) {
         if (irq == ARMTIMER_IRQ)
             tick = true;
         else
-            kernel->executeIntVector(irq, (CPUState *)&state);
+            kernel->executeIntVector(irq, (CPUState * ) & state);
 
         kernel->m_intControl->clear(irq);
     }
 
-    if (tick)
-    {
+    if (tick) {
         kernel->m_timer->tick();
         kernel->getProcessManager()->schedule();
     }
 
     // If we scheduled a new process, switch the registers now
     next = (ARMProcess *) kernel->getProcessManager()->current();
-    if (next != proc)
-    {
-        proc->setCpuState((const CPUState *)&state);
-        MemoryBlock::copy((void *)&state, next->cpuState(), sizeof(state));
+    if (next != proc) {
+        proc->setCpuState((const CPUState *) &state);
+        MemoryBlock::copy((void *) &state, next->cpuState(), sizeof(state));
     }
 }

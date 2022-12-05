@@ -19,8 +19,7 @@
 #include <KernelLog.h>
 #include "RecoveryServer.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     KernelLog log;
     RecoveryServer server;
     return server.run();

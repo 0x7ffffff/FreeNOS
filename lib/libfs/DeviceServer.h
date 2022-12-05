@@ -40,9 +40,8 @@
  * @see FileSystemServer
  * @see FileSystemMessage
  */
-class DeviceServer : public FileSystemServer
-{
-  private:
+class DeviceServer : public FileSystemServer {
+private:
 
     /** Maximum number of Devices that can be registered */
     static const Size MaximumDevices = 32;
@@ -50,7 +49,7 @@ class DeviceServer : public FileSystemServer
     /** Maximum number of interrupts that can be registered */
     static const Size MaximumInterrupts = 256;
 
-  public:
+public:
 
     /**
      * Constructor
@@ -106,10 +105,10 @@ class DeviceServer : public FileSystemServer
      */
     virtual void interruptHandler(Size vector);
 
-  private:
+private:
 
     /** Contains all Devices served by this DeviceServer. */
-    Index<Device, MaximumDevices> m_devices;
+    Index <Device, MaximumDevices> m_devices;
 
     /**
      * @brief Registers Devices using interrupts.
@@ -121,7 +120,7 @@ class DeviceServer : public FileSystemServer
      * @see List
      * @see Device
      */
-    Index<List<Device *>, MaximumInterrupts> m_interrupts;
+    Index <List<Device *>, MaximumInterrupts> m_interrupts;
 };
 
 /**

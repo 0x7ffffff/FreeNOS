@@ -20,13 +20,9 @@
 u32 SerialDevice::inodeNumber = 2;
 
 SerialDevice::SerialDevice(const u32 irq)
-    : Device(inodeNumber, FileSystem::CharacterDeviceFile)
-    , AbstractFactory<SerialDevice>()
-    , m_irq(irq)
-{
+        : Device(inodeNumber, FileSystem::CharacterDeviceFile), AbstractFactory<SerialDevice>(), m_irq(irq) {
 }
 
-u32 SerialDevice::getIrq() const
-{
+u32 SerialDevice::getIrq() const {
     return m_irq;
 }

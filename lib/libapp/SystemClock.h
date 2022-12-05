@@ -31,20 +31,18 @@
 /**
  * Provides an abstract interface to the system clock.
  */
-class SystemClock
-{
-  public:
+class SystemClock {
+public:
 
     /**
      * Result codes
      */
-    enum Result
-    {
+    enum Result {
         Success,
         IOError
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -56,7 +54,7 @@ class SystemClock
      *
      * @param val Timeval struct
      */
-    void value(struct timeval & val) const;
+    void value(struct timeval &val) const;
 
     /**
      * Get the current time
@@ -70,16 +68,16 @@ class SystemClock
      *
      * @param clock Clock to compare with
      */
-    void printDiff(const SystemClock & clock) const;
+    void printDiff(const SystemClock &clock) const;
 
     /**
      * Print difference between to timestamps to stdout
      *
      * @param stamp Timestamp to compare with
      */
-    void printDiff(const struct timeval & stamp) const;
+    void printDiff(const struct timeval &stamp) const;
 
-  private:
+private:
 
     /** Time value */
     struct timeval m_timeval;

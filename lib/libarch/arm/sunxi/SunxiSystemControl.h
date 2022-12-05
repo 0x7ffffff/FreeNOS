@@ -35,44 +35,40 @@
 /**
  * Allwinner System Control (SYSCON) module
  */
-class SunxiSystemControl
-{
-  private:
+class SunxiSystemControl {
+private:
 
     /** Physical base memory address of the SYSCON module */
     static const Address IOBase = 0x01C00000;
 
-  private:
+private:
 
     /**
      * Hardware registers.
      */
-    enum Registers
-    {
+    enum Registers {
         EmacClock = 0x30,
     };
 
     /**
      * EMAC Clock Register flags
      */
-    enum EmacClockFlags
-    {
-        EmacClockDefault  = 0x58000,
-        EmacClockMask     = 0xffff8000,
+    enum EmacClockFlags {
+        EmacClockDefault = 0x58000,
+        EmacClockMask = 0xffff8000,
         EmacClockPhyShift = 20,
-        EmacClockLedPoll  = (1 << 17),
+        EmacClockLedPoll = (1 << 17),
         EmacClockShutdown = (1 << 16),
-        EmacClockSelect   = (1 << 15),
-        EmacClockRmiiEn   = (1 << 13),
+        EmacClockSelect = (1 << 15),
+        EmacClockRmiiEn = (1 << 13),
     };
 
-  public:
+public:
 
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         IOError,
         InvalidArgument
@@ -94,7 +90,7 @@ class SunxiSystemControl
      */
     Result setupEmac(const uint phyAddr);
 
-  private:
+private:
 
     /** Memory I/O object */
     Arch::IO m_io;

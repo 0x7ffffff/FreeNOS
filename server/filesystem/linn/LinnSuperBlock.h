@@ -110,8 +110,7 @@
 /**
  * Linnenbank Filesystem (LinnFS) super block.
  */
-typedef struct LinnSuperBlock
-{
+typedef struct LinnSuperBlock {
     le32 magic0;                /**< Allows detection of valid superblocks. */
     le32 magic1;                /**< Allows detection of valid superblocks. */
     le16 majorRevision;         /**< Filesystem major revision level. */
@@ -134,7 +133,7 @@ typedef struct LinnSuperBlock
 
     le32 groupsTable;           /**< Block address of the LinnGroup table. */
 }
-LinnSuperBlock;
+        LinnSuperBlock;
 
 /**
  * @}

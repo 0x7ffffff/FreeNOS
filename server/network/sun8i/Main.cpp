@@ -19,8 +19,7 @@
 #include <NetworkServer.h>
 #include "Sun8iEmac.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     KernelLog log;
     NetworkServer server("/network/sun8i");
     Sun8iEmac *emac = new Sun8iEmac(server.getNextInode(), server);
@@ -30,8 +29,7 @@ int main(int argc, char **argv)
 
     // Initialize
     const FileSystem::Result result = server.initialize();
-    if (result != FileSystem::Success)
-    {
+    if (result != FileSystem::Success) {
         ERROR("failed to initialize: result = " << (int) result);
         return 1;
     }

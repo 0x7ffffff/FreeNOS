@@ -32,15 +32,13 @@
 /**
  * Cache management interface.
  */
-class Cache
-{
-  public:
+class Cache {
+public:
 
     /**
      * Result codes
      */
-    enum Result
-    {
+    enum Result {
         Success,
         InvalidArgument,
         IOError,
@@ -50,14 +48,13 @@ class Cache
     /**
      * Cache types
      */
-    enum Type
-    {
+    enum Type {
         Instruction,
         Data,
         Unified
     };
 
-  public:
+public:
 
     /**
      * Invalidate the entire cache.

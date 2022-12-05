@@ -20,37 +20,28 @@
 SplitAllocator::SplitAllocator(const Allocator::Range physRange,
                                const Allocator::Range virtRange,
                                const Size pageSize)
-    : Allocator(physRange)
-    , m_alloc(physRange, pageSize)
-    , m_virtRange(virtRange)
-    , m_pageSize(pageSize)
-{
+        : Allocator(physRange), m_alloc(physRange, pageSize), m_virtRange(virtRange), m_pageSize(pageSize) {
 }
 
-Size SplitAllocator::available() const
-{
+Size SplitAllocator::available() const {
     return m_alloc.available();
 }
 
-Allocator::Result SplitAllocator::allocate(Allocator::Range & args)
-{
+Allocator::Result SplitAllocator::allocate(Allocator::Range &args) {
     return m_alloc.allocate(args);
 }
 
-Allocator::Result SplitAllocator::allocateSparse(const Allocator::Range & args,
-                                                 CallbackFunction *callback)
-{
+Allocator::Result SplitAllocator::allocateSparse(const Allocator::Range &args,
+                                                 CallbackFunction *callback) {
     const Size allocSize = m_pageSize * 8U;
 
-    if (args.size > m_alloc.available())
-    {
+    if (args.size > m_alloc.available()) {
         return OutOfMemory;
     } else if (args.size % (allocSize)) {
         return InvalidSize;
     }
 
-    for (Size i = 0; i < args.size; i += allocSize)
-    {
+    for (Size i = 0; i < args.size; i += allocSize) {
         Range alloc_args;
         alloc_args.address = 0;
         alloc_args.size = allocSize;
@@ -66,44 +57,37 @@ Allocator::Result SplitAllocator::allocateSparse(const Allocator::Range & args,
     return Success;
 }
 
-Allocator::Result SplitAllocator::allocate(Allocator::Range & phys,
-                                           Allocator::Range & virt)
-{
+Allocator::Result SplitAllocator::allocate(Allocator::Range &phys,
+                                           Allocator::Range &virt) {
     Result r = m_alloc.allocate(phys);
 
-    if (r == Success)
-    {
-        virt.address   = toVirtual(phys.address);
-        virt.size      = phys.size;
+    if (r == Success) {
+        virt.address = toVirtual(phys.address);
+        virt.size = phys.size;
         virt.alignment = phys.alignment;
     }
 
     return r;
 }
 
-Allocator::Result SplitAllocator::allocate(const Address addr)
-{
+Allocator::Result SplitAllocator::allocate(const Address addr) {
     return m_alloc.allocateAt(addr);
 }
 
-Allocator::Result SplitAllocator::release(const Address addr)
-{
+Allocator::Result SplitAllocator::release(const Address addr) {
     return m_alloc.release(addr);
 }
 
-Address SplitAllocator::toVirtual(const Address phys) const
-{
+Address SplitAllocator::toVirtual(const Address phys) const {
     const Size mappingDiff = base() - m_virtRange.address;
     return phys - mappingDiff;
 }
 
-Address SplitAllocator::toPhysical(const Address virt) const
-{
+Address SplitAllocator::toPhysical(const Address virt) const {
     const Size mappingDiff = base() - m_virtRange.address;
     return virt + mappingDiff;
 }
 
-bool SplitAllocator::isAllocated(const Address page) const
-{
+bool SplitAllocator::isAllocated(const Address page) const {
     return m_alloc.isAllocated(page);
 }

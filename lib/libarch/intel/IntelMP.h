@@ -50,7 +50,9 @@
 
 /** Forward declarations */
 class MemoryContext;
+
 class IntelPIT;
+
 class IntelAPIC;
 
 /**
@@ -67,9 +69,8 @@ class IntelAPIC;
 /**
  * Intel Multi-Processor Specification.
  */
-class IntelMP : public CoreManager
-{
-  private:
+class IntelMP : public CoreManager {
+private:
 
     /** Multiprocessor Floating Structure Signature. */
     static const uint MPFloatSignature = 0x5f504d5f;
@@ -87,13 +88,12 @@ class IntelMP : public CoreManager
     static const Address MPAreaAddr = 0x1000;
 
     /** BIOS memory area size to search for MP tables */
-    static const Size MPAreaSize = 0x100000-0x1000;
+    static const Size MPAreaSize = 0x100000 - 0x1000;
 
     /**
      * Multiprocessor Floating Structure.
      */
-    typedef struct MPFloat
-    {
+    typedef struct MPFloat {
         unsigned long signature;
         unsigned long configAddr;
         unsigned char length;
@@ -102,13 +102,12 @@ class IntelMP : public CoreManager
         unsigned char feature1;
         unsigned long feature2;
     }
-    MPFloat;
+            MPFloat;
 
     /**
      * Multiprocessor Configuration Structure.
      */
-    typedef struct MPConfig
-    {
+    typedef struct MPConfig {
         char signature[4];
         unsigned short length;
         unsigned char revision;
@@ -121,13 +120,12 @@ class IntelMP : public CoreManager
         unsigned long apicAddr;
         unsigned long reserved;
     }
-    MPConfig;
+            MPConfig;
 
     /**
      * Multiprocessor Configuration Entry.
      */
-    typedef struct MPEntry
-    {
+    typedef struct MPEntry {
         unsigned char type;
         unsigned char apicId;
         unsigned char apicRevision;
@@ -136,14 +134,14 @@ class IntelMP : public CoreManager
         u32 features;
         u32 reserved[2];
     }
-    MPEntry;
+            MPEntry;
 
-  public:
+public:
 
     /**
      * Constructor
      */
-    IntelMP(IntelAPIC & apic);
+    IntelMP(IntelAPIC &apic);
 
     /**
      * Perform initialization.
@@ -168,23 +166,23 @@ class IntelMP : public CoreManager
      */
     virtual Result boot(CoreInfo *info);
 
-  private:
+private:
 
     /**
      * Parse Multiprocessor Config entry.
      *
      * @return MPEntry object pointer of the next entry.
      */
-    MPEntry * parseEntry(MPEntry *entry);
+    MPEntry *parseEntry(MPEntry *entry);
 
     /**
      * Scan memory for a Multiprocessor Config structure.
      *
      * @return MPConfig object pointer on success or ZERO on failure.
      */
-    MPConfig * scanMemory(Address addr);
+    MPConfig *scanMemory(Address addr);
 
-  private:
+private:
 
     /** I/O instance for BIOS memory */
     IntelIO m_bios;
@@ -193,7 +191,7 @@ class IntelMP : public CoreManager
     IntelIO m_lastMemory;
 
     /** APIC instance */
-    IntelAPIC & m_apic;
+    IntelAPIC &m_apic;
 };
 
 /**

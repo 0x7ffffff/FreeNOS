@@ -28,9 +28,8 @@
 /**
  * Concatenate files to standard output.
  */
-class Cat : public POSIXApplication
-{
-  public:
+class Cat : public POSIXApplication {
+public:
 
     /**
      * Constructor
@@ -59,7 +58,7 @@ class Cat : public POSIXApplication
      */
     virtual Result exec();
 
-  private:
+private:
 
     /**
      * Concatenate a file

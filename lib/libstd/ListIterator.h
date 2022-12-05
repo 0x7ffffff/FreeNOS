@@ -34,9 +34,9 @@
 /**
  * Iterate through a List.
  */
-template <class T> class ListIterator : public Iterator<T>
-{
-  public:
+template<class T>
+class ListIterator : public Iterator<T> {
+public:
 
     /**
      * Class constructor.
@@ -44,8 +44,7 @@ template <class T> class ListIterator : public Iterator<T>
      * @param list Reference to the List to iterate.
      */
     ListIterator(List<T> *list)
-        : m_list(*list)
-    {
+            : m_list(*list) {
 
         m_current = ZERO;
         reset();
@@ -56,9 +55,8 @@ template <class T> class ListIterator : public Iterator<T>
      *
      * @param list Reference to the List to iterate.
      */
-    ListIterator(List<T> & list)
-        : m_list(list)
-    {
+    ListIterator(List<T> &list)
+            : m_list(list) {
 
         m_current = ZERO;
         reset();
@@ -69,9 +67,8 @@ template <class T> class ListIterator : public Iterator<T>
      *
      * @param list Reference to the List to iterate.
      */
-    ListIterator(const List<T> & list)
-        : m_list((List<T> &) list)
-    {
+    ListIterator(const List<T> &list)
+            : m_list((List<T> &) list) {
 
         m_current = ZERO;
         reset();
@@ -80,8 +77,7 @@ template <class T> class ListIterator : public Iterator<T>
     /**
      * Reset the iterator.
      */
-    virtual void reset()
-    {
+    virtual void reset() {
         m_current = m_list.head();
         m_next = m_current;
     }
@@ -91,8 +87,7 @@ template <class T> class ListIterator : public Iterator<T>
      *
      * @return true if more items, false if not.
      */
-    virtual bool hasNext() const
-    {
+    virtual bool hasNext() const {
         return m_next != ZERO;
     }
 
@@ -101,8 +96,7 @@ template <class T> class ListIterator : public Iterator<T>
      *
      * @return True if current item available, false otherwise.
      */
-    virtual bool hasCurrent() const
-    {
+    virtual bool hasCurrent() const {
         return m_current != ZERO;
     }
 
@@ -111,8 +105,7 @@ template <class T> class ListIterator : public Iterator<T>
      *
      * @return Current item.
      */
-    virtual const T & current() const
-    {
+    virtual const T &current() const {
         return m_current->data;
     }
 
@@ -121,8 +114,7 @@ template <class T> class ListIterator : public Iterator<T>
      *
      * @return Current item.
      */
-    virtual T & current()
-    {
+    virtual T &current() {
         return m_current->data;
     }
 
@@ -137,8 +129,7 @@ template <class T> class ListIterator : public Iterator<T>
      *
      * @see hasNext
      */
-    virtual T & next()
-    {
+    virtual T &next() {
 
         m_current = m_next;
         m_next = m_current->next;
@@ -150,8 +141,7 @@ template <class T> class ListIterator : public Iterator<T>
      *
      * @return True if successfull, false otherwise.
      */
-    virtual bool remove()
-    {
+    virtual bool remove() {
         // Do we have a current item?
         if (!m_current)
             return false;
@@ -172,10 +162,8 @@ template <class T> class ListIterator : public Iterator<T>
      * This function first increment the current item
      * and then updates the next item pointer.
      */
-    virtual void operator++(int num)
-    {
-        if (m_current)
-        {
+    virtual void operator++(int num) {
+        if (m_current) {
             m_current = m_current->next;
 
             if (m_current)
@@ -185,10 +173,10 @@ template <class T> class ListIterator : public Iterator<T>
         }
     }
 
-  private:
+private:
 
     /** Points to the List to iterate. */
-    List<T> & m_list;
+    List<T> &m_list;
 
     /** Current node */
     class List<T>::Node *m_current;

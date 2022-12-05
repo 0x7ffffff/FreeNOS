@@ -30,9 +30,8 @@
 /**
  * Network interface control application.
  */
-class NetCtl : public POSIXApplication
-{
-  public:
+class NetCtl : public POSIXApplication {
+public:
 
     /**
      * Class constructor.
@@ -54,7 +53,7 @@ class NetCtl : public POSIXApplication
      */
     virtual Result exec();
 
-  private:
+private:
 
     /**
      * Output device information

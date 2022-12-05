@@ -36,32 +36,29 @@
 /**
  * Iterate through a HashTable.
  */
-template <class K, class V> class HashIterator : public Iterator<V>
-{
-  public:
+template<class K, class V>
+class HashIterator : public Iterator<V> {
+public:
 
     /**
      * Class constructor.
      *
      * @param hash Reference to the HashTable to iterate.
      */
-    HashIterator(HashTable<K, V> & hash)
-        : m_hash(hash), m_keys(hash.keys()), m_iter(m_keys)
-    {
+    HashIterator(HashTable<K, V> &hash)
+            : m_hash(hash), m_keys(hash.keys()), m_iter(m_keys) {
     }
 
     /**
      * Destructor.
      */
-    virtual ~HashIterator()
-    {
+    virtual ~HashIterator() {
     }
 
     /**
      * Reset the iterator.
      */
-    virtual void reset()
-    {
+    virtual void reset() {
         m_iter.reset();
     }
 
@@ -70,8 +67,7 @@ template <class K, class V> class HashIterator : public Iterator<V>
      *
      * @return true if more items, false if not.
      */
-    virtual bool hasNext() const
-    {
+    virtual bool hasNext() const {
         return m_iter.hasNext();
     }
 
@@ -80,8 +76,7 @@ template <class K, class V> class HashIterator : public Iterator<V>
      *
      * @return True if the iterator has a current item, false otherwise.
      */
-    virtual bool hasCurrent() const
-    {
+    virtual bool hasCurrent() const {
         return m_iter.hasCurrent();
     }
 
@@ -90,8 +85,7 @@ template <class K, class V> class HashIterator : public Iterator<V>
      *
      * @return Reference to the current read-only value.
      */
-    virtual const V & current() const
-    {
+    virtual const V &current() const {
         return m_hash[m_iter.current()];
     }
 
@@ -100,8 +94,7 @@ template <class K, class V> class HashIterator : public Iterator<V>
      *
      * @return Reference to the current value.
      */
-    virtual V & current()
-    {
+    virtual V &current() {
         return m_hash[m_iter.current()];
     }
 
@@ -110,8 +103,7 @@ template <class K, class V> class HashIterator : public Iterator<V>
      *
      * @return Reference to the current key.
      */
-    virtual const K & key()
-    {
+    virtual const K &key() {
         return m_iter.current();
     }
 
@@ -123,8 +115,7 @@ template <class K, class V> class HashIterator : public Iterator<V>
      *
      * @return Reference to the next item.
      */
-    virtual V & next()
-    {
+    virtual V &next() {
         return m_hash[m_iter.next()];
     }
 
@@ -133,8 +124,7 @@ template <class K, class V> class HashIterator : public Iterator<V>
      *
      * @return True if removed successfully, false otherwise.
      */
-    virtual bool remove()
-    {
+    virtual bool remove() {
         K key = m_iter.current();
         m_iter.remove();
         return m_hash.remove(key);
@@ -148,15 +138,14 @@ template <class K, class V> class HashIterator : public Iterator<V>
      *
      * @param num Ignored
      */
-    virtual void operator ++(int num)
-    {
+    virtual void operator++(int num) {
         m_iter++;
     }
 
-  private:
+private:
 
     /** Points to the HashTable to iterate. */
-    HashTable<K, V> & m_hash;
+    HashTable<K, V> &m_hash;
 
     /** List of keys to iterate. */
     List<K> m_keys;

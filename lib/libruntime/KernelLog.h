@@ -31,9 +31,8 @@
 /**
  * Log to the kernel using PrivExec().
  */
-class KernelLog : public Log
-{
-  public:
+class KernelLog : public Log {
+public:
 
     /**
      * Constructor

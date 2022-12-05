@@ -25,7 +25,9 @@
 #include <Index.h>
 
 class MemoryChannel;
+
 class MemoryContext;
+
 class Process;
 
 /**
@@ -36,17 +38,15 @@ class Process;
 /**
  * Manages memory shares for a Process.
  */
-class ProcessShares
-{
-  private:
+class ProcessShares {
+private:
 
     /** Maximum number of memory shares that a single process can have. */
     static const Size MaximumMemoryShares = 32u;
 
-  public:
+public:
 
-    struct MemoryShare
-    {
+    struct MemoryShare {
         /** Remote process id for this share */
         ProcessID pid;
 
@@ -63,8 +63,7 @@ class ProcessShares
         bool attached;
     };
 
-    enum Result
-    {
+    enum Result {
         Success,
         InvalidArgument,
         MemoryMapError,
@@ -94,7 +93,7 @@ class ProcessShares
      *
      * @return MemoryContext object pointer.
      */
-    MemoryContext * getMemoryContext();
+    MemoryContext *getMemoryContext();
 
     /**
      * Set MemoryContext.
@@ -108,7 +107,7 @@ class ProcessShares
     /**
      *
      */
-    Result createShare(ProcessShares & instance,
+    Result createShare(ProcessShares &instance,
                        MemoryShare *share);
 
     /**
@@ -146,7 +145,7 @@ class ProcessShares
      */
     Result removeShares(ProcessID pid);
 
-  private:
+private:
 
     /**
      * Release one memory share
@@ -167,11 +166,11 @@ class ProcessShares
      *
      * @return MemoryShare pointer if found or ZERO if not
      */
-    MemoryShare * findShare(const ProcessID pid,
-                            const Size coreId,
-                            const Size tagId);
+    MemoryShare *findShare(const ProcessID pid,
+                           const Size coreId,
+                           const Size tagId);
 
-  private:
+private:
 
     /** ProcessID associated to these shares */
     ProcessID m_pid;
@@ -180,7 +179,7 @@ class ProcessShares
     MemoryContext *m_memory;
 
     /** Contains all memory shares */
-    Index<MemoryShare, MaximumMemoryShares> m_shares;
+    Index <MemoryShare, MaximumMemoryShares> m_shares;
 };
 
 /**

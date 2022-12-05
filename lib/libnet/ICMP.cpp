@@ -26,16 +26,13 @@
 ICMP::ICMP(NetworkServer &server,
            NetworkDevice &device,
            NetworkProtocol &parent)
-    : NetworkProtocol(server, device, parent)
-{
+        : NetworkProtocol(server, device, parent) {
 }
 
-ICMP::~ICMP()
-{
+ICMP::~ICMP() {
 }
 
-FileSystem::Result ICMP::initialize()
-{
+FileSystem::Result ICMP::initialize() {
     DEBUG("");
 
     m_factory = new ICMPFactory(m_server.getNextInode(), this);
@@ -46,19 +43,16 @@ FileSystem::Result ICMP::initialize()
 }
 
 FileSystem::Result ICMP::process(const NetworkQueue::Packet *pkt,
-                                 const Size offset)
-{
+                                 const Size offset) {
     const IPV4::Header *iphdr = (const IPV4::Header *) (pkt->data + offset - sizeof(IPV4::Header));
     const ICMP::Header *hdr = (const ICMP::Header *) (pkt->data + offset);
     const IPV4::Address source = readBe32(&iphdr->source);
 
     DEBUG("source = " << *IPV4::toString(source) << " type = " <<
-          hdr->type << " code = " << hdr->code << " id = " << hdr->id);
+                      hdr->type << " code = " << hdr->code << " id = " << hdr->id);
 
-    switch (hdr->type)
-    {
-        case EchoRequest:
-        {
+    switch (hdr->type) {
+        case EchoRequest: {
             DEBUG("request");
 
             ICMP::Header reply;
@@ -67,12 +61,10 @@ FileSystem::Result ICMP::process(const NetworkQueue::Packet *pkt,
 
             return sendPacket(source, &reply, hdr + 1, pkt->size - offset - sizeof(ICMP::Header));
         }
-        case EchoReply:
-        {
+        case EchoReply: {
             DEBUG("reply");
 
-            for (Size i = 0; i < m_sockets.size(); i++)
-            {
+            for (Size i = 0; i < m_sockets.size(); i++) {
                 ICMPSocket *s = (ICMPSocket *) m_sockets.get(i);
                 if (s && s->getAddress() == source)
                     s->setReply(hdr);
@@ -84,24 +76,21 @@ FileSystem::Result ICMP::process(const NetworkQueue::Packet *pkt,
     return FileSystem::Success;
 }
 
-ICMPSocket * ICMP::createSocket(String & path,
-                                const ProcessID pid)
-{
+ICMPSocket *ICMP::createSocket(String &path,
+                               const ProcessID pid) {
     Size pos = 0;
 
     DEBUG("");
 
     // Allocate socket
     ICMPSocket *sock = new ICMPSocket(m_server.getNextInode(), this, pid);
-    if (!sock)
-    {
+    if (!sock) {
         ERROR("failed to allocate ICMP socket");
         return ZERO;
     }
 
     // Insert to sockets array
-    if (!m_sockets.insert(pos, sock))
-    {
+    if (!m_sockets.insert(pos, sock)) {
         ERROR("failed to insert ICMP socket");
         delete sock;
         return ZERO;
@@ -112,8 +101,7 @@ ICMPSocket * ICMP::createSocket(String & path,
     // Add socket to NetworkServer as a file
     path << m_server.getMountPath() << filepath;
     const FileSystem::Result result = m_server.registerFile(sock, *filepath);
-    if (result != FileSystem::Success)
-    {
+    if (result != FileSystem::Success) {
         ERROR("failed to register ICMP socket to NetworkServer: result = " << (int) result);
         m_sockets.remove(pos);
         delete sock;
@@ -123,23 +111,19 @@ ICMPSocket * ICMP::createSocket(String & path,
     return sock;
 }
 
-void ICMP::unregisterSockets(const ProcessID pid)
-{
+void ICMP::unregisterSockets(const ProcessID pid) {
     DEBUG("pid = " << pid);
 
-    for (Size i = 0; i < MaxIcmpSockets; i++)
-    {
+    for (Size i = 0; i < MaxIcmpSockets; i++) {
         ICMPSocket *sock = m_sockets[i];
-        if (sock != ZERO && sock->getProcessID() == pid)
-        {
+        if (sock != ZERO && sock->getProcessID() == pid) {
             m_sockets.remove(i);
             String path;
             path << "/icmp/" << i;
             const FileSystem::Result result = m_server.unregisterFile(*path);
-            if (result != FileSystem::Success)
-            {
+            if (result != FileSystem::Success) {
                 ERROR("failed to unregister ICMPSocket at " << *path <<
-                      " for PID " << pid << ": result = " << (int) result);
+                                                            " for PID " << pid << ": result = " << (int) result);
             }
         }
     }
@@ -148,21 +132,18 @@ void ICMP::unregisterSockets(const ProcessID pid)
 FileSystem::Result ICMP::sendPacket(const IPV4::Address ip,
                                     const ICMP::Header *headerInput,
                                     const void *payload,
-                                    const Size payloadSize)
-{
+                                    const Size payloadSize) {
     DEBUG("ip = " << *IPV4::toString(ip) << " header.type = " << headerInput->type <<
-          " header.id = " << readBe16(&headerInput->id) << " header.seq = " <<
-            readBe16(&headerInput->sequence) << " payloadSize = " << payloadSize);
+                  " header.id = " << readBe16(&headerInput->id) << " header.seq = " <<
+                  readBe16(&headerInput->sequence) << " payloadSize = " << payloadSize);
 
     // Get a fresh packet
     NetworkQueue::Packet *pkt;
     const FileSystem::Result result = m_parent.getTransmitPacket(&pkt, &ip, sizeof(ip),
                                                                  NetworkProtocol::ICMP,
                                                                  sizeof(ICMP::Header) + payloadSize);
-    if (result != FileSystem::Success)
-    {
-        if (result != FileSystem::RetryAgain)
-        {
+    if (result != FileSystem::Success) {
+        if (result != FileSystem::RetryAgain) {
             ERROR("failed to get transmit packet: result = " << (int) result);
         }
         return result;

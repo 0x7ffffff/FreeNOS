@@ -36,31 +36,28 @@
 /**
  * Broadcom Power Management.
  */
-class BroadcomPower
-{
-  public:
+class BroadcomPower {
+public:
 
     /**
      * Powered devices.
      */
-    enum Device
-    {
-        SD    = (1 << 0),
+    enum Device {
+        SD = (1 << 0),
         UART0 = (1 << 1),
         UART1 = (1 << 2),
-        USB   = (1 << 3)
+        USB = (1 << 3)
     };
 
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         IOError
     };
 
-  public:
+public:
 
     /**
      * Constructor.
@@ -83,7 +80,7 @@ class BroadcomPower
      */
     Result enable(Device device);
 
-  private:
+private:
 
     /** Mailbox for communicating with the GPU. */
     BroadcomMailbox m_mailbox;

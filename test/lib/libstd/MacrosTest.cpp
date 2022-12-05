@@ -21,18 +21,18 @@
 #include <Macros.h>
 
 TestCase(DoubleAbsolute)
-{
-    testAssert(doubleAbsolute(1.0) == 1.0);
-    testAssert(doubleAbsolute(10000.0) == 10000.0);
-    testAssert(doubleAbsolute(-9999.123) == 9999.123);
-    testAssert(doubleAbsolute(0.0) == 0.0);
+        {
+                testAssert(doubleAbsolute(1.0) == 1.0);
+        testAssert(doubleAbsolute(10000.0) == 10000.0);
+        testAssert(doubleAbsolute(-9999.123) == 9999.123);
+        testAssert(doubleAbsolute(0.0) == 0.0);
 
-    return OK;
-}
+        return OK;
+        }
 
 TestCase(DoubleEquals)
-{
-    testAssert(doubleEquals(1033.12345, 1033.12345, 0.000001));
-    testAssert(!doubleEquals(1033.12345, 1033.12346, 0.000001));
-    return OK;
-}
+        {
+                testAssert(doubleEquals(1033.12345, 1033.12345, 0.000001));
+        testAssert(!doubleEquals(1033.12345, 1033.12346, 0.000001));
+        return OK;
+        }

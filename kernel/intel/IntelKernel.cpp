@@ -29,20 +29,17 @@
 #include <intel/IntelBoot.h>
 #include "IntelKernel.h"
 
-extern C void executeInterrupt(CPUState state)
-{
+extern C void executeInterrupt(CPUState state) {
     Kernel::instance()->executeIntVector(state.vector, &state);
 }
 
 IntelKernel::IntelKernel(CoreInfo *info)
-    : Kernel(info)
-{
+        : Kernel(info) {
     IntelMap map;
     IntelCore core;
 
     // First megabyte should not be used on Intel (I/O devices and tables)
-    for (Size i = 0; i < MegaByte(1); i += PAGESIZE)
-    {
+    for (Size i = 0; i < MegaByte(1); i += PAGESIZE) {
         m_alloc->allocate(info->memory.phys + i);
     }
 
@@ -55,38 +52,33 @@ IntelKernel::IntelKernel(CoreInfo *info)
     interruptRun = ::executeInterrupt;
 
     // Setup exception handlers
-    for (int i = 0; i < 17; i++)
-    {
+    for (int i = 0; i < 17; i++) {
         hookIntVector(i, exception, 0);
     }
     // Setup IRQ handlers
-    for (int i = 17; i < 256; i++)
-    {
+    for (int i = 17; i < 256; i++) {
         // Trap gate
         if (i == 0x90)
             hookIntVector(0x90, trap, 0);
 
-        // Hardware Interrupt
+            // Hardware Interrupt
         else
             hookIntVector(i, interrupt, 0);
     }
 
     // Only core0 uses PIC and PIT.
-    if (info->coreId == 0)
-    {
+    if (info->coreId == 0) {
         // Set PIT interrupt frequency to 250 hertz
         m_pit.setFrequency(100);
 
         // Configure the master and slave PICs
         m_pic.initialize();
         m_intControl = &m_pic;
-    }
-    else
+    } else
         m_intControl = &m_apic;
 
     // Try to configure the APIC.
-    if (m_apic.initialize() == Timer::Success)
-    {
+    if (m_apic.initialize() == Timer::Success) {
         NOTICE("Using APIC timer");
 
         // Enable APIC timer interrupt
@@ -94,17 +86,14 @@ IntelKernel::IntelKernel(CoreInfo *info)
 
         m_timer = &m_apic;
 
-        if (m_coreInfo->timerCounter == 0)
-        {
+        if (m_coreInfo->timerCounter == 0) {
             m_apic.start(&m_pit);
             m_coreInfo->timerCounter = m_apic.getCounter();
-        }
-        else
+        } else
             m_apic.start(m_coreInfo->timerCounter, m_pit.getFrequency());
     }
-    // Use PIT as system timer.
-    else
-    {
+        // Use PIT as system timer.
+    else {
         NOTICE("Using PIT timer");
         m_timer = &m_pit;
 
@@ -117,30 +106,28 @@ IntelKernel::IntelKernel(CoreInfo *info)
     }
 
     // Initialize TSS Segment
-    Address tssAddr = (Address) &kernelTss;
-    gdt[KERNEL_TSS].limitLow    = sizeof(TSS);
-    gdt[KERNEL_TSS].baseLow     = (tssAddr) & 0xffff;
-    gdt[KERNEL_TSS].baseMid     = (tssAddr >> 16) & 0xff;
-    gdt[KERNEL_TSS].type        = 9;
-    gdt[KERNEL_TSS].privilege   = 0;
-    gdt[KERNEL_TSS].present     = 1;
-    gdt[KERNEL_TSS].limitHigh   = 0;
+    Address tssAddr = (Address) & kernelTss;
+    gdt[KERNEL_TSS].limitLow = sizeof(TSS);
+    gdt[KERNEL_TSS].baseLow = (tssAddr) & 0xffff;
+    gdt[KERNEL_TSS].baseMid = (tssAddr >> 16) & 0xff;
+    gdt[KERNEL_TSS].type = 9;
+    gdt[KERNEL_TSS].privilege = 0;
+    gdt[KERNEL_TSS].present = 1;
+    gdt[KERNEL_TSS].limitHigh = 0;
     gdt[KERNEL_TSS].granularity = 0;
-    gdt[KERNEL_TSS].baseHigh    = (tssAddr >> 24) & 0xff;
+    gdt[KERNEL_TSS].baseHigh = (tssAddr >> 24) & 0xff;
 
     // Fill the Task State Segment (TSS).
     MemoryBlock::set(&kernelTss, 0, sizeof(TSS));
-    kernelTss.ss0    = KERNEL_DS_SEL;
-    kernelTss.esp0   = 0;
+    kernelTss.ss0 = KERNEL_DS_SEL;
+    kernelTss.esp0 = 0;
     kernelTss.bitmap = sizeof(TSS);
     ltr(KERNEL_TSS_SEL);
 
 }
 
-void IntelKernel::enableIRQ(u32 irq, bool enabled)
-{
-    if (irq == m_apic.getInterrupt())
-    {
+void IntelKernel::enableIRQ(u32 irq, bool enabled) {
+    if (irq == m_apic.getInterrupt()) {
         if (enabled)
             m_apic.start();
         else
@@ -152,8 +139,7 @@ void IntelKernel::enableIRQ(u32 irq, bool enabled)
     Kernel::enableIRQ(irq, enabled);
 }
 
-void IntelKernel::exception(CPUState *state, ulong param, ulong vector)
-{
+void IntelKernel::exception(CPUState *state, ulong param, ulong vector) {
     IntelCore core;
     ProcessManager *procs = Kernel::instance()->getProcessManager();
 
@@ -165,32 +151,28 @@ void IntelKernel::exception(CPUState *state, ulong param, ulong vector)
     procs->schedule();
 }
 
-void IntelKernel::interrupt(CPUState *state, ulong param, ulong vector)
-{
+void IntelKernel::interrupt(CPUState *state, ulong param, ulong vector) {
     IntelKernel *kern = (IntelKernel *) Kernel::instance();
 
-    if (kern->m_intControl)
-    {
+    if (kern->m_intControl) {
         kern->m_intControl->clear(
-            state->vector - kern->m_intControl->getBase()
+                state->vector - kern->m_intControl->getBase()
         );
     }
 }
 
-void IntelKernel::trap(CPUState *state, ulong param, ulong vector)
-{
+void IntelKernel::trap(CPUState *state, ulong param, ulong vector) {
     state->regs.eax = Kernel::instance()->getAPI()->invoke(
-        (API::Number) state->regs.eax,
-                      state->regs.ecx,
-                      state->regs.ebx,
-                      state->regs.edx,
-                      state->regs.esi,
-                      state->regs.edi
+            (API::Number) state->regs.eax,
+            state->regs.ecx,
+            state->regs.ebx,
+            state->regs.edx,
+            state->regs.esi,
+            state->regs.edi
     );
 }
 
-void IntelKernel::clocktick(CPUState *state, ulong param, ulong vector)
-{
+void IntelKernel::clocktick(CPUState *state, ulong param, ulong vector) {
     IntelKernel *kern = (IntelKernel *) Kernel::instance();
     Size irq = kern->m_timer->getInterrupt();
 

@@ -19,19 +19,15 @@
 #include "DatastoreServer.h"
 
 DatastoreServer::DatastoreServer()
-    : ChannelServer<DatastoreServer, DatastoreMessage>(this)
-    , m_buffers()
-{
+        : ChannelServer<DatastoreServer, DatastoreMessage>(this), m_buffers() {
     addIPCHandler(Datastore::RegisterBuffer, &DatastoreServer::registerBuffer);
 }
 
-HashTable<String, Address> * DatastoreServer::getBufferTable(const ProcessID pid)
-{
-    HashTable<String, Address> * const *table = m_buffers.get(pid);
+HashTable <String, Address> *DatastoreServer::getBufferTable(const ProcessID pid) {
+    HashTable <String, Address> *const *table = m_buffers.get(pid);
 
-    if (table == NULL)
-    {
-        HashTable<String, Address> *h = new HashTable<String, Address>();
+    if (table == NULL) {
+        HashTable <String, Address> *h = new HashTable<String, Address>();
 
         if (h != ZERO)
             m_buffers.insert(pid, h);
@@ -39,30 +35,24 @@ HashTable<String, Address> * DatastoreServer::getBufferTable(const ProcessID pid
         table = m_buffers.get(pid);
     }
 
-    if (table != NULL)
-    {
+    if (table != NULL) {
         return *table;
-    }
-    else
-    {
+    } else {
         return ZERO;
     }
 }
 
-void DatastoreServer::registerBuffer(DatastoreMessage *msg)
-{
+void DatastoreServer::registerBuffer(DatastoreMessage *msg) {
     // Validate the buffer size
-    if (msg->size > MaximumBufferSize)
-    {
+    if (msg->size > MaximumBufferSize) {
         ERROR("invalid buffer size: " << msg->size);
         msg->result = Datastore::InvalidArgument;
         return;
     }
 
     // Retrieve buffer mapping table
-    HashTable<String, Address> *table = getBufferTable(msg->from);
-    if (!table)
-    {
+    HashTable <String, Address> *table = getBufferTable(msg->from);
+    if (!table) {
         ERROR("failed to retrieve buffer mapping table for PID " << msg->from);
         msg->result = Datastore::IOError;
         return;
@@ -80,24 +70,21 @@ void DatastoreServer::registerBuffer(DatastoreMessage *msg)
 
     // Check if the key already exists
     const Address *addr = table->get(msg->key);
-    if (addr != ZERO)
-    {
+    if (addr != ZERO) {
         range.phys = *addr;
     }
 
     // Create mapping in the process
     const API::Result mapResult = VMCtl(msg->from, MapContiguous, &range);
-    if (mapResult != API::Success)
-    {
+    if (mapResult != API::Success) {
         ERROR("failed to allocate buffer `" << msg->key << "' in PID " <<
-               msg->from << ": " << (int) mapResult);
+                                            msg->from << ": " << (int) mapResult);
         msg->result = Datastore::IOError;
         return;
     }
 
     // Add buffer to our administration
-    if (addr == ZERO && !table->insert(msg->key, range.phys))
-    {
+    if (addr == ZERO && !table->insert(msg->key, range.phys)) {
         ERROR("failed to add buffer `" << msg->key << "' to mapping table for PID " << msg->from);
         VMCtl(msg->from, Release, &range);
         msg->result = Datastore::IOError;
@@ -106,8 +93,8 @@ void DatastoreServer::registerBuffer(DatastoreMessage *msg)
 
     // Done
     msg->address = range.virt;
-    msg->result  = Datastore::Success;
+    msg->result = Datastore::Success;
 
     DEBUG("mapped `" << msg->key << "' for PID " << msg->from << " at " <<
-           (void *) msg->address << " / " << (void *) range.phys);
+                     (void *) msg->address << " / " << (void *) range.phys);
 }

@@ -25,30 +25,25 @@
 ICMPSocket::ICMPSocket(const u32 inode,
                        ICMP *icmp,
                        const ProcessID pid)
-    : NetworkSocket(inode, icmp->getMaximumPacketSize(), pid)
-{
+        : NetworkSocket(inode, icmp->getMaximumPacketSize(), pid) {
     m_icmp = icmp;
     m_gotReply = false;
     MemoryBlock::set(&m_info, 0, sizeof(m_info));
 }
 
-ICMPSocket::~ICMPSocket()
-{
+ICMPSocket::~ICMPSocket() {
 }
 
-const IPV4::Address ICMPSocket::getAddress() const
-{
+const IPV4::Address ICMPSocket::getAddress() const {
     return m_info.address;
 }
 
-FileSystem::Result ICMPSocket::read(IOBuffer & buffer,
-                                    Size & size,
-                                    const Size offset)
-{
+FileSystem::Result ICMPSocket::read(IOBuffer &buffer,
+                                    Size &size,
+                                    const Size offset) {
     DEBUG("");
 
-    if (!m_gotReply)
-    {
+    if (!m_gotReply) {
         return FileSystem::RetryAgain;
     }
 
@@ -58,20 +53,16 @@ FileSystem::Result ICMPSocket::read(IOBuffer & buffer,
     return FileSystem::Success;
 }
 
-FileSystem::Result ICMPSocket::write(IOBuffer & buffer,
-                                     Size & size,
-                                     const Size offset)
-{
+FileSystem::Result ICMPSocket::write(IOBuffer &buffer,
+                                     Size &size,
+                                     const Size offset) {
     DEBUG("");
 
     // Receive socket information first?
-    if (!m_info.address)
-    {
+    if (!m_info.address) {
         buffer.read(&m_info, sizeof(m_info));
         return FileSystem::Success;
-    }
-    else
-    {
+    } else {
         ICMP::Header header;
         buffer.read(&header, sizeof(header));
 
@@ -79,19 +70,16 @@ FileSystem::Result ICMPSocket::write(IOBuffer & buffer,
     }
 }
 
-FileSystem::Result ICMPSocket::process(const NetworkQueue::Packet *pkt)
-{
+FileSystem::Result ICMPSocket::process(const NetworkQueue::Packet *pkt) {
     DEBUG("");
 
     return FileSystem::Success;
 }
 
-void ICMPSocket::setReply(const ICMP::Header *header)
-{
+void ICMPSocket::setReply(const ICMP::Header *header) {
     DEBUG("");
 
-    if (!m_gotReply)
-    {
+    if (!m_gotReply) {
         MemoryBlock::copy(&m_reply, header, sizeof(ICMP::Header));
         m_gotReply = true;
     }

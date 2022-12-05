@@ -23,9 +23,8 @@
 extern Address vecTable[], handlerTable;
 
 ARMException::ARMException(Address base)
-    : m_vecTable(base)
-{
-    MemoryBlock::copy((void *)m_vecTable, vecTable, ARM_EX_VECTAB_SIZE);
+        : m_vecTable(base) {
+    MemoryBlock::copy((void *) m_vecTable, vecTable, ARM_EX_VECTAB_SIZE);
 
     // First enable low interrupt vector base to allow re-mapping
     u32 v = sysctrl_read();
@@ -37,9 +36,8 @@ ARMException::ARMException(Address base)
 }
 
 ARMException::Result ARMException::install(
-    ARMException::ExceptionType vector,
-    ARMException::Handler handler)
-{
-    ((Address *) &handlerTable)[vector] = (Address) handler;
+        ARMException::ExceptionType vector,
+        ARMException::Handler handler) {
+    ((Address * ) & handlerTable)[vector] = (Address) handler;
     return Success;
 }

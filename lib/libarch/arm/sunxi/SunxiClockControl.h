@@ -35,29 +35,26 @@
 /**
  * Allwinner Clock Control Unit (CCU)
  */
-class SunxiClockControl
-{
-  private:
+class SunxiClockControl {
+private:
 
     /** Physical base memory address of the CCU module */
     static const Address IOBase = 0x01C20000;
 
-  private:
+private:
 
     /**
      * Hardware registers.
      */
-    enum Registers
-    {
+    enum Registers {
     };
 
-  public:
+public:
 
     /**
      * Clock identifiers
      */
-    enum Clock
-    {
+    enum Clock {
         ClockEmacTx = 1,
         ClockEphy,
     };
@@ -65,8 +62,7 @@ class SunxiClockControl
     /**
      * Reset signal identifiers
      */
-    enum Reset
-    {
+    enum Reset {
         ResetEmacTx = 1,
         ResetEphy,
     };
@@ -74,14 +70,13 @@ class SunxiClockControl
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         IOError,
         InvalidArgument
     };
 
-  public:
+public:
 
     /**
      * Perform initialization.
@@ -108,7 +103,7 @@ class SunxiClockControl
      */
     Result deassert(const Reset reset);
 
-  private:
+private:
 
     /** Memory I/O object */
     Arch::IO m_io;

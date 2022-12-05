@@ -18,23 +18,19 @@
 #include "Broadcom2836.h"
 
 Broadcom2836::Broadcom2836(Size coreId)
-    : m_coreId(coreId)
-{
+        : m_coreId(coreId) {
     m_io.setBase(IOBase);
 }
 
-Broadcom2836::Result Broadcom2836::initialize()
-{
+Broadcom2836::Result Broadcom2836::initialize() {
     return Success;
 }
 
 Broadcom2836::Result Broadcom2836::setCoreTimerIrq(Broadcom2836::Timer timer,
-                                                   bool enable)
-{
+                                                   bool enable) {
     u32 reg = CoreTimerRegister + (m_coreId * sizeof(u32));
 
-    switch (timer)
-    {
+    switch (timer) {
         case PhysicalTimer1:
             if (enable)
                 m_io.set(reg, (1 << 0));
@@ -49,8 +45,7 @@ Broadcom2836::Result Broadcom2836::setCoreTimerIrq(Broadcom2836::Timer timer,
     return NotFound;
 }
 
-bool Broadcom2836::getCoreTimerIrqStatus(Broadcom2836::Timer timer) const
-{
+bool Broadcom2836::getCoreTimerIrqStatus(Broadcom2836::Timer timer) const {
     if (timer == PhysicalTimer1)
         return (m_io.read(CoreIrqRegister + (m_coreId * sizeof(u32))) & (1 << 0)) > 0;
     else

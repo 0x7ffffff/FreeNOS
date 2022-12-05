@@ -66,32 +66,29 @@
 /**
  * The symbol table for a.out.
  */
-typedef struct AoutSymbolTable
-{
+typedef struct AoutSymbolTable {
     u32 tabSize;
     u32 strSize;
     u32 address;
     u32 reserved;
 }
-AoutSymbolTable;
+        AoutSymbolTable;
 
 /**
  * The section header table for ELF.
  */
-typedef struct ElfSectionHeaderTable
-{
+typedef struct ElfSectionHeaderTable {
     u32 num;
     u32 size;
     u32 address;
     u32 shndx;
 }
-ElfSectionHeaderTable;
+        ElfSectionHeaderTable;
 
 /**
  * The Multiboot information.
  */
-typedef struct MultibootInfo
-{
+typedef struct MultibootInfo {
     u32 flags;
     u32 memLower;
     u32 memUpper;
@@ -100,35 +97,32 @@ typedef struct MultibootInfo
     u32 modsCount;
     u32 modsAddress;
 
-    union
-    {
+    union {
         AoutSymbolTable aout;
         ElfSectionHeaderTable elf;
     };
     u32 mmapLength;
     u32 mmapAddress;
 }
-MultibootInfo;
+        MultibootInfo;
 
 /**
  * The module class.
  */
-typedef struct MultibootModule
-{
+typedef struct MultibootModule {
     u32 modStart;
     u32 modEnd;
     u32 string;
     u32 reserved;
 }
-MultibootModule;
+        MultibootModule;
 
 /**
  * The MultiBoot memory map.
  *
  * @note Be careful that the offset 0 is base_addr_low but no size.
  */
-typedef struct MultibootMemoryMap
-{
+typedef struct MultibootMemoryMap {
     u32 size;
     u32 baseAddressLow;
     u32 baseAddressHigh;
@@ -136,7 +130,7 @@ typedef struct MultibootMemoryMap
     u32 lengthHigh;
     u32 type;
 }
-MultibootMemoryMap;
+        MultibootMemoryMap;
 
 /** Fill in by the early boot process. */
 extern MultibootInfo multibootInfo;

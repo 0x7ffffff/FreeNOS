@@ -35,9 +35,8 @@
 /**
  * Broadcom 2836 device specific I/O configuration
  */
-class Broadcom2836
-{
-  private:
+class Broadcom2836 {
+private:
 
     /** Base address for the BCM2836 I/O configuration */
     static const Address IOBase = 0x40000000;
@@ -45,36 +44,33 @@ class Broadcom2836
     /**
      * Hardware registers.
      */
-    enum Registers
-    {
-        CorePrescalerRegister   = 0x0008,
-        CoreTimerRegister       = 0x0040,
-        CoreIrqRegister         = 0x0060,
-        CoreSetMailboxRegister  = 0x0080
+    enum Registers {
+        CorePrescalerRegister = 0x0008,
+        CoreTimerRegister = 0x0040,
+        CoreIrqRegister = 0x0060,
+        CoreSetMailboxRegister = 0x0080
     };
 
-  public:
+public:
 
     /**
      * Hardware timers available in BCM 2836.
      */
-    enum Timer
-    {
+    enum Timer {
         PhysicalTimer1
     };
 
     /**
      * Result code.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         NotFound,
         IOError,
         FrequencyError
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -107,7 +103,7 @@ class Broadcom2836
      */
     bool getCoreTimerIrqStatus(Timer timer) const;
 
-  private:
+private:
 
     /** Core identifier */
     Size m_coreId;

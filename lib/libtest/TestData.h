@@ -27,7 +27,9 @@
 #ifdef __HOST__
 #include <sys/time.h>
 #else
+
 #include <FreeNOS/System.h>
+
 #endif /* __HOST__ */
 
 /**
@@ -41,30 +43,27 @@
 /**
  * Generate test data for a certain data type.
  */
-template <class T> class TestData
-{
-  public:
+template<class T>
+class TestData {
+public:
 
     /**
      * Constructor.
      */
-    TestData()
-    {
+    TestData() {
         seed();
     }
 
     /**
      * Destructor.
      */
-    virtual ~TestData()
-    {
+    virtual ~TestData() {
     }
 
     /**
      * Initialize the random number generator.
      */
-    void seed()
-    {
+    void seed() {
         // Collect seed from process id.
         pid_t pid = getpid();
         unsigned int seed = pid;
@@ -84,8 +83,7 @@ template <class T> class TestData
     /**
      * The number of generated values.
      */
-    Size count() const
-    {
+    Size count() const {
         return m_values.count();
     }
 
@@ -96,16 +94,14 @@ template <class T> class TestData
      *
      * @return T value reference.
      */
-    T & get(Size index)
-    {
+    T &get(Size index) {
         return m_values[index];
     }
 
     /**
      * Retrieve previously random generated test data by index.
      */
-    T & operator[](Size index)
-    {
+    T &operator[](Size index) {
         return m_values[index];
     }
 
@@ -127,10 +123,10 @@ template <class T> class TestData
      */
     virtual T unique(Size count = 1) = 0;
 
-  protected:
+protected:
 
     /** Vector with generated values. */
-    Vector<T> m_values;
+    Vector <T> m_values;
 };
 
 /**

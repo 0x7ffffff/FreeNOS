@@ -41,9 +41,8 @@
  * @see LinnDirectoryEntry
  * @see LinnFileSystem
  */
-class LinnDirectory : public Directory
-{
-  public:
+class LinnDirectory : public Directory {
+public:
 
     /**
      * Constructor function.
@@ -69,8 +68,8 @@ class LinnDirectory : public Directory
      *
      * @return Result code
      */
-    virtual FileSystem::Result read(IOBuffer & buffer,
-                                    Size & size,
+    virtual FileSystem::Result read(IOBuffer &buffer,
+                                    Size &size,
                                     const Size offset);
 
     /**
@@ -87,9 +86,9 @@ class LinnDirectory : public Directory
      * @see File
      * @see LinnInode
      */
-    virtual File * lookup(const char *name);
+    virtual File *lookup(const char *name);
 
-  private:
+private:
 
     /**
      * Retrieve a directory entry.
@@ -102,7 +101,7 @@ class LinnDirectory : public Directory
     bool getLinnDirectoryEntry(LinnDirectoryEntry *dent,
                                const char *name);
 
-  private:
+private:
 
     /** Filesystem pointer. */
     LinnFileSystem *m_fs;

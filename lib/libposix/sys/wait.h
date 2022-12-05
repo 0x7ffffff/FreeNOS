@@ -54,7 +54,12 @@
  *
  * @return Process ID of the child on success or -1 on error
  */
-extern C pid_t waitpid(pid_t pid, int *stat_loc, int options);
+extern C pid_t
+waitpid(pid_t
+pid,
+int *stat_loc,
+int options
+);
 
 /**
  * @}

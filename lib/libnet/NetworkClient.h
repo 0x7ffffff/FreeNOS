@@ -41,15 +41,13 @@
  * as each client may run on a different (possibly dedicated using pinning) core
  * thus running multiple network stack instances on each core in parallel.
  */
-class NetworkClient
-{
-  public:
+class NetworkClient {
+public:
 
     /**
      * Socket actions
      */
-    enum SocketAction
-    {
+    enum SocketAction {
         Connect,
         Listen,
         SendSingle,
@@ -62,13 +60,12 @@ class NetworkClient
      * This struct is written to a socket
      * to put it in either connect or listen state.
      */
-    typedef struct SocketInfo
-    {
+    typedef struct SocketInfo {
         IPV4::Address address;
         u16 port;
         u16 action;
     }
-    SocketInfo;
+            SocketInfo;
 
     /**
      * Describes a single packet.
@@ -76,8 +73,7 @@ class NetworkClient
      * This structure is used for operations that involve multiple packets,
      * for example: SendMultiple.
      */
-    struct PacketInfo
-    {
+    struct PacketInfo {
         Address address;
         Size size;
     };
@@ -85,8 +81,7 @@ class NetworkClient
     /**
      * Socket types
      */
-    enum SocketType
-    {
+    enum SocketType {
         ARP,
         ICMP,
         TCP,
@@ -96,8 +91,7 @@ class NetworkClient
     /**
      * Result codes
      */
-    enum Result
-    {
+    enum Result {
         Success,
         IOError,
         NotFound,
@@ -105,7 +99,7 @@ class NetworkClient
         TimedOut
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -185,7 +179,7 @@ class NetworkClient
      */
     Result close(const int sock);
 
-  private:
+private:
 
     /**
      * Set socket to new state.
@@ -195,7 +189,7 @@ class NetworkClient
                            const u16 port,
                            const SocketAction action);
 
-  private:
+private:
 
     /** Network device name */
     String m_deviceName;

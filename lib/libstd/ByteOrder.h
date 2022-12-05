@@ -225,8 +225,7 @@
  *
  * @return Unsigned 64-bit integer
  */
-inline const u64 read64(const void *data)
-{
+inline const u64 read64(const void *data) {
     u64 value;
     MemoryBlock::copy(&value, data, sizeof(value));
     return value;
@@ -239,8 +238,7 @@ inline const u64 read64(const void *data)
  *
  * @return Unsigned 32-bit integer
  */
-inline const u32 read32(const void *data)
-{
+inline const u32 read32(const void *data) {
     u32 value;
     MemoryBlock::copy(&value, data, sizeof(value));
     return value;
@@ -253,8 +251,7 @@ inline const u32 read32(const void *data)
  *
  * @return Unsigned 16-bit integer
  */
-inline const u16 read16(const void *data)
-{
+inline const u16 read16(const void *data) {
     u16 value;
     MemoryBlock::copy(&value, data, sizeof(value));
     return value;
@@ -267,8 +264,7 @@ inline const u16 read16(const void *data)
  *
  * @return Unsigned 8-bit integer
  */
-inline const u8 read8(const void *data)
-{
+inline const u8 read8(const void *data) {
     u8 value;
     MemoryBlock::copy(&value, data, sizeof(value));
     return value;
@@ -280,8 +276,7 @@ inline const u8 read8(const void *data)
  * @param data Memory pointer to write to, which can be unaligned.
  * @param input Input integer
  */
-inline void write64(void *data, const u64 input)
-{
+inline void write64(void *data, const u64 input) {
     MemoryBlock::copy(data, &input, sizeof(input));
 }
 
@@ -291,8 +286,7 @@ inline void write64(void *data, const u64 input)
  * @param data Memory pointer to write to, which can be unaligned.
  * @param input Input integer
  */
-inline void write32(void *data, const u32 input)
-{
+inline void write32(void *data, const u32 input) {
     MemoryBlock::copy(data, &input, sizeof(input));
 }
 
@@ -302,8 +296,7 @@ inline void write32(void *data, const u32 input)
  * @param data Memory pointer to write to, which can be unaligned.
  * @param input Input integer
  */
-inline void write16(void *data, const u16 input)
-{
+inline void write16(void *data, const u16 input) {
     MemoryBlock::copy(data, &input, sizeof(input));
 }
 
@@ -313,8 +306,7 @@ inline void write16(void *data, const u16 input)
  * @param data Memory pointer to write to, which can be unaligned.
  * @param input Input integer
  */
-inline void write8(void *data, const u8 input)
-{
+inline void write8(void *data, const u8 input) {
     MemoryBlock::copy(data, &input, sizeof(input));
 }
 
@@ -325,8 +317,7 @@ inline void write8(void *data, const u8 input)
  *
  * @return Unsigned 64-bit integer
  */
-inline const u64 readLe64(const void *data)
-{
+inline const u64 readLe64(const void *data) {
     u64 value;
     MemoryBlock::copy(&value, data, sizeof(value));
     return le64_to_cpu(value);
@@ -339,8 +330,7 @@ inline const u64 readLe64(const void *data)
  *
  * @return Unsigned 32-bit integer
  */
-inline const u32 readLe32(const void *data)
-{
+inline const u32 readLe32(const void *data) {
     u32 value;
     MemoryBlock::copy(&value, data, sizeof(value));
     return le32_to_cpu(value);
@@ -353,8 +343,7 @@ inline const u32 readLe32(const void *data)
  *
  * @return Unsigned 16-bit integer
  */
-inline const u16 readLe16(const void *data)
-{
+inline const u16 readLe16(const void *data) {
     u16 value;
     MemoryBlock::copy(&value, data, sizeof(value));
     return le16_to_cpu(value);
@@ -367,8 +356,7 @@ inline const u16 readLe16(const void *data)
  *
  * @return Unsigned 64-bit integer
  */
-inline const u64 readBe64(const void *data)
-{
+inline const u64 readBe64(const void *data) {
     u64 value;
     MemoryBlock::copy(&value, data, sizeof(value));
     return be64_to_cpu(value);
@@ -381,8 +369,7 @@ inline const u64 readBe64(const void *data)
  *
  * @return Unsigned 32-bit integer
  */
-inline const u32 readBe32(const void *data)
-{
+inline const u32 readBe32(const void *data) {
     u32 value;
     MemoryBlock::copy(&value, data, sizeof(value));
     return be32_to_cpu(value);
@@ -395,8 +382,7 @@ inline const u32 readBe32(const void *data)
  *
  * @return Unsigned 16-bit integer
  */
-inline const u16 readBe16(const void *data)
-{
+inline const u16 readBe16(const void *data) {
     u16 value;
     MemoryBlock::copy(&value, data, sizeof(value));
     return be16_to_cpu(value);
@@ -408,8 +394,7 @@ inline const u16 readBe16(const void *data)
  * @param data Memory pointer to write to, which can be unaligned.
  * @param input Input integer
  */
-inline void writeLe64(void *data, const u64 input)
-{
+inline void writeLe64(void *data, const u64 input) {
     const u64 value = cpu_to_le64(input);
     MemoryBlock::copy(data, &value, sizeof(value));
 }
@@ -420,8 +405,7 @@ inline void writeLe64(void *data, const u64 input)
  * @param data Memory pointer to write to, which can be unaligned.
  * @param input Input integer
  */
-inline void writeLe32(void *data, const u32 input)
-{
+inline void writeLe32(void *data, const u32 input) {
     const u32 value = cpu_to_le32(input);
     MemoryBlock::copy(data, &value, sizeof(value));
 }
@@ -432,8 +416,7 @@ inline void writeLe32(void *data, const u32 input)
  * @param data Memory pointer to write to, which can be unaligned.
  * @param input Input integer
  */
-inline void writeLe16(void *data, const u16 input)
-{
+inline void writeLe16(void *data, const u16 input) {
     const u16 value = cpu_to_le16(input);
     MemoryBlock::copy(data, &value, sizeof(value));
 }
@@ -444,8 +427,7 @@ inline void writeLe16(void *data, const u16 input)
  * @param data Memory pointer to write to, which can be unaligned.
  * @param input Input integer
  */
-inline void writeBe64(void *data, const u64 input)
-{
+inline void writeBe64(void *data, const u64 input) {
     const u64 value = cpu_to_be64(input);
     MemoryBlock::copy(data, &value, sizeof(value));
 }
@@ -456,8 +438,7 @@ inline void writeBe64(void *data, const u64 input)
  * @param data Memory pointer to write to, which can be unaligned.
  * @param input Input integer
  */
-inline void writeBe32(void *data, const u32 input)
-{
+inline void writeBe32(void *data, const u32 input) {
     const u32 value = cpu_to_be32(input);
     MemoryBlock::copy(data, &value, sizeof(value));
 }
@@ -468,8 +449,7 @@ inline void writeBe32(void *data, const u32 input)
  * @param data Memory pointer to write to, which can be unaligned.
  * @param input Input integer
  */
-inline void writeBe16(void *data, const u16 input)
-{
+inline void writeBe16(void *data, const u16 input) {
     const u16 value = cpu_to_be16(input);
     MemoryBlock::copy(data, &value, sizeof(value));
 }

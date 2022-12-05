@@ -27,28 +27,24 @@
 #include "BootImageCreate.h"
 
 BootImageCreate::BootImageCreate(int argc, char **argv)
-    : Application(argc, argv)
-{
+        : Application(argc, argv) {
     parser().setDescription("Create system boot image");
     parser().registerFlag('p', "prefix", "Prefix each entry from the config file with the given path");
     parser().registerPositional("CONFFILE", "Configuration file for the boot image");
     parser().registerPositional("OUTFILE", "Output file name of the boot image");
 }
 
-BootImageCreate::~BootImageCreate()
-{
+BootImageCreate::~BootImageCreate() {
 }
 
-BootImageCreate::Result BootImageCreate::output(const char *string) const
-{
+BootImageCreate::Result BootImageCreate::output(const char *string) const {
     printf("%s", string);
     return Success;
 }
 
 Size BootImageCreate::readBootSymbols(const char *conf_file,
                                       const char *prefix,
-                                      Vector<BootEntry *> *entries)
-{
+                                      Vector<BootEntry *> *entries) {
     char line[PATH_MAX];
     const char *prog = *(parser().name());
     const char *symbolname = 0;
@@ -60,22 +56,20 @@ Size BootImageCreate::readBootSymbols(const char *conf_file,
     size_t prefix_len = prefix ? strlen(prefix) : 0;
 
     // Open configuration file
-    if ((fp = fopen(conf_file, "r")) == NULL)
-    {
+    if ((fp = fopen(conf_file, "r")) == NULL) {
         fprintf(stderr, "%s: failed to open `%s': %s\r\n",
                 prog, conf_file, strerror(errno));
         exit(EXIT_FAILURE);
     }
 
     // Read out lines
-    while (fgets(line, sizeof(line), fp) != NULL)
-    {
+    while (fgets(line, sizeof(line), fp) != NULL) {
         // Allocate new boot entry
         entry = new BootEntry;
 
         // Remove trailing newline
         if (strlen(line) < sizeof(line) - 1)
-            line[strlen(line)-1] = 0;
+            line[strlen(line) - 1] = 0;
 
         // Get boot symbol type
         if (strncmp(line, "BootProgram ", 12) == 0) {
@@ -94,12 +88,11 @@ Size BootImageCreate::readBootSymbols(const char *conf_file,
         }
 
         // Fill boot symbol name first
-        line[sizeof(line)-1] = 0;
+        line[sizeof(line) - 1] = 0;
         strncpy(entry->symbol.name, symbolname, BOOTIMAGE_NAMELEN);
 
         // Append path prefix, if set
-        if (prefix_len && prefix_len < BOOTIMAGE_NAMELEN)
-        {
+        if (prefix_len && prefix_len < BOOTIMAGE_NAMELEN) {
             char tmp[PATH_MAX];
             snprintf(tmp, sizeof(tmp), "%s/%s", prefix, symbolname);
             strncpy(line, tmp, sizeof(line));
@@ -108,8 +101,7 @@ Size BootImageCreate::readBootSymbols(const char *conf_file,
 
         // Find the file
         struct stat st;
-        if (stat(symbolname, &st) == -1)
-        {
+        if (stat(symbolname, &st) == -1) {
             fprintf(stderr, "%s: failed to stat `%s': %s\r\n",
                     prog, symbolname, strerror(errno));
             exit(EXIT_FAILURE);
@@ -119,14 +111,12 @@ Size BootImageCreate::readBootSymbols(const char *conf_file,
 
         // Read the file
         FILE *entry_fd = fopen(symbolname, "r");
-        if (!entry_fd)
-        {
+        if (!entry_fd) {
             fprintf(stderr, "%s: failed to open `%s': %s\r\n",
                     prog, symbolname, strerror(errno));
             exit(EXIT_FAILURE);
         }
-        if (fread(entry->data, st.st_size, 1, entry_fd) != 1)
-        {
+        if (fread(entry->data, st.st_size, 1, entry_fd) != 1) {
             fprintf(stderr, "%s: failed to fread `%s': %s\r\n",
                     prog, symbolname, strerror(errno));
             exit(EXIT_FAILURE);
@@ -134,31 +124,27 @@ Size BootImageCreate::readBootSymbols(const char *conf_file,
         fclose(entry_fd);
 
         // Parse as BootProgram using libexec.
-        if (entry->symbol.type == BootProgram || entry->symbol.type == BootPrivProgram)
-        {
-            if (ExecutableFormat::find(entry->data, st.st_size, &format) != ExecutableFormat::Success)
-            {
+        if (entry->symbol.type == BootProgram || entry->symbol.type == BootPrivProgram) {
+            if (ExecutableFormat::find(entry->data, st.st_size, &format) != ExecutableFormat::Success) {
                 fprintf(stderr, "%s: failed to parse executable image format in `%s': %s\r\n",
-                            prog, symbolname, strerror(errno));
+                        prog, symbolname, strerror(errno));
                 exit(EXIT_FAILURE);
             }
             // Extract memory regions
-            if (format->regions(entry->regions, &num) != ExecutableFormat::Success || num <= 0)
-            {
+            if (format->regions(entry->regions, &num) != ExecutableFormat::Success || num <= 0) {
                 fprintf(stderr, "%s: failed to extract memory regions from `%s': %s\r\n",
-                            prog, symbolname, strerror(errno));
+                        prog, symbolname, strerror(errno));
                 exit(EXIT_FAILURE);
             }
-            entry->numRegions   = num;
+            entry->numRegions = num;
 
-            format->entry((Address *)&entry->symbol.entry);
+            format->entry((Address * ) & entry->symbol.entry);
         }
-        // BootData
-        else if (entry->symbol.type == BootData)
-        {
+            // BootData
+        else if (entry->symbol.type == BootData) {
             // Fill BootEntry
             entry->symbol.type = BootData;
-            entry->numRegions  = 1;
+            entry->numRegions = 1;
             entry->regions[0].virt = 0;
             entry->regions[0].access = Memory::User | Memory::Readable | Memory::Writable;
             entry->regions[0].dataSize = st.st_size;
@@ -174,11 +160,10 @@ Size BootImageCreate::readBootSymbols(const char *conf_file,
         totalEntries++;
 
         // Debug out memory sections
-        for (Size i = 0; i < entry->numRegions; i++)
-        {
+        for (Size i = 0; i < entry->numRegions; i++) {
             printf("%s[%u]: vaddr=%x size=%u\r\n",
-                    symbolname, i, (uint) entry->regions[i].virt,
-                    entry->regions[i].memorySize);
+                   symbolname, i, (uint) entry->regions[i].virt,
+                   entry->regions[i].memorySize);
             totalBytes += entry->regions[i].memorySize;
         }
     }
@@ -190,12 +175,11 @@ Size BootImageCreate::readBootSymbols(const char *conf_file,
     return totalEntries;
 }
 
-BootImageCreate::Result BootImageCreate::exec()
-{
-    Vector<BootEntry *> input;
+BootImageCreate::Result BootImageCreate::exec() {
+    Vector < BootEntry * > input;
     BootImage image;
     BootSymbol *symbols;
-    BootSegment *segments;    
+    BootSegment *segments;
     FILE *fp;
     Size numSegments = 0, dataOffset = 0, lastDataOffset = 0;
     uint segCount = 0;
@@ -205,60 +189,56 @@ BootImageCreate::Result BootImageCreate::exec()
     const char *prefix = arguments().get("prefix");
 
     // Read boot symbols
-    if (readBootSymbols(conf_file, prefix, &input) == 0)
-    {
+    if (readBootSymbols(conf_file, prefix, &input) == 0) {
         fprintf(stderr, "%s: failed to read boot symbols\r\n", prog);
         return IOError;
     }
 
     // Allocate tables
-    symbols = new BootSymbol[ input.count() ];
+    symbols = new BootSymbol[input.count()];
     memset(&image, 0, sizeof(image));
     memset(symbols, 0, sizeof(BootSymbol) * input.count());
 
     // Fill in the boot image header
-    image.magic[0]       = BOOTIMAGE_MAGIC0;
-    image.magic[1]       = BOOTIMAGE_MAGIC1;
+    image.magic[0] = BOOTIMAGE_MAGIC0;
+    image.magic[1] = BOOTIMAGE_MAGIC1;
     image.layoutRevision = BOOTIMAGE_REVISION;
-    image.symbolTableOffset   = sizeof(BootImage);
-    image.symbolTableCount    = input.count();
-    image.segmentsTableOffset  = image.symbolTableOffset  +
-                                (image.symbolTableCount   * sizeof(BootSymbol));
+    image.symbolTableOffset = sizeof(BootImage);
+    image.symbolTableCount = input.count();
+    image.segmentsTableOffset = image.symbolTableOffset +
+                                (image.symbolTableCount * sizeof(BootSymbol));
 
     // Fill in the boot symbols
-    for (Size i = 0; i < input.count(); i++)
-    {
+    for (Size i = 0; i < input.count(); i++) {
         strncpy(symbols[i].name, input[i]->symbol.name, BOOTIMAGE_NAMELEN);
-        symbols[i].type  = input[i]->symbol.type;
+        symbols[i].type = input[i]->symbol.type;
         symbols[i].entry = input[i]->symbol.entry;
         symbols[i].segmentsOffset = numSegments;
-        symbols[i].segmentsCount  = input[i]->numRegions;
+        symbols[i].segmentsCount = input[i]->numRegions;
         symbols[i].segmentsTotalSize = 0;
         numSegments += input[i]->numRegions;
     }
     // Update BootImage
     image.segmentsTableCount = numSegments;
-    
+
     // Now we allocate and clear the segments table
     segments = new BootSegment[numSegments];
     memset(segments, 0, sizeof(BootSegment) * numSegments);
-    
+
     // Point segment data after the segments table
-    dataOffset  = image.segmentsTableOffset +
-                  image.segmentsTableCount  * sizeof(BootSegment);
+    dataOffset = image.segmentsTableOffset +
+                 image.segmentsTableCount * sizeof(BootSegment);
     dataOffset += PageSize - (dataOffset % PageSize);
-    
+
     // Fill the segments table by looping symbols
-    for (Size i = 0; i < input.count(); i++)
-    {
+    for (Size i = 0; i < input.count(); i++) {
         // Loop the symbol segments
-        for (Size j = 0; j < input[i]->numRegions; j++)
-        {
+        for (Size j = 0; j < input[i]->numRegions; j++) {
             // Fill in the segment
             segments[segCount].virtualAddress = input[i]->regions[j].virt;
-            segments[segCount].size           = input[i]->regions[j].memorySize;
-            segments[segCount].offset         = dataOffset;
-            
+            segments[segCount].size = input[i]->regions[j].memorySize;
+            segments[segCount].offset = dataOffset;
+
             // Increment total segments size
             symbols[i].segmentsTotalSize += segments[segCount].size;
 
@@ -273,33 +253,28 @@ BootImageCreate::Result BootImageCreate::exec()
     image.bootImageSize = lastDataOffset;
 
     // Open boot image for writing
-    if ((fp = fopen(out_file, "w")) == NULL)
-    {
+    if ((fp = fopen(out_file, "w")) == NULL) {
         fprintf(stderr, "%s: failed to open `%s': %s\r\n",
                 prog, out_file, strerror(errno));
         return IOError;
     }
 
     // Write the final boot image headers
-    if (fwrite(&image,    sizeof(image), 1, fp) <= 0 ||
-        fwrite( symbols,  sizeof(BootSymbol)  * input.count(),  1, fp) <= 0 ||
-        fwrite( segments, sizeof(BootSegment) * numSegments, 1, fp) <= 0)
-    {
+    if (fwrite(&image, sizeof(image), 1, fp) <= 0 ||
+        fwrite(symbols, sizeof(BootSymbol) * input.count(), 1, fp) <= 0 ||
+        fwrite(segments, sizeof(BootSegment) * numSegments, 1, fp) <= 0) {
         fprintf(stderr, "%s: failed to write BootImage headers to `%s': %s\r\n",
                 prog, out_file, strerror(errno));
         return IOError;
     }
 
     // Write the contents of the BootSegments
-    for (Size i = 0; i < input.count(); i++)
-    {
+    for (Size i = 0; i < input.count(); i++) {
         // Loop regions/segments per boot symbol entry
-        for (Size j = 0; j < input[i]->numRegions; j++)
-        {
+        for (Size j = 0; j < input[i]->numRegions; j++) {
             // Adjust file pointer
             if (fseek(fp, segments[symbols[i].segmentsOffset].offset,
-                      SEEK_SET) == -1)
-            {
+                      SEEK_SET) == -1) {
                 fprintf(stderr, "%s: failed to seek to BootSegment contents in `%s': %s\r\n",
                         prog, out_file, strerror(errno));
                 return IOError;
@@ -307,8 +282,7 @@ BootImageCreate::Result BootImageCreate::exec()
 
             // Write segment contents
             if (fwrite(input[i]->data + input[i]->regions[j].dataOffset,
-                       input[i]->regions[j].memorySize, 1, fp) <= 0)
-            {
+                       input[i]->regions[j].memorySize, 1, fp) <= 0) {
                 fprintf(stderr, "%s: failed to write BootSegment contents to `%s': %s\r\n",
                         prog, out_file, strerror(errno));
                 return IOError;
@@ -317,7 +291,7 @@ BootImageCreate::Result BootImageCreate::exec()
     }
     // Close file
     fclose(fp);
-    
+
     // Done
     return Success;
 }

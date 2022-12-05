@@ -110,9 +110,8 @@
 #define DIRENTRY(vaddr) \
     ((vaddr) >> DIRSHIFT)
 
-ARMSecondTable * ARMFirstTable::getSecondTable(Address virt, SplitAllocator *alloc) const
-{
-    u32 entry = m_tables[ DIRENTRY(virt) ];
+ARMSecondTable *ARMFirstTable::getSecondTable(Address virt, SplitAllocator *alloc) const {
+    u32 entry = m_tables[DIRENTRY(virt)];
 
     // Check if the page table is present.
     if (!(entry & PAGE1_TABLE))
@@ -124,17 +123,15 @@ ARMSecondTable * ARMFirstTable::getSecondTable(Address virt, SplitAllocator *all
 MemoryContext::Result ARMFirstTable::map(Address virt,
                                          Address phys,
                                          Memory::Access access,
-                                         SplitAllocator *alloc)
-{
+                                         SplitAllocator *alloc) {
     ARMSecondTable *table = getSecondTable(virt, alloc);
     Arch::Cache cache;
     Allocator::Range allocPhys, allocVirt;
 
     // Check if the page table is present.
-    if (!table)
-    {
+    if (!table) {
         // Reject if already mapped as a (super)section
-        if (m_tables[ DIRENTRY(virt) ] & PAGE1_SECTION)
+        if (m_tables[DIRENTRY(virt)] & PAGE1_SECTION)
             return MemoryContext::AlreadyExists;
 
         // Allocate a new page table
@@ -145,10 +142,10 @@ MemoryContext::Result ARMFirstTable::map(Address virt,
         if (alloc->allocate(allocPhys, allocVirt) != Allocator::Success)
             return MemoryContext::OutOfMemory;
 
-        MemoryBlock::set((void *)allocVirt.address, 0, PAGESIZE);
+        MemoryBlock::set((void *) allocVirt.address, 0, PAGESIZE);
 
         // Assign to the page directory. Do not assign permission flags (only for direct sections).
-        m_tables[ DIRENTRY(virt) ] = allocPhys.address | PAGE1_TABLE;
+        m_tables[DIRENTRY(virt)] = allocPhys.address | PAGE1_TABLE;
         cache.cleanData(&m_tables[DIRENTRY(virt)]);
         table = getSecondTable(virt, alloc);
     }
@@ -156,8 +153,7 @@ MemoryContext::Result ARMFirstTable::map(Address virt,
 }
 
 MemoryContext::Result ARMFirstTable::mapLarge(Memory::Range range,
-                                              SplitAllocator *alloc)
-{
+                                              SplitAllocator *alloc) {
     Arch::Cache cache;
 
     if (range.size & 0xfffff)
@@ -166,46 +162,37 @@ MemoryContext::Result ARMFirstTable::mapLarge(Memory::Range range,
     if ((range.phys & ~PAGEMASK) || (range.virt & ~PAGEMASK))
         return MemoryContext::InvalidAddress;
 
-    for (Size i = 0; i < range.size; i += MegaByte(1))
-    {
-        if (m_tables[ DIRENTRY(range.virt + i) ] & (PAGE1_TABLE | PAGE1_SECTION))
+    for (Size i = 0; i < range.size; i += MegaByte(1)) {
+        if (m_tables[DIRENTRY(range.virt + i)] & (PAGE1_TABLE | PAGE1_SECTION))
             return MemoryContext::AlreadyExists;
 
-        m_tables[ DIRENTRY(range.virt + i) ] = (range.phys + i) | PAGE1_SECTION | flags(range.access);
+        m_tables[DIRENTRY(range.virt + i)] = (range.phys + i) | PAGE1_SECTION | flags(range.access);
         cache.cleanData(&m_tables[DIRENTRY(range.virt + i)]);
     }
     return MemoryContext::Success;
 }
 
-MemoryContext::Result ARMFirstTable::unmap(Address virt, SplitAllocator *alloc)
-{
+MemoryContext::Result ARMFirstTable::unmap(Address virt, SplitAllocator *alloc) {
     ARMSecondTable *table = getSecondTable(virt, alloc);
     Arch::Cache cache;
 
-    if (!table)
-    {
-        if (m_tables[DIRENTRY(virt)] & PAGE1_SECTION)
-        {
+    if (!table) {
+        if (m_tables[DIRENTRY(virt)] & PAGE1_SECTION) {
             m_tables[DIRENTRY(virt)] = PAGE1_NONE;
             cache.cleanData(&m_tables[DIRENTRY(virt)]);
             return MemoryContext::Success;
-        }
-        else
+        } else
             return MemoryContext::InvalidAddress;
-    }
-    else
+    } else
         return table->unmap(virt);
 }
 
 MemoryContext::Result ARMFirstTable::translate(Address virt,
                                                Address *phys,
-                                               SplitAllocator *alloc) const
-{
+                                               SplitAllocator *alloc) const {
     ARMSecondTable *table = getSecondTable(virt, alloc);
-    if (!table)
-    {
-        if (m_tables[DIRENTRY(virt)] & PAGE1_SECTION)
-        {
+    if (!table) {
+        if (m_tables[DIRENTRY(virt)] & PAGE1_SECTION) {
             const Address offsetInSection = virt % MegaByte(1);
 
             *phys = (m_tables[DIRENTRY(virt)] & SECTIONMASK) +
@@ -213,15 +200,13 @@ MemoryContext::Result ARMFirstTable::translate(Address virt,
             return MemoryContext::Success;
         }
         return MemoryContext::InvalidAddress;
-    }
-    else
+    } else
         return table->translate(virt, phys);
 }
 
 MemoryContext::Result ARMFirstTable::access(Address virt,
                                             Memory::Access *access,
-                                            SplitAllocator *alloc) const
-{
+                                            SplitAllocator *alloc) const {
     ARMSecondTable *table = getSecondTable(virt, alloc);
     if (!table)
         return MemoryContext::InvalidAddress;
@@ -229,59 +214,51 @@ MemoryContext::Result ARMFirstTable::access(Address virt,
         return table->access(virt, access);
 }
 
-u32 ARMFirstTable::flags(Memory::Access access) const
-{
+u32 ARMFirstTable::flags(Memory::Access access) const {
     u32 f = PAGE1_AP_SYS;
 
     // Permissions
     if (!(access & Memory::Executable)) f |= PAGE1_NOEXEC;
-    if ((access & Memory::User))        f |= PAGE1_AP_USER;
-    if (!(access & Memory::Writable))   f |= PAGE1_APX;
+    if ((access & Memory::User)) f |= PAGE1_AP_USER;
+    if (!(access & Memory::Writable)) f |= PAGE1_APX;
 
     // Caching
-    if (access & Memory::Device)        f |= PAGE1_DEVICE_SHARED;
+    if (access & Memory::Device) f |= PAGE1_DEVICE_SHARED;
     else if (access & Memory::Uncached) f |= PAGE1_UNCACHED;
-    else                                f |= PAGE1_CACHE_WRITEBACK;
+    else f |= PAGE1_CACHE_WRITEBACK;
 
     return f;
 }
 
 inline void ARMFirstTable::releasePhysical(SplitAllocator *alloc,
-                                           const Address phys)
-{
+                                           const Address phys) {
     // Some pages that are part of the boot core's memory region
     // are mapped on secondary cores. They can't be released there.
     const Address allocBase = alloc->base();
     const Size allocSize = alloc->size();
-    if (phys < allocBase || phys > allocBase + allocSize)
-    {
+    if (phys < allocBase || phys > allocBase + allocSize) {
         return;
     }
 
     // Note that some pages may have double mappings.
     // Avoid attempting to release the same page twice or more.
-    if (alloc->isAllocated(phys))
-    {
+    if (alloc->isAllocated(phys)) {
         alloc->release(phys);
     }
 }
 
 MemoryContext::Result ARMFirstTable::releaseRange(const Memory::Range range,
-                                                  SplitAllocator *alloc)
-{
+                                                  SplitAllocator *alloc) {
     Address phys;
 
     // Walk the full range of memory specified
-    for (Size addr = range.virt; addr < range.virt + range.size; addr += PAGESIZE)
-    {
+    for (Size addr = range.virt; addr < range.virt + range.size; addr += PAGESIZE) {
         ARMSecondTable *table = getSecondTable(addr, alloc);
-        if (table == ZERO)
-        {
+        if (table == ZERO) {
             return MemoryContext::InvalidAddress;
         }
 
-        if (table->translate(addr, &phys) != MemoryContext::Success)
-        {
+        if (table->translate(addr, &phys) != MemoryContext::Success) {
             return MemoryContext::InvalidAddress;
         }
 
@@ -294,39 +271,32 @@ MemoryContext::Result ARMFirstTable::releaseRange(const Memory::Range range,
 
 MemoryContext::Result ARMFirstTable::releaseSection(const Memory::Range range,
                                                     SplitAllocator *alloc,
-                                                    const bool tablesOnly)
-{
+                                                    const bool tablesOnly) {
     Address phys;
 
     // Input must be aligned to section address
-    if (range.virt & ~SECTIONMASK)
-    {
+    if (range.virt & ~SECTIONMASK) {
         return MemoryContext::InvalidAddress;
     }
 
     // Walk the page directory
-    for (Size addr = range.virt; addr < range.virt + range.size; addr += MegaByte(1))
-    {
+    for (Size addr = range.virt; addr < range.virt + range.size; addr += MegaByte(1)) {
         ARMSecondTable *table = getSecondTable(addr, alloc);
-        if (!table)
-        {
+        if (!table) {
             continue;
         }
 
         // Release mapped pages, if requested
-        if (!tablesOnly)
-        {
-            for (Size i = 0; i < MegaByte(1); i += PAGESIZE)
-            {
-                if (table->translate(i, &phys) == MemoryContext::Success)
-                {
+        if (!tablesOnly) {
+            for (Size i = 0; i < MegaByte(1); i += PAGESIZE) {
+                if (table->translate(i, &phys) == MemoryContext::Success) {
                     releasePhysical(alloc, phys);
                 }
             }
         }
         // Release page table
-        alloc->release(m_tables[ DIRENTRY(addr) ] & PAGEMASK);
-        m_tables[ DIRENTRY(addr) ] = 0;
+        alloc->release(m_tables[DIRENTRY(addr)] & PAGEMASK);
+        m_tables[DIRENTRY(addr)] = 0;
     }
 
     return MemoryContext::Success;

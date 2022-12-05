@@ -33,9 +33,8 @@ class TestReporter;
 /**
  * Reponsible for discovering and running tests
  */
-class TestRunner
-{
-  public:
+class TestRunner {
+public:
 
     /**
      * Class constructor
@@ -55,7 +54,7 @@ class TestRunner
      *
      * @return TestReporter pointer
      */
-    TestReporter * getReporter();
+    TestReporter *getReporter();
 
     /**
      * Run all discovered tests
@@ -64,7 +63,7 @@ class TestRunner
      */
     int run(void);
 
-  protected:
+protected:
 
     /** Program argument count */
     int m_argc;

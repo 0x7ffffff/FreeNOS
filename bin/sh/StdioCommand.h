@@ -32,9 +32,8 @@
 /**
  * Change the standard Input/Output of the shell.
  */
-class StdioCommand : public ShellCommand
-{
-  public:
+class StdioCommand : public ShellCommand {
+public:
 
     /**
      * Constructor function.

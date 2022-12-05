@@ -43,8 +43,7 @@ typedef uint MPI_Status;
 /**
  * Named Predefined Datatypes
  */
-typedef enum
-{
+typedef enum {
     MPI_CHAR = 0,
     MPI_SHORT,
     MPI_LONG,
@@ -54,13 +53,12 @@ typedef enum
     MPI_UNSIGNED,
     MPI_UNSIGNED_LONG
 }
-MPI_Datatype;
+        MPI_Datatype;
 
 /**
  * Reserved communicators.
  */
-enum
-{
+enum {
     MPI_COMM_WORLD = 0,
     MPI_COMM_SELF
 };
@@ -68,8 +66,7 @@ enum
 /**
  * MPI Error Codes.
  */
-enum
-{
+enum {
     MPI_SUCCESS = 0,
     MPI_ERR_BUFFER,
     MPI_ERR_COUNT,

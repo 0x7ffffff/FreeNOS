@@ -33,9 +33,8 @@
 /**
  * Pseudo files only exist in memory.
  */
-class PseudoFile : public File
-{
-  public:
+class PseudoFile : public File {
+public:
 
     /**
      * Default constructor.
@@ -68,8 +67,8 @@ class PseudoFile : public File
      *
      * @return Result code
      */
-    virtual FileSystem::Result read(IOBuffer & buffer,
-                                    Size & size,
+    virtual FileSystem::Result read(IOBuffer &buffer,
+                                    Size &size,
                                     const Size offset);
 
     /**
@@ -82,11 +81,11 @@ class PseudoFile : public File
      *
      * @return Result code
      */
-    virtual FileSystem::Result write(IOBuffer & buffer,
-                                     Size & size,
+    virtual FileSystem::Result write(IOBuffer &buffer,
+                                     Size &size,
                                      const Size offset);
 
-  private:
+private:
 
     /** Buffer from which we read. */
     char *m_buffer;

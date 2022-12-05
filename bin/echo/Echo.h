@@ -28,9 +28,8 @@
 /**
  * Echo standard input to output.
  */
-class Echo : public POSIXApplication
-{
-  public:
+class Echo : public POSIXApplication {
+public:
 
     /**
      * Constructor

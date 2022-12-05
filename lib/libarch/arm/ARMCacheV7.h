@@ -39,22 +39,20 @@
  *
  * @see ARM Architecture Reference Manual, page xxx
  */
-class ARMCacheV7 : public Cache
-{
-  private:
+class ARMCacheV7 : public Cache {
+private:
 
     /**
      * Defines the cache level type bits
      */
-    enum CacheLevelType
-    {
-        CacheLevelInstruction     = 1,
-        CacheLevelData            = 2,
+    enum CacheLevelType {
+        CacheLevelInstruction = 1,
+        CacheLevelData = 2,
         CacheLevelInstructionData = 3,
-        CacheLevelUnified         = 4
+        CacheLevelUnified = 4
     };
 
-  public:
+public:
 
     /**
      * Invalidate the entire cache.
@@ -107,7 +105,7 @@ class ARMCacheV7 : public Cache
      */
     virtual Result invalidateAddress(Type type, Address addr);
 
-  private:
+private:
 
     /**
      * Flush the entire data cache
@@ -152,14 +150,13 @@ class ARMCacheV7 : public Cache
      */
     Result flushLevel(u32 level, bool clean);
 
-  private:
+private:
 
     /** ARM system control processor object */
     ARMControl m_control;
 };
 
-namespace Arch
-{
+namespace Arch {
     typedef ARMCacheV7 Cache;
 };
 

@@ -57,12 +57,11 @@
 /**
  * A structure containing information about a file.
  */
-typedef struct FILE
-{
+typedef struct FILE {
     /** File descriptor. */
     int fd;
 }
-FILE;
+        FILE;
 
 /**
  * @brief Open a stream.
@@ -87,8 +86,11 @@ FILE;
  *         to the object controlling the stream. Otherwise, a null
  *         pointer shall be returned, and errno shall be set to indicate the error.
  */
-extern C FILE * fopen(const char *filename,
-                      const char *mode);
+extern C FILE
+*
+
+fopen(const char *filename,
+      const char *mode);
 
 /**
  * @brief Binary input.
@@ -118,8 +120,10 @@ extern C FILE * fopen(const char *filename,
  *         be set, and errno shall be set to indicate
  *         the error.
  */
-extern C size_t fread(void *ptr, size_t size,
-                      size_t nitems, FILE *stream);
+extern C size_t
+
+fread(void *ptr, size_t size,
+      size_t nitems, FILE *stream);
 
 /**
  * The fwrite() function shall write, from the array pointed to by ptr,
@@ -143,8 +147,10 @@ extern C size_t fread(void *ptr, size_t size,
  *         Otherwise, if a write error occurs, the error indicator for the
  *         stream shall be set, and errno shall be set to indicate the error.
  */
-extern C size_t fwrite(const void *ptr, size_t size,
-                       size_t nitems, FILE *stream);
+extern C size_t
+
+fwrite(const void *ptr, size_t size,
+       size_t nitems, FILE *stream);
 
 /**
  * @brief Close a stream.
@@ -162,7 +168,7 @@ extern C size_t fwrite(const void *ptr, size_t size,
  * @return Upon successful completion, fclose() shall return 0; otherwise,
  *         it shall return EOF and set errno to indicate the error.
  */
-extern C int fclose(FILE *stream);
+extern C int fclose(FILE * stream);
 
 /**
  * @}

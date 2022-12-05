@@ -35,9 +35,8 @@
  *       implementations should be placed in libarch without creating a new dependency in libstd,
  *       for example using weak symbols.
  */
-class MemoryBlock
-{
-  public:
+class MemoryBlock {
+public:
 
     /**
      * Fill memory with a constant byte.
@@ -48,7 +47,7 @@ class MemoryBlock
      *
      * @return Pointer to dest.
      */
-    static void * set(void *dest, int ch, unsigned count);
+    static void *set(void *dest, int ch, unsigned count);
 
     /**
      * Copy memory from one place to another.

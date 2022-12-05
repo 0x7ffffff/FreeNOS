@@ -30,19 +30,20 @@
 #define __ASSERT__
 #endif
 #define __LIB_LIBSTD_LOG_H
+
 #include <Assert.h>
 
 TestCase(AssertCallsFatal)
-{
-    bool fatalCalled = false;
+        {
+                bool fatalCalled = false;
 
-    // invoke an assertion that always passed
-    assert(true);
-    testAssert(fatalCalled == false);
+        // invoke an assertion that always passed
+        assert(true);
+        testAssert(fatalCalled == false);
 
-    // invoke an assertion that always fails
-    assert(false);
-    testAssert(fatalCalled == true);
+        // invoke an assertion that always fails
+        assert(false);
+        testAssert(fatalCalled == true);
 
-    return OK;
-}
+        return OK;
+        }

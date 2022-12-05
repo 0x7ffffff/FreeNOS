@@ -25,24 +25,19 @@
 #include "XMLReporter.h"
 
 XMLReporter::XMLReporter(int argc, char **argv)
-    : TestReporter(argc, argv)
-{
+        : TestReporter(argc, argv) {
 }
 
-void XMLReporter::reportBegin(List<TestInstance *> & tests)
-{
-    if (m_multiline)
-    {
+void XMLReporter::reportBegin(List<TestInstance *> &tests) {
+    if (m_multiline) {
         printf("<!-- Init %s -->\r\n",
-                m_argv[0]);
-    }
-    else
-    {
+               m_argv[0]);
+    } else {
         printf("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\r\n"
                "<testsuites id=\"%s\" name=\"%s\">\r\n"
                "<testsuite id=\"%s\" name=\"%s\" tests=\"%d\">\r\n",
-                m_argv[0], m_argv[0],
-                m_argv[0], m_argv[0], tests.count());
+               m_argv[0], m_argv[0],
+               m_argv[0], m_argv[0], tests.count());
     }
 
 #ifdef __HOST__
@@ -50,17 +45,13 @@ void XMLReporter::reportBegin(List<TestInstance *> & tests)
 #endif /* __HOST__ */
 }
 
-void XMLReporter::reportBefore(TestInstance & test)
-{
-    if (m_multiline)
-    {
+void XMLReporter::reportBefore(TestInstance &test) {
+    if (m_multiline) {
         printf("<!-- Start %s -->\r\n", *test.m_name);
-    }
-    else
-    {
+    } else {
         printf("   <testcase id=\"%s.%s\" name=\"%s.%s\">\r\n",
-                m_argv[0], *test.m_name,
-                m_argv[0], *test.m_name);
+               m_argv[0], *test.m_name,
+               m_argv[0], *test.m_name);
     }
 
 #ifdef __HOST__
@@ -68,33 +59,33 @@ void XMLReporter::reportBefore(TestInstance & test)
 #endif /* __HOST__ */
 }
 
-void XMLReporter::reportAfter(TestInstance & test, TestResult & result)
-{
-    if (m_multiline)
-    {
-        switch (result.getResult())
-        {
-            case TestResult::Success: printf("<!-- Finish %s OK -->\r\n", *test.m_name); break;
-            case TestResult::Failure: printf("<!-- Finish %s FAIL -->\r\n", *test.m_name); break;
-            case TestResult::Skipped: printf("<!-- Finish %s SKIP -->\r\n", *test.m_name); break;
+void XMLReporter::reportAfter(TestInstance &test, TestResult &result) {
+    if (m_multiline) {
+        switch (result.getResult()) {
+            case TestResult::Success:
+                printf("<!-- Finish %s OK -->\r\n", *test.m_name);
+                break;
+            case TestResult::Failure:
+                printf("<!-- Finish %s FAIL -->\r\n", *test.m_name);
+                break;
+            case TestResult::Skipped:
+                printf("<!-- Finish %s SKIP -->\r\n", *test.m_name);
+                break;
         }
-    }
-    else
-    {
-        switch (result.getResult())
-        {
+    } else {
+        switch (result.getResult()) {
             case TestResult::Success:
                 printf("      <!-- OK -->\r\n");
                 break;
 
             case TestResult::Failure:
                 printf("      <failure message=\"%s\" type=\"error\" />\r\n",
-                        *result.getDescription());
+                       *result.getDescription());
                 break;
 
             case TestResult::Skipped:
                 printf("      <skipped message=\"Skipped: %s\" type=\"unittest.case.SkipTest\">Skipped: %s</skipped>\r\n",
-                        *test.m_name, *test.m_name);
+                       *test.m_name, *test.m_name);
                 break;
         }
         printf("   </testcase>\r\n");
@@ -105,8 +96,7 @@ void XMLReporter::reportAfter(TestInstance & test, TestResult & result)
 #endif /* __HOST__ */
 }
 
-void XMLReporter::reportFinish(List<TestInstance *> & tests)
-{
+void XMLReporter::reportFinish(List<TestInstance *> &tests) {
     if (m_multiline)
         printf("</testsuites>\r\n"
                "<!-- Completed ");
@@ -116,7 +106,7 @@ void XMLReporter::reportFinish(List<TestInstance *> & tests)
                "<!-- Result ");
 
     printf("%s (%d passed %d failed %d skipped %d total) -->\r\n",
-            m_fail == 0 ? "OK" : "FAIL", m_ok, m_fail, m_skip, (m_ok + m_fail + m_skip));
+           m_fail == 0 ? "OK" : "FAIL", m_ok, m_fail, m_skip, (m_ok + m_fail + m_skip));
 
 #ifdef __HOST__
     fflush(stdout);

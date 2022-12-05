@@ -35,18 +35,17 @@
  *
  * @see Device
  */
-class DeviceLog : public Log
-{
-  public:
+class DeviceLog : public Log {
+public:
 
     /**
      * Constructor.
      *
      * @param device Device instance to write log messages to
      */
-    DeviceLog(Device & device);
+    DeviceLog(Device &device);
 
-  protected:
+protected:
 
     /**
      * Write a string to the Device one character at a time
@@ -55,10 +54,10 @@ class DeviceLog : public Log
      */
     virtual void write(const char *str);
 
-  private:
+private:
 
     /** Device instance */
-    Device & m_device;
+    Device &m_device;
 };
 
 /**

@@ -23,32 +23,27 @@
 VGA::VGA(const u32 inode,
          const Size w,
          const Size h)
-    : Device(inode, FileSystem::BlockDeviceFile)
-    , width(w)
-    , height(h)
-{
+        : Device(inode, FileSystem::BlockDeviceFile), width(w), height(h) {
     m_identifier << "vga0";
 }
 
-FileSystem::Result VGA::initialize()
-{
+FileSystem::Result VGA::initialize() {
     Memory::Range range;
 
     // Request VGA memory
-    range.size   = PAGESIZE;
-    range.access = Memory::User     |
+    range.size = PAGESIZE;
+    range.access = Memory::User |
                    Memory::Readable |
                    Memory::Writable;
-    range.virt   = ZERO;
-    range.phys   = VGA_PADDR;
+    range.virt = ZERO;
+    range.phys = VGA_PADDR;
     VMCtl(SELF, MapContiguous, &range);
 
     // Point to the VGA mapping
     vga = (u16 *) range.virt;
 
     // Clear screen
-    for (uint i = 0; i < width * height; i++)
-    {
+    for (uint i = 0; i < width * height; i++) {
         vga[i] = VGA_CHAR(' ', LIGHTGREY, BLACK);
     }
 
@@ -60,12 +55,10 @@ FileSystem::Result VGA::initialize()
     return FileSystem::Success;
 }
 
-FileSystem::Result VGA::read(IOBuffer & buffer,
-                             Size & size,
-                             const Size offset)
-{
-    if (offset + size > width * height * sizeof(u16))
-    {
+FileSystem::Result VGA::read(IOBuffer &buffer,
+                             Size &size,
+                             const Size offset) {
+    if (offset + size > width * height * sizeof(u16)) {
         return FileSystem::InvalidArgument;
     }
 
@@ -73,12 +66,10 @@ FileSystem::Result VGA::read(IOBuffer & buffer,
     return FileSystem::Success;
 }
 
-FileSystem::Result VGA::write(IOBuffer & buffer,
-                              Size & size,
-                              const Size offset)
-{
-    if (offset + size > width * height * sizeof(u16))
-    {
+FileSystem::Result VGA::write(IOBuffer &buffer,
+                              Size &size,
+                              const Size offset) {
+    if (offset + size > width * height * sizeof(u16)) {
         return FileSystem::InvalidArgument;
     }
 

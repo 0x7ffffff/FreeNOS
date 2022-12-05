@@ -23,68 +23,68 @@
 #include <Allocator.h>
 
 TestCase(AllocatorConstruct)
-{
-    const Allocator::Range range = { 0, PAGESIZE, sizeof(u32) };
-    Allocator alloc(range);
+        {
+                const Allocator::Range range = { 0, PAGESIZE, sizeof(u32) };
+                Allocator alloc(range);
 
-    return OK;
-}
+                return OK;
+        }
 
 TestCase(AllocatorDefault)
-{
-    const Allocator::Range range = { 0, PAGESIZE, sizeof(u32) };
-    Allocator alloc(range);
+        {
+                const Allocator::Range range = { 0, PAGESIZE, sizeof(u32) };
+                Allocator alloc(range);
 
-    // Retrieve current default
-    Allocator *current = alloc.getDefault();
+                // Retrieve current default
+                Allocator *current = alloc.getDefault();
 
-    // Assign a new default allocator
-    alloc.setDefault(&alloc);
-    testAssert(alloc.getDefault() == &alloc);
+                // Assign a new default allocator
+                alloc.setDefault(&alloc);
+                testAssert(alloc.getDefault() == &alloc);
 
-    // Restore default
-    alloc.setDefault(current);
-    testAssert(alloc.getDefault() == current);
-    testAssert(alloc.getDefault() != &alloc);
+                // Restore default
+                alloc.setDefault(current);
+                testAssert(alloc.getDefault() == current);
+                testAssert(alloc.getDefault() != &alloc);
 
-    return OK;
-}
+                return OK;
+        }
 
 TestCase(AllocatorParent)
-{
-    const Allocator::Range range = { 0, PAGESIZE, sizeof(u32) };
-    Allocator alloc(range);
-    Allocator parent(range);
+        {
+                const Allocator::Range range = { 0, PAGESIZE, sizeof(u32) };
+                Allocator alloc(range);
+                Allocator parent(range);
 
-    // The default is no parent
-    testAssert(alloc.parent() == NULL);
+                // The default is no parent
+                testAssert(alloc.parent() == NULL);
 
-    // Assign a new parent
-    alloc.setParent(&parent);
-    testAssert(alloc.parent() == &parent);
+                // Assign a new parent
+                alloc.setParent(&parent);
+                testAssert(alloc.parent() == &parent);
 
-    return OK;
-}
+                return OK;
+        }
 
 TestCase(AllocatorAligned)
-{
-    const Allocator::Range range = { 0, PAGESIZE, sizeof(u32) };
-    Allocator alloc(range);
+        {
+                const Allocator::Range range = { 0, PAGESIZE, sizeof(u32) };
+                Allocator alloc(range);
 
-    // Address zero is always aligned to itself
-    testAssert(alloc.aligned(0, sizeof(u8)) == 0);
-    testAssert(alloc.aligned(0, sizeof(u32)) == 0);
-    testAssert(alloc.aligned(0, PAGESIZE) == 0);
+                // Address zero is always aligned to itself
+                testAssert(alloc.aligned(0, sizeof(u8)) == 0);
+                testAssert(alloc.aligned(0, sizeof(u32)) == 0);
+                testAssert(alloc.aligned(0, PAGESIZE) == 0);
 
-    // Test for 32-bit alignments
-    testAssert(alloc.aligned(0x100, sizeof(u32)) == 0x100);
-    testAssert(alloc.aligned(31, sizeof(u32)) == 32);
-    testAssert(alloc.aligned(1, sizeof(u32)) == 4);
+                // Test for 32-bit alignments
+                testAssert(alloc.aligned(0x100, sizeof(u32)) == 0x100);
+                testAssert(alloc.aligned(31, sizeof(u32)) == 32);
+                testAssert(alloc.aligned(1, sizeof(u32)) == 4);
 
-    // Test for PAGESIZE alignments
-    testAssert(alloc.aligned(PAGESIZE-1, PAGESIZE) == PAGESIZE);
-    testAssert(alloc.aligned(PAGESIZE, PAGESIZE) == PAGESIZE);
-    testAssert(alloc.aligned(PAGESIZE+1, PAGESIZE) == PAGESIZE * 2);
+                // Test for PAGESIZE alignments
+                testAssert(alloc.aligned(PAGESIZE-1, PAGESIZE) == PAGESIZE);
+                testAssert(alloc.aligned(PAGESIZE, PAGESIZE) == PAGESIZE);
+                testAssert(alloc.aligned(PAGESIZE+1, PAGESIZE) == PAGESIZE * 2);
 
-    return OK;
-}
+                return OK;
+        }

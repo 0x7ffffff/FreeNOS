@@ -19,27 +19,21 @@
 #include "DeviceServer.h"
 
 DeviceServer::DeviceServer(const char *path)
-    : FileSystemServer(new Directory(1), path)
-{
+        : FileSystemServer(new Directory(1), path) {
 }
 
-DeviceServer::~DeviceServer()
-{
+DeviceServer::~DeviceServer() {
 }
 
-FileSystem::Result DeviceServer::initialize()
-{
+FileSystem::Result DeviceServer::initialize() {
     // Initialize all devices
-    for (Size i = 0; i < m_devices.count(); i++)
-    {
+    for (Size i = 0; i < m_devices.count(); i++) {
         Device *dev = m_devices[i];
-        if (dev != ZERO)
-        {
+        if (dev != ZERO) {
             const FileSystem::Result result = dev->initialize();
-            if (result != FileSystem::Success)
-            {
+            if (result != FileSystem::Success) {
                 ERROR("failed to initialize device " << (*dev->getIdentifier()) <<
-                      ": result = " << (int)result);
+                                                     ": result = " << (int) result);
                 return result;
             }
         }
@@ -47,72 +41,61 @@ FileSystem::Result DeviceServer::initialize()
 
     // Add log level pseudo file
     const FileSystem::Result logResult = registerFile(new LogLevelFile(getNextInode()), "loglevel");
-    if (logResult != FileSystem::Success)
-    {
+    if (logResult != FileSystem::Success) {
         ERROR("failed to register LogLevelFile: result = " << (int) logResult);
         return logResult;
     }
 
     // Mount on the root file system
     const FileSystem::Result result = mount();
-    if (result != FileSystem::Success)
-    {
-        ERROR("failed to mount to path " << m_mountPath << ": result = " << (int)result);
+    if (result != FileSystem::Success) {
+        ERROR("failed to mount to path " << m_mountPath << ": result = " << (int) result);
         return result;
     }
 
     return FileSystem::Success;
 }
 
-void DeviceServer::registerDevice(Device *dev, const char *path)
-{
+void DeviceServer::registerDevice(Device *dev, const char *path) {
     FileSystemServer::registerFile(dev, path);
 
     // Add to the list of Devices
     const bool result = m_devices.insert(dev);
-    if (!result)
-    {
+    if (!result) {
         FATAL("failed to register device on path: " << path);
     }
 }
 
-void DeviceServer::registerInterrupt(Device *dev, Size vector)
-{
-    if (!m_interrupts.get(vector))
-    {
-        m_interrupts.insertAt(vector, new List<Device *>);
+void DeviceServer::registerInterrupt(Device *dev, Size vector) {
+    if (!m_interrupts.get(vector)) {
+        m_interrupts.insertAt(vector, new List < Device * > );
     }
     m_interrupts[vector]->append(dev);
 
     // Register to kernel
     const API::Result watchResult = ProcessCtl(SELF, WatchIRQ, vector);
-    if (watchResult != API::Success)
-    {
+    if (watchResult != API::Success) {
         ERROR("failed to register IRQ handler using WatchIRQ: result = " << (int) watchResult);
         return;
     }
 
     const API::Result enableResult = ProcessCtl(SELF, EnableIRQ, vector);
-    if (enableResult != API::Success)
-    {
+    if (enableResult != API::Success) {
         ERROR("failed to enable IRQ handler using EnableIRQ: result = " << (int) enableResult);
         return;
     }
 
     // Register interrupt handler
-    addIRQHandler(vector, (IRQHandlerFunction) &DeviceServer::interruptHandler);
+    addIRQHandler(vector, (IRQHandlerFunction) & DeviceServer::interruptHandler);
 }
 
-void DeviceServer::interruptHandler(Size vector)
-{
-    List<Device *> *lst = m_interrupts.get(vector);
+void DeviceServer::interruptHandler(Size vector) {
+    List < Device * > *lst = m_interrupts.get(vector);
 
     // Do we have any Devices with this interrupt vector?
-    if (lst)
-    {
+    if (lst) {
         // Loop all Devices of interest. Invoke callback.
-        for (ListIterator<Device *> i(lst); i.hasCurrent(); i++)
-        {
+        for (ListIterator < Device * > i(lst); i.hasCurrent(); i++) {
             i.current()->interrupt(vector);
         }
     }

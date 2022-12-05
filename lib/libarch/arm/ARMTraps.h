@@ -56,15 +56,14 @@
  *
  * @return An integer.
  */
-inline ulong trapKernel1(ulong api, ulong arg1)
-{
+inline ulong trapKernel1(ulong api, ulong arg1) {
     register unsigned reg0 asm ("r0") = api;
     register unsigned reg1 asm ("r1") = arg1;
 
     asm volatile ("swi #0\n"
-                : "+r"(reg0)
-                : "r"(reg0), "r"(reg1)
-                : "memory");
+            : "+r"(reg0)
+            : "r"(reg0), "r"(reg1)
+            : "memory");
     return reg0;
 }
 
@@ -77,16 +76,15 @@ inline ulong trapKernel1(ulong api, ulong arg1)
  *
  * @return An integer
  */
-inline ulong trapKernel2(ulong api, ulong arg1, ulong arg2)
-{
+inline ulong trapKernel2(ulong api, ulong arg1, ulong arg2) {
     register unsigned reg0 asm ("r0") = api;
     register unsigned reg1 asm ("r1") = arg1;
     register unsigned reg2 asm ("r2") = arg2;
 
     asm volatile ("swi #0\n"
-                : "+r"(reg0)
-                : "r"(reg0), "r"(reg1), "r"(reg2)
-                : "memory");
+            : "+r"(reg0)
+            : "r"(reg0), "r"(reg1), "r"(reg2)
+            : "memory");
     return reg0;
 }
 
@@ -100,17 +98,16 @@ inline ulong trapKernel2(ulong api, ulong arg1, ulong arg2)
  *
  * @return An integer.
  */
-inline ulong trapKernel3(ulong api, ulong arg1, ulong arg2, ulong arg3)
-{
+inline ulong trapKernel3(ulong api, ulong arg1, ulong arg2, ulong arg3) {
     register unsigned reg0 asm ("r0") = api;
     register unsigned reg1 asm ("r1") = arg1;
     register unsigned reg2 asm ("r2") = arg2;
     register unsigned reg3 asm ("r3") = arg3;
 
     asm volatile ("swi #0\n"
-                : "+r"(reg0)
-                : "r"(reg0), "r"(reg1), "r"(reg2), "r"(reg3)
-                : "memory");
+            : "+r"(reg0)
+            : "r"(reg0), "r"(reg1), "r"(reg2), "r"(reg3)
+            : "memory");
     return reg0;
 }
 
@@ -126,8 +123,7 @@ inline ulong trapKernel3(ulong api, ulong arg1, ulong arg2, ulong arg3)
  * @return An integer.
  */
 inline ulong trapKernel4(ulong api, ulong arg1, ulong arg2, ulong arg3,
-                         ulong arg4)
-{
+                         ulong arg4) {
     register unsigned reg0 asm ("r0") = api;
     register unsigned reg1 asm ("r1") = arg1;
     register unsigned reg2 asm ("r2") = arg2;
@@ -135,9 +131,9 @@ inline ulong trapKernel4(ulong api, ulong arg1, ulong arg2, ulong arg3,
     register unsigned reg4 asm ("r4") = arg4;
 
     asm volatile ("swi #0\n"
-                : "+r"(reg0)
-                : "r"(reg0), "r"(reg1), "r"(reg2), "r"(reg3), "r"(reg4)
-                : "memory");
+            : "+r"(reg0)
+            : "r"(reg0), "r"(reg1), "r"(reg2), "r"(reg3), "r"(reg4)
+            : "memory");
     return reg0;
 }
 
@@ -154,8 +150,7 @@ inline ulong trapKernel4(ulong api, ulong arg1, ulong arg2, ulong arg3,
  * @return An integer.
  */
 inline ulong trapKernel5(ulong api, ulong arg1, ulong arg2, ulong arg3,
-                         ulong arg4, ulong arg5)
-{
+                         ulong arg4, ulong arg5) {
     register unsigned reg0 asm ("r0") = api;
     register unsigned reg1 asm ("r1") = arg1;
     register unsigned reg2 asm ("r2") = arg2;
@@ -164,9 +159,9 @@ inline ulong trapKernel5(ulong api, ulong arg1, ulong arg2, ulong arg3,
     register unsigned reg5 asm ("r5") = arg5;
 
     asm volatile ("swi #0\n"
-                : "+r"(reg0)
-                : "r"(reg0), "r"(reg1), "r"(reg2), "r"(reg3), "r"(reg4), "r"(reg5)
-                : "memory");
+            : "+r"(reg0)
+            : "r"(reg0), "r"(reg1), "r"(reg2), "r"(reg3), "r"(reg4), "r"(reg5)
+            : "memory");
     return reg0;
 }
 

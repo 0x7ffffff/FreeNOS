@@ -24,33 +24,29 @@ const ProcessID ProcessClient::m_pid = ProcessCtl(SELF, GetPID, 0);
 
 const ProcessID ProcessClient::m_parent = ProcessCtl(SELF, GetParent, 0);
 
-ProcessID ProcessClient::getProcessID() const
-{
+ProcessID ProcessClient::getProcessID() const {
     return m_pid;
 }
 
-ProcessID ProcessClient::getParentID() const
-{
+ProcessID ProcessClient::getParentID() const {
     return m_parent;
 }
 
 ProcessClient::Result ProcessClient::processInfo(const ProcessID pid,
-                                                 ProcessClient::Info &info) const
-{
+                                                 ProcessClient::Info &info) const {
 #ifndef __HOST__
-    const char * textStates[] = {
-        "Ready",
-        "Sleeping",
-        "Waiting",
-        "Stopped"
+    const char *textStates[] = {
+            "Ready",
+            "Sleeping",
+            "Waiting",
+            "Stopped"
     };
     const Arch::MemoryMap map;
     const Memory::Range range = map.range(MemoryMap::UserArgs);
     char cmd[128];
 
-    const API::Result result = ProcessCtl(pid, InfoPID, (Address) &info.kernelState);
-    switch (result)
-    {
+    const API::Result result = ProcessCtl(pid, InfoPID, (Address) & info.kernelState);
+    switch (result) {
         case API::Success:
             break;
         case API::NotFound:
@@ -60,8 +56,7 @@ ProcessClient::Result ProcessClient::processInfo(const ProcessID pid,
     }
 
     // Read the full command
-    if (VMCopy(pid, API::Read, (Address) cmd, range.virt, sizeof(cmd)) != API::Success)
-    {
+    if (VMCopy(pid, API::Read, (Address) cmd, range.virt, sizeof(cmd)) != API::Success) {
         return IOError;
     }
 
@@ -74,14 +69,11 @@ ProcessClient::Result ProcessClient::processInfo(const ProcessID pid,
 }
 
 ProcessClient::Result ProcessClient::processInfo(const String program,
-                                                 ProcessClient::Info &info) const
-{
+                                                 ProcessClient::Info &info) const {
     // Loop processes
-    for (ProcessID i = 0; i < MaximumProcesses; i++)
-    {
+    for (ProcessID i = 0; i < MaximumProcesses; i++) {
         const Result result = processInfo(i, info);
-        if (result == Success && info.command.equals(program))
-        {
+        if (result == Success && info.command.equals(program)) {
             return result;
         }
     }
@@ -89,17 +81,13 @@ ProcessClient::Result ProcessClient::processInfo(const String program,
     return NotFound;
 }
 
-ProcessID ProcessClient::findProcess(const String program) const
-{
+ProcessID ProcessClient::findProcess(const String program) const {
     ProcessClient::Info info;
 
     const Result result = processInfo(program, info);
-    if (result == Success)
-    {
+    if (result == Success) {
         return info.kernelState.id;
-    }
-    else
-    {
+    } else {
         return ANY;
     }
 }

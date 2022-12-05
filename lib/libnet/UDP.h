@@ -38,27 +38,25 @@ class UDPFactory;
 /**
  * User Datagram Protocol (UDP)
  */
-class UDP : public NetworkProtocol
-{
-  private:
+class UDP : public NetworkProtocol {
+private:
 
     static const Size MaxUdpSockets = 128u;
 
-  public:
+public:
 
     /**
      * Packet header format
      */
-    typedef struct Header
-    {
+    typedef struct Header {
         u16 sourcePort;
         u16 destPort;
         u16 length;
         u16 checksum;
     }
-    Header;
+            Header;
 
-  public:
+public:
 
     /**
      * Constructor
@@ -88,8 +86,8 @@ class UDP : public NetworkProtocol
      *
      * @return UDPSocket object instance
      */
-    UDPSocket * createSocket(String & path,
-                             const ProcessID pid);
+    UDPSocket *createSocket(String &path,
+                            const ProcessID pid);
 
     /**
      * Remove sockets for a process
@@ -127,7 +125,7 @@ class UDP : public NetworkProtocol
      */
     FileSystem::Result sendPacket(const NetworkClient::SocketInfo *src,
                                   const NetworkClient::SocketInfo *dest,
-                                  IOBuffer & buffer,
+                                  IOBuffer &buffer,
                                   const Size size,
                                   const Size offset);
 
@@ -144,7 +142,7 @@ class UDP : public NetworkProtocol
                               const Header *header,
                               const Size datalen);
 
-  private:
+private:
 
     /**
      * Calculate sum of artibrary data
@@ -157,13 +155,13 @@ class UDP : public NetworkProtocol
     static const ulong calculateSum(const u16 *ptr,
                                     const Size bytes);
 
-  private:
+private:
 
     /** Factory for creating new UDP sockets */
     UDPFactory *m_factory;
 
     /** Contains all UDP sockets */
-    Index<UDPSocket, MaxUdpSockets> m_sockets;
+    Index <UDPSocket, MaxUdpSockets> m_sockets;
 
     /** Maps UDP ports to UDP sockets */
     HashTable<u16, UDPSocket *> m_ports;

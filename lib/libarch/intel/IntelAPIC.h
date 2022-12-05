@@ -26,6 +26,7 @@
 
 /** Forward declarations */
 class MemoryContext;
+
 class IntelPIT;
 
 /**
@@ -42,11 +43,10 @@ class IntelPIT;
 /**
  * Intel Advanced Programmable Interrupt Controller (APIC)
  */
-class IntelAPIC : public IntController, public Timer
-{
-  using Timer::start;
+class IntelAPIC : public IntController, public Timer {
+    using Timer::start;
 
-  public:
+public:
 
     /** APIC memory mapped I/O register base offset (physical address). */
     static const uint IOBase = 0xfee00000;
@@ -54,63 +54,59 @@ class IntelAPIC : public IntController, public Timer
     /** APIC timer interrupt vector is fixed at 48 */
     static const uint TimerVector = 48;
 
-  private:
+private:
 
     /**
      * Hardware registers.
      */
-    enum Registers
-    {
-        Identifier          = 0x20,
-        Version             = 0x30,
-        TaskPriority        = 0x80,
+    enum Registers {
+        Identifier = 0x20,
+        Version = 0x30,
+        TaskPriority = 0x80,
         ArbitrationPriority = 0x90,
-        ProcessorPriority   = 0xa0,
-        EndOfInterrupt      = 0xb0,
-        SpuriousIntVec      = 0xf0,
-        InService           = 0x100,
-        TriggerMode         = 0x180,
-        IntRequest          = 0x200,
-        ErrorStatus         = 0x280,
-        IntCommand1         = 0x300,
-        IntCommand2         = 0x310,
-        Timer               = 0x320,
-        ThermalSensor       = 0x330,
-        PerfCounters        = 0x340,
-        LocalInt0           = 0x350,
-        LocalInt1           = 0x360,
-        Error               = 0x370,
-        InitialCount        = 0x380,
-        CurrentCount        = 0x390,
-        DivideConfig        = 0x3e0
+        ProcessorPriority = 0xa0,
+        EndOfInterrupt = 0xb0,
+        SpuriousIntVec = 0xf0,
+        InService = 0x100,
+        TriggerMode = 0x180,
+        IntRequest = 0x200,
+        ErrorStatus = 0x280,
+        IntCommand1 = 0x300,
+        IntCommand2 = 0x310,
+        Timer = 0x320,
+        ThermalSensor = 0x330,
+        PerfCounters = 0x340,
+        LocalInt0 = 0x350,
+        LocalInt1 = 0x360,
+        Error = 0x370,
+        InitialCount = 0x380,
+        CurrentCount = 0x390,
+        DivideConfig = 0x3e0
     };
 
     /**
      * Spurious Interrupt Vector Register flags.
      */
-    enum SpuriousIntVecFlags
-    {
+    enum SpuriousIntVecFlags {
         APICEnable = 0x100
     };
 
     /**
      * Timer Divide Configuration Register flags.
      */
-    enum DivideConfigFlags
-    {
+    enum DivideConfigFlags {
         Divide16 = 3
     };
 
     /**
      * Timer Register flags.
      */
-    enum TimerFlags
-    {
-        TimerMasked  = (1 << 16),
+    enum TimerFlags {
+        TimerMasked = (1 << 16),
         PeriodicMode = (1 << 17)
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -122,7 +118,7 @@ class IntelAPIC : public IntController, public Timer
      *
      * @return I/O object reference.
      */
-    IntelIO & getIO();
+    IntelIO &getIO();
 
     /**
      * Get timer initial counter.
@@ -228,7 +224,7 @@ class IntelAPIC : public IntController, public Timer
      */
     IntController::Result sendIPI(uint coreId, uint vector);
 
-  private:
+private:
 
     /** I/O object */
     IntelIO m_io;

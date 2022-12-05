@@ -34,9 +34,8 @@
 /**
  * Memory mapping for the kernel and user processes on the ARM architecture
  */
-class ARMMap : public MemoryMap
-{
-  public:
+class ARMMap : public MemoryMap {
+public:
 
     /**
      * Constructor.
@@ -44,8 +43,7 @@ class ARMMap : public MemoryMap
     ARMMap();
 };
 
-namespace Arch
-{
+namespace Arch {
     typedef ARMMap MemoryMap;
 };
 

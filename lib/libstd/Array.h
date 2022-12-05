@@ -36,15 +36,14 @@
  *
  * This class contains some extra functionality, somewhat like the Arrays class in Java.
  */
-template <class T, Size N> class Array : public Sequence<T>
-{
-  public:
+template<class T, Size N>
+class Array : public Sequence<T> {
+public:
 
     /**
      * Default constructor
      */
-    Array()
-    {
+    Array() {
     }
 
     /**
@@ -52,10 +51,8 @@ template <class T, Size N> class Array : public Sequence<T>
      *
      * @param a Array reference to copy from.
      */
-    Array(const Array<T,N> & a)
-    {
-        for (Size i = 0; i < N; i++)
-        {
+    Array(const Array<T, N> &a) {
+        for (Size i = 0; i < N; i++) {
             m_array[i] = a->m_array[i];
         }
     }
@@ -71,10 +68,8 @@ template <class T, Size N> class Array : public Sequence<T>
      *
      * @return bool Whether putting the item at the given position succeeded.
      */
-    virtual bool insert(Size position, const T & item)
-    {
-        if (position >= N)
-        {
+    virtual bool insert(Size position, const T &item) {
+        if (position >= N) {
             return false;
         }
         m_array[position] = item;
@@ -88,10 +83,8 @@ template <class T, Size N> class Array : public Sequence<T>
      *
      * @return Pointer to the item at the given position.
      */
-    virtual const T * get(Size position) const
-    {
-        if (position >= N)
-        {
+    virtual const T *get(Size position) const {
+        if (position >= N) {
             return ZERO;
         }
         return &m_array[position];
@@ -107,8 +100,7 @@ template <class T, Size N> class Array : public Sequence<T>
      *
      * @return Reference to the item at the given position
      */
-    virtual const T & at(Size position) const
-    {
+    virtual const T &at(Size position) const {
         return m_array[position];
     }
 
@@ -122,8 +114,7 @@ template <class T, Size N> class Array : public Sequence<T>
      *
      * @return T at the given position or default constructed T.
      */
-    virtual const T value(Size position) const
-    {
+    virtual const T value(Size position) const {
         if (position >= N)
             return T();
         else
@@ -135,8 +126,7 @@ template <class T, Size N> class Array : public Sequence<T>
      *
      * @return size The maximum size of this Array.
      */
-    virtual Size size() const
-    {
+    virtual Size size() const {
         return N;
     }
 
@@ -145,12 +135,11 @@ template <class T, Size N> class Array : public Sequence<T>
      *
      * @return The same as size().
      */
-    virtual Size count() const
-    {
+    virtual Size count() const {
         return N;
     }
 
-  private:
+private:
 
     /** The actual array where the data is stored. */
     T m_array[N];

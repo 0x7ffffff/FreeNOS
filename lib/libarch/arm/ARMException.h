@@ -41,15 +41,13 @@ struct CPUState;
 /**
  * ARM exception handling functionality.
  */
-class ARMException
-{
-  public:
+class ARMException {
+public:
 
     /**
      * ARM exception types.
      */
-    enum ExceptionType
-    {
+    enum ExceptionType {
         Reset = 0,
         UndefinedInstruction,
         SoftwareInterrupt,
@@ -63,8 +61,7 @@ class ARMException
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         NotFound,
         IOError
@@ -77,7 +74,7 @@ class ARMException
      */
     typedef void Handler(struct CPUState state);
 
-  public:
+public:
 
     /**
      * Constructor
@@ -97,7 +94,7 @@ class ARMException
      */
     Result install(ExceptionType vector, Handler handler);
 
-  private:
+private:
 
     /**
      * ARM exception vector jump table.

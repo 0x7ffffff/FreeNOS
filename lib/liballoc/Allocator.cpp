@@ -20,79 +20,64 @@
 #include <MemoryBlock.h>
 #include "Allocator.h"
 
-Allocator * Allocator::m_default = ZERO;
+Allocator *Allocator::m_default = ZERO;
 
 Allocator::Allocator()
-    : m_parent(ZERO)
-{
+        : m_parent(ZERO) {
     MemoryBlock::set(&m_range, 0, sizeof(m_range));
 }
 
 Allocator::Allocator(const Allocator::Range range)
-    : m_parent(ZERO)
-    , m_range(range)
-{
+        : m_parent(ZERO), m_range(range) {
     assert(m_range.alignment >= sizeof(u32));
     assert(m_range.size >= sizeof(u32));
     assert((m_range.size % m_range.alignment) == 0);
 }
 
-Allocator::~Allocator()
-{
+Allocator::~Allocator() {
 }
 
-void Allocator::setParent(Allocator *parent)
-{
+void Allocator::setParent(Allocator *parent) {
     m_parent = parent;
 }
 
-Allocator * Allocator::parent()
-{
+Allocator *Allocator::parent() {
     return m_parent;
 }
 
-Allocator * Allocator::getDefault()
-{
+Allocator *Allocator::getDefault() {
     return m_default;
 }
 
-void Allocator::setDefault(Allocator *alloc)
-{
+void Allocator::setDefault(Allocator *alloc) {
     m_default = alloc;
 }
 
-Size Allocator::size() const
-{
+Size Allocator::size() const {
     return m_range.size;
 }
 
-Address Allocator::base() const
-{
+Address Allocator::base() const {
     return m_range.address;
 }
 
-Size Allocator::alignment() const
-{
+Size Allocator::alignment() const {
     return m_range.alignment;
 }
 
-Size Allocator::available() const
-{
+Size Allocator::available() const {
     return m_parent ? m_parent->available() : ZERO;
 }
 
-Allocator::Result Allocator::allocate(Allocator::Range & range)
-{
+Allocator::Result Allocator::allocate(Allocator::Range &range) {
     return OutOfMemory;
 }
 
-Allocator::Result Allocator::release(const Address addr)
-{
+Allocator::Result Allocator::release(const Address addr) {
     return InvalidAddress;
 }
 
-Address Allocator::aligned(const Address addr, const Size boundary) const
-{
+Address Allocator::aligned(const Address addr, const Size boundary) const {
     Address corrected = addr;
 
     if (addr % boundary)

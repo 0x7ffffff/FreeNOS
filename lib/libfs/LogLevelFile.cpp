@@ -20,27 +20,21 @@
 #include "LogLevelFile.h"
 
 LogLevelFile::LogLevelFile(const u32 inode)
-    : File(inode)
-{
+        : File(inode) {
     m_access = FileSystem::OwnerRW;
 }
 
-LogLevelFile::~LogLevelFile()
-{
+LogLevelFile::~LogLevelFile() {
 }
 
-FileSystem::Result LogLevelFile::read(IOBuffer & buffer,
-                                      Size & size,
-                                      const Size offset)
-{
+FileSystem::Result LogLevelFile::read(IOBuffer &buffer,
+                                      Size &size,
+                                      const Size offset) {
     // Bounds checking
-    if (offset >= 2)
-    {
+    if (offset >= 2) {
         size = 0;
         return FileSystem::Success;
-    }
-    else
-    {
+    } else {
         // Retrieve the current log level
         const Log::Level level = Log::instance()->getMinimumLogLevel();
 
@@ -57,18 +51,14 @@ FileSystem::Result LogLevelFile::read(IOBuffer & buffer,
     }
 }
 
-FileSystem::Result LogLevelFile::write(IOBuffer & buffer,
-                                       Size & size,
-                                       const Size offset)
-{
+FileSystem::Result LogLevelFile::write(IOBuffer &buffer,
+                                       Size &size,
+                                       const Size offset) {
     // Bounds checking
-    if (offset > 1)
-    {
+    if (offset > 1) {
         size = 0;
         return FileSystem::Success;
-    }
-    else
-    {
+    } else {
         char tmp[2];
 
         // Read input

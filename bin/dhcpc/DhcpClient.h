@@ -33,9 +33,8 @@
  * @see https://tools.ietf.org/html/rfc2131
  * @see https://tools.ietf.org/html/rfc1533
  */
-class DhcpClient : public POSIXApplication
-{
-  private:
+class DhcpClient : public POSIXApplication {
+private:
 
     /** Server UDP port */
     static const u16 ServerPort = 67;
@@ -55,8 +54,7 @@ class DhcpClient : public POSIXApplication
     /**
      * Protocol packet header
      */
-    struct Header
-    {
+    struct Header {
         u8 operation;
         u8 hardwareType;
         u8 hardwareLength;
@@ -76,42 +74,39 @@ class DhcpClient : public POSIXApplication
     /**
      * DHCP operations
      */
-    enum Operation
-    {
-        BootRequest  = 1,
+    enum Operation {
+        BootRequest = 1,
         BootResponse = 2
     };
 
     /**
      * DHCP message types
      */
-    enum MessageType
-    {
+    enum MessageType {
         Discover = 1,
-        Offer    = 2,
-        Request  = 3,
-        Decline  = 4,
-        Ack      = 5,
-        Nak      = 6,
-        Release  = 7
+        Offer = 2,
+        Request = 3,
+        Decline = 4,
+        Ack = 5,
+        Nak = 6,
+        Release = 7
     };
 
     /**
      * DHCP options
      */
-    enum Options
-    {
-        SubnetMask           = 1,
-        Router               = 3,
-        DomainNameServer     = 6,
-        RequestedIP          = 50,
-        DhcpMessageType      = 53,
-        ServerIdentifier     = 54,
+    enum Options {
+        SubnetMask = 1,
+        Router = 3,
+        DomainNameServer = 6,
+        RequestedIP = 50,
+        DhcpMessageType = 53,
+        ServerIdentifier = 54,
         ParameterRequestList = 55,
-        EndMark              = 255
+        EndMark = 255
     };
 
-  public:
+public:
 
     /**
      * Class constructor.
@@ -140,7 +135,7 @@ class DhcpClient : public POSIXApplication
      */
     virtual Result exec();
 
-  private:
+private:
 
     /**
      * Set IP address on a device
@@ -216,9 +211,9 @@ class DhcpClient : public POSIXApplication
      * @return Result code
      */
     Result sendBootRequest(const DhcpClient::MessageType messageType,
-                           const IPV4::Address & ipAddr,
-                           const IPV4::Address & ipServer,
-                           const IPV4::Address & ipGateway) const;
+                           const IPV4::Address &ipAddr,
+                           const IPV4::Address &ipServer,
+                           const IPV4::Address &ipGateway) const;
 
     /**
      * Receive DHCP boot response
@@ -255,9 +250,9 @@ class DhcpClient : public POSIXApplication
      * @return Result code
      */
     Result udpReceive(void *packet,
-                      Size & size) const;
+                      Size &size) const;
 
-  private:
+private:
 
     /** Network client */
     NetworkClient *m_client;

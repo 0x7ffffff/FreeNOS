@@ -46,10 +46,8 @@
  * Each core in a system will run its own instance of CoreServer.
  * CoreServers will communicate and collaborate together to implement functionality.
  */
-class CoreServer : public ChannelServer<CoreServer, CoreMessage>
-                 , public AbstractFactory<CoreServer>
-{
-  private:
+class CoreServer : public ChannelServer<CoreServer, CoreMessage>, public AbstractFactory<CoreServer> {
+private:
 
     /** Maximum number of cores currently supported */
     static const Size MaxCores = 256;
@@ -60,7 +58,7 @@ class CoreServer : public ChannelServer<CoreServer, CoreMessage>
     /** The default kernel for starting new cores. */
     static const char *kernelPath;
 
-  public:
+public:
 
     /**
      * Class constructor function.
@@ -88,7 +86,7 @@ class CoreServer : public ChannelServer<CoreServer, CoreMessage>
      */
     virtual Result initialize();
 
-  private:
+private:
 
     /**
      * Boot a processor core
@@ -121,7 +119,7 @@ class CoreServer : public ChannelServer<CoreServer, CoreMessage>
      */
     virtual Core::Result sendIPI(uint coreId) = 0;
 
-  private:
+private:
 
     /**
      * Prepare processor core for booting
@@ -235,11 +233,11 @@ class CoreServer : public ChannelServer<CoreServer, CoreMessage>
      */
     Core::Result sendToSlave(uint coreId, CoreMessage *msg);
 
-  protected:
+protected:
 
     CoreManager *m_cores;
 
-  private:
+private:
 
     ExecutableFormat *m_kernel;
     Memory::Range m_kernelImage;
@@ -248,11 +246,11 @@ class CoreServer : public ChannelServer<CoreServer, CoreMessage>
 
     Size m_numRegions;
 
-    Index<CoreInfo, MaxCores> *m_coreInfo;
+    Index <CoreInfo, MaxCores> *m_coreInfo;
     SystemInformation m_info;
 
-    Index<MemoryChannel, MaxCores> *m_fromSlave;
-    Index<MemoryChannel, MaxCores> *m_toSlave;
+    Index <MemoryChannel, MaxCores> *m_fromSlave;
+    Index <MemoryChannel, MaxCores> *m_toSlave;
 
     MemoryChannel *m_toMaster;
     MemoryChannel *m_fromMaster;

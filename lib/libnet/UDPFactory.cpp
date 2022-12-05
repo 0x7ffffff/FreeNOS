@@ -21,34 +21,28 @@
 
 UDPFactory::UDPFactory(const u32 inode,
                        UDP *udp)
-    : File(inode)
-    , m_udp(udp)
-{
+        : File(inode), m_udp(udp) {
 }
 
-UDPFactory::~UDPFactory()
-{
+UDPFactory::~UDPFactory() {
 }
 
-FileSystem::Result UDPFactory::read(IOBuffer & buffer,
-                                    Size & size,
-                                    const Size offset)
-{
+FileSystem::Result UDPFactory::read(IOBuffer &buffer,
+                                    Size &size,
+                                    const Size offset) {
     DEBUG("");
 
     String path;
     UDPSocket *sock;
     const FileSystemMessage *msg = buffer.getMessage();
 
-    if (offset > 0)
-    {
+    if (offset > 0) {
         size = 0;
         return FileSystem::Success;
     }
 
     sock = m_udp->createSocket(path, msg->from);
-    if (!sock)
-    {
+    if (!sock) {
         ERROR("failed to create UDP socket");
         return FileSystem::IOError;
     }

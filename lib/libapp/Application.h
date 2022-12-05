@@ -35,9 +35,8 @@
 /**
  * Generic application
  */
-class Application
-{
-  private:
+class Application {
+private:
 
     /** Exit code for successful termination */
     static const uint ExitSuccess = 0;
@@ -45,13 +44,12 @@ class Application
     /** Exit code for failure termination */
     static const uint ExitFailure = 1;
 
-  public:
+public:
 
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         NotFound,
         IOError,
@@ -61,7 +59,7 @@ class Application
         OutOfMemory
     };
 
-  public:
+public:
 
     /**
      * Class constructor.
@@ -83,7 +81,7 @@ class Application
      */
     virtual int run();
 
-  protected:
+protected:
 
     /**
      * Initialize the application.
@@ -114,52 +112,52 @@ class Application
      *
      * @return Result code.
      */
-    virtual Result output(String & string) const;
+    virtual Result output(String &string) const;
 
-  protected:
+protected:
 
     /**
      * Get program arguments parser.
      *
      * @return Program arguments parser.
      */
-    ArgumentParser & parser();
+    ArgumentParser &parser();
 
     /**
      * Get constant program arguments parser.
      *
      * @return Program arguments parser.
      */
-    const ArgumentParser & parser() const;
+    const ArgumentParser &parser() const;
 
     /**
      * Get program arguments.
      */
-    const ArgumentContainer & arguments() const;
+    const ArgumentContainer &arguments() const;
 
     /**
      * Set program version.
      *
      * @param version Program version string
      */
-    void setVersion(const String & version);
+    void setVersion(const String &version);
 
-  private:
+private:
 
     /**
      * Print usage and terminate.
      */
     void usage() const;
 
-  protected:
+protected:
 
     /** Input argument count */
     int m_argc;
 
     /** Input argument values */
-    char ** m_argv;
+    char **m_argv;
 
-  private:
+private:
 
     /** Program argument parser object */
     ArgumentParser m_parser;

@@ -32,9 +32,8 @@
 /**
  * Write data to a file.
  */
-class WriteCommand : public ShellCommand
-{
-  public:
+class WriteCommand : public ShellCommand {
+public:
 
     /**
      * Constructor function.

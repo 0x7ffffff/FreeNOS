@@ -39,9 +39,8 @@ class UDP;
  * UDP sockets accept payloads to send when writing
  * and read payloads when receiving payloads.
  */
-class UDPSocket : public NetworkSocket
-{
-  public:
+class UDPSocket : public NetworkSocket {
+public:
 
     /**
      * Constructor
@@ -72,8 +71,8 @@ class UDPSocket : public NetworkSocket
      *
      * @return Result code
      */
-    virtual FileSystem::Result read(IOBuffer & buffer,
-                                    Size & size,
+    virtual FileSystem::Result read(IOBuffer &buffer,
+                                    Size &size,
                                     const Size offset);
 
     /**
@@ -86,8 +85,8 @@ class UDPSocket : public NetworkSocket
      *
      * @return Result code
      */
-    virtual FileSystem::Result write(IOBuffer & buffer,
-                                     Size & size,
+    virtual FileSystem::Result write(IOBuffer &buffer,
+                                     Size &size,
                                      const Size offset);
 
     /**
@@ -108,7 +107,7 @@ class UDPSocket : public NetworkSocket
      */
     virtual FileSystem::Result process(const NetworkQueue::Packet *pkt);
 
-  private:
+private:
 
     /** UDP protocol instance */
     UDP *m_udp;

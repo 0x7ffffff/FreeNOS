@@ -18,8 +18,7 @@
 #include <KernelLog.h>
 #include "MpiProxy.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     MpiProxy proxy(argc, argv);
 
     KernelLog log;

@@ -37,9 +37,8 @@
 /**
  * Intel 8254 Programmable Interrupt Timer (PIT).
  */
-class IntelPIT : public Timer
-{
-  private:
+class IntelPIT : public Timer {
+private:
 
     /** Oscillator frequency in hertz used by the PIT. */
     static const uint OscillatorFreq = 1193182;
@@ -50,25 +49,23 @@ class IntelPIT : public Timer
     /**
      * Hardware registers.
      */
-    enum Registers
-    {
-        Control      = 0x43,
+    enum Registers {
+        Control = 0x43,
         Channel0Data = 0x40
     };
 
     /**
      * Control Register Flags.
      */
-    enum ControlFlags
-    {
-        Channel0      = 0,
-        LatchedRead   = 0,
+    enum ControlFlags {
+        Channel0 = 0,
+        LatchedRead = 0,
         AccessLowHigh = (3 << 4),
-        SquareWave    = (3 << 1),
+        SquareWave = (3 << 1),
         RateGenerator = (2 << 1),
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -109,7 +106,7 @@ class IntelPIT : public Timer
      */
     Result waitTrigger();
 
-  private:
+private:
 
     /**
      * Set Control register.
@@ -120,7 +117,7 @@ class IntelPIT : public Timer
      */
     Result setControl(ControlFlags flags);
 
-  private:
+private:
 
     /** I/O instance */
     IntelIO m_io;

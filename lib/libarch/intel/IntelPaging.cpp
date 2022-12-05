@@ -21,33 +21,22 @@
 #include "IntelPaging.h"
 
 IntelPaging::IntelPaging(MemoryMap *map, SplitAllocator *alloc)
-    : MemoryContext(map, alloc)
-    , m_pageDirectory(0)
-    , m_pageDirectoryAddr(0)
-    , m_pageDirectoryAllocated(false)
-{
+        : MemoryContext(map, alloc), m_pageDirectory(0), m_pageDirectoryAddr(0), m_pageDirectoryAllocated(false) {
 }
 
 IntelPaging::IntelPaging(MemoryMap *map, Address pageDirectory, SplitAllocator *alloc)
-    : MemoryContext(map, alloc)
-    , m_pageDirectory((IntelPageDirectory *) alloc->toVirtual(pageDirectory))
-    , m_pageDirectoryAddr(pageDirectory)
-    , m_pageDirectoryAllocated(false)
-{
+        : MemoryContext(map, alloc), m_pageDirectory((IntelPageDirectory *) alloc->toVirtual(pageDirectory)),
+          m_pageDirectoryAddr(pageDirectory), m_pageDirectoryAllocated(false) {
 }
 
-IntelPaging::~IntelPaging()
-{
-    if (m_pageDirectoryAllocated)
-    {
+IntelPaging::~IntelPaging() {
+    if (m_pageDirectoryAllocated) {
         m_alloc->release(m_pageDirectoryAddr);
     }
 }
 
-MemoryContext::Result IntelPaging::initialize()
-{
-    if (m_pageDirectoryAddr != 0)
-    {
+MemoryContext::Result IntelPaging::initialize() {
+    if (m_pageDirectoryAddr != 0) {
         return MemoryContext::Success;
     }
 
@@ -59,8 +48,7 @@ MemoryContext::Result IntelPaging::initialize()
     phys.alignment = sizeof(IntelPageDirectory);
 
     // Allocate page directory from low physical memory.
-    if (m_alloc->allocate(phys, virt) != Allocator::Success)
-    {
+    if (m_alloc->allocate(phys, virt) != Allocator::Success) {
         return MemoryContext::OutOfMemory;
     }
 
@@ -73,7 +61,7 @@ MemoryContext::Result IntelPaging::initialize()
 
     // Lookup the currently active page directory
     IntelPageDirectory *currentDirectory =
-        (IntelPageDirectory *) m_alloc->toVirtual(core.readCR3());
+            (IntelPageDirectory *) m_alloc->toVirtual(core.readCR3());
 
     // Inherit kernel mappings. The kernel has permanently mapped 1GB of
     // physical memory (i.e. the "low memory" in SplitAllocator). The low
@@ -92,16 +80,14 @@ MemoryContext::Result IntelPaging::initialize()
     return MemoryContext::Success;
 }
 
-MemoryContext::Result IntelPaging::activate(bool initializeMMU)
-{
+MemoryContext::Result IntelPaging::activate(bool initializeMMU) {
     IntelCore core;
     core.writeCR3(m_pageDirectoryAddr);
     m_current = this;
     return Success;
 }
 
-MemoryContext::Result IntelPaging::map(Address virt, Address phys, Memory::Access acc)
-{
+MemoryContext::Result IntelPaging::map(Address virt, Address phys, Memory::Access acc) {
     MemoryContext::Result r = m_pageDirectory->map(virt, phys, acc, m_alloc);
 
     // Flush TLB entry
@@ -111,8 +97,7 @@ MemoryContext::Result IntelPaging::map(Address virt, Address phys, Memory::Acces
     return r;
 }
 
-MemoryContext::Result IntelPaging::unmap(Address virt)
-{
+MemoryContext::Result IntelPaging::unmap(Address virt) {
     MemoryContext::Result r = m_pageDirectory->unmap(virt, m_alloc);
 
     // Flush TLB entry
@@ -122,23 +107,19 @@ MemoryContext::Result IntelPaging::unmap(Address virt)
     return r;
 }
 
-MemoryContext::Result IntelPaging::lookup(Address virt, Address *phys) const
-{
+MemoryContext::Result IntelPaging::lookup(Address virt, Address *phys) const {
     return m_pageDirectory->translate(virt, phys, m_alloc);
 }
 
-MemoryContext::Result IntelPaging::access(Address virt, Memory::Access *access) const
-{
+MemoryContext::Result IntelPaging::access(Address virt, Memory::Access *access) const {
     return m_pageDirectory->access(virt, access, m_alloc);
 }
 
-MemoryContext::Result IntelPaging::releaseSection(const Memory::Range & range,
-                                                  const bool tablesOnly)
-{
+MemoryContext::Result IntelPaging::releaseSection(const Memory::Range &range,
+                                                  const bool tablesOnly) {
     return m_pageDirectory->releaseSection(range, m_alloc, tablesOnly);
 }
 
-MemoryContext::Result IntelPaging::releaseRange(Memory::Range *range)
-{
+MemoryContext::Result IntelPaging::releaseRange(Memory::Range *range) {
     return m_pageDirectory->releaseRange(*range, m_alloc);
 }

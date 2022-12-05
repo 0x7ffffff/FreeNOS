@@ -19,8 +19,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 
-int snprintf(char *buffer, unsigned int size, const char *fmt, ...)
-{
+int snprintf(char *buffer, unsigned int size, const char *fmt, ...) {
     va_list args;
     int ret;
 

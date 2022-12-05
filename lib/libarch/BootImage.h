@@ -41,13 +41,12 @@
 /**
  * BootImage contains executable programs to be loaded at system bootup.
  */
-typedef struct BootImage
-{
+typedef struct BootImage {
     /** Magic numbers to detect a valid boot image. */
     u32 magic[2];
 
     /** Version of the boot image layout. */
-    u8  layoutRevision;
+    u8 layoutRevision;
 
     /** Total size of the boot image in bytes */
     u32 bootImageSize;
@@ -64,25 +63,23 @@ typedef struct BootImage
     /** Number of entries in the segments table. */
     u16 segmentsTableCount;
 }
-BootImage;
+        BootImage;
 
 /**
  * Boot symbol types.
  */
-typedef enum BootSymbolType
-{
-    BootProgram     = 0, /**< Executable program */
+typedef enum BootSymbolType {
+    BootProgram = 0, /**< Executable program */
     BootPrivProgram = 1, /**< Privileged executable program */
-    BootFilesystem  = 2, /**< Embedded filesystem */
-    BootData        = 3  /**< Binary data */
+    BootFilesystem = 2, /**< Embedded filesystem */
+    BootData = 3  /**< Binary data */
 }
-BootSymbolType;
+        BootSymbolType;
 
 /**
  * Program embedded in the BootImage.
  */
-typedef struct BootSymbol
-{
+typedef struct BootSymbol {
     /** Name of the boot symbol. */
     char name[BOOTIMAGE_NAMELEN];
 
@@ -101,13 +98,12 @@ typedef struct BootSymbol
     /** Total size of the BootSymbol segments */
     u32 segmentsTotalSize;
 }
-BootSymbol;
+        BootSymbol;
 
 /**
  * Memory segment.
  */
-typedef struct BootSegment
-{
+typedef struct BootSegment {
     /** Virtual memory address to load the segment. */
     u32 virtualAddress;
 
@@ -117,7 +113,7 @@ typedef struct BootSegment
     /** Offset in the boot image of the segment contents. */
     u32 offset;
 }
-BootSegment;
+        BootSegment;
 
 /**
  * @}

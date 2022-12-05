@@ -32,8 +32,7 @@
 /**
  * The <time.h> header shall declare the timespec structure.
  */
-struct timespec
-{
+struct timespec {
     /** Seconds. */
     time_t tv_sec;
 

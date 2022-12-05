@@ -33,9 +33,8 @@
 /**
  * Abstracts files which are opened by a user process.
  */
-class FileDescriptor : public StrictSingleton<FileDescriptor>
-{
-  public:
+class FileDescriptor : public StrictSingleton<FileDescriptor> {
+public:
 
     /** Default maximum number of files which can be opened */
     static const Size MaximumFiles = 1024;
@@ -43,8 +42,7 @@ class FileDescriptor : public StrictSingleton<FileDescriptor>
     /**
      * Describes a single file opened by a user process
      */
-    struct Entry
-    {
+    struct Entry {
         u32 inode;     /**@< Inode number of the file */
         ProcessID pid; /**@< Process identifier of the filesystem */
         Size position; /**@< Current position indicator. */
@@ -54,14 +52,13 @@ class FileDescriptor : public StrictSingleton<FileDescriptor>
     /**
      * Result code
      */
-    enum Result
-    {
+    enum Result {
         Success,
         InvalidArgument,
         OutOfFiles
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -75,7 +72,7 @@ class FileDescriptor : public StrictSingleton<FileDescriptor>
      *
      * @return Entry table pointer
      */
-    Entry * getArray(Size & count);
+    Entry *getArray(Size &count);
 
     /**
      * Assign entry table
@@ -97,7 +94,7 @@ class FileDescriptor : public StrictSingleton<FileDescriptor>
      */
     Result openEntry(const u32 inode,
                      const ProcessID filesystem,
-                     Size & index);
+                     Size &index);
 
     /**
      * Retrieve a file descriptor Entry
@@ -106,7 +103,7 @@ class FileDescriptor : public StrictSingleton<FileDescriptor>
      *
      * @return Pointer to the Entry on success or ZERO on failure
      */
-    Entry * getEntry(const Size index);
+    Entry *getEntry(const Size index);
 
     /**
      * Remove file descriptor entry
@@ -117,7 +114,7 @@ class FileDescriptor : public StrictSingleton<FileDescriptor>
      */
     Result closeEntry(const Size index);
 
-  private:
+private:
 
     /** Pointer to array of entries */
     Entry *m_array;

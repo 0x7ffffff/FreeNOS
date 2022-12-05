@@ -35,16 +35,14 @@
 /**
  * Generic Input/Output operations suitable for the host operating system.
  */
-class HostIO : public IO
-{
-  public:
+class HostIO : public IO {
+public:
 
     /**
      * write to memory mapped I/O register
      */
-    inline void write(const u32 reg, const u32 data)
-    {
-        volatile u32 *ptr = (volatile u32 *)((volatile u8 *)m_base + reg);
+    inline void write(const u32 reg, const u32 data) {
+        volatile u32 *ptr = (volatile u32 *) ((volatile u8 *) m_base + reg);
         *ptr = data;
     }
 
@@ -55,9 +53,8 @@ class HostIO : public IO
      *
      * @return 32-bit value
      */
-    inline u32 read(const u32 reg) const
-    {
-        const volatile u32 *ptr = (const volatile u32 *)((const volatile u8 *)m_base + reg);
+    inline u32 read(const u32 reg) const {
+        const volatile u32 *ptr = (const volatile u32 *) ((const volatile u8 *) m_base + reg);
         return *ptr;
     }
 
@@ -68,11 +65,9 @@ class HostIO : public IO
      * @param count Number of bytes to read.
      * @param buf Output buffer.
      */
-    inline void read(const Address addr, const Size count, void *buf) const
-    {
-        for (Size i = 0; i < count; i+= sizeof(u32))
-        {
-            *(u32 *)(((u8 *)buf) + i) = read(addr + i);
+    inline void read(const Address addr, const Size count, void *buf) const {
+        for (Size i = 0; i < count; i += sizeof(u32)) {
+            *(u32 * )(((u8 *) buf) + i) = read(addr + i);
         }
     }
 
@@ -83,11 +78,9 @@ class HostIO : public IO
      * @param count Number of bytes to write.
      * @param buf Input buffer.
      */
-    inline void write(const Address addr, const Size count, const void *buf)
-    {
-        for (Size i = 0; i < count; i+= sizeof(u32))
-        {
-            write(addr + i, *(u32 *) (((u8 *)buf) + i));
+    inline void write(const Address addr, const Size count, const void *buf) {
+        for (Size i = 0; i < count; i += sizeof(u32)) {
+            write(addr + i, *(u32 * )(((u8 *) buf) + i));
         }
     }
 
@@ -97,8 +90,7 @@ class HostIO : public IO
      * @param addr Address of the register to write.
      * @param data 32-bit value containing the bits to set (bitwise or).
      */
-    inline void set(const Address addr, const u32 data)
-    {
+    inline void set(const Address addr, const u32 data) {
         volatile u32 current = read(addr);
         current |= data;
         write(addr, current);
@@ -110,16 +102,14 @@ class HostIO : public IO
      * @param addr Address of the register to write.
      * @param data 32-bit value containing the bits to set (bitwise or).
      */
-    inline void unset(const Address addr, const u32 data)
-    {
+    inline void unset(const Address addr, const u32 data) {
         volatile u32 current = read(addr);
         current &= ~(data);
         write(addr, current);
     }
 };
 
-namespace Arch
-{
+namespace Arch {
     typedef HostIO IO;
 };
 

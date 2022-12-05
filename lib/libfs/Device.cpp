@@ -19,25 +19,20 @@
 
 Device::Device(const u32 inode,
                const FileSystem::FileType type)
-    : File(inode, type)
-{
+        : File(inode, type) {
 }
 
-Device::~Device()
-{
+Device::~Device() {
 }
 
-const String & Device::getIdentifier() const
-{
+const String &Device::getIdentifier() const {
     return m_identifier;
 }
 
-FileSystem::Result Device::initialize()
-{
+FileSystem::Result Device::initialize() {
     return FileSystem::Success;
 }
 
-FileSystem::Result Device::interrupt(const Size vector)
-{
+FileSystem::Result Device::interrupt(const Size vector) {
     return FileSystem::Success;
 }

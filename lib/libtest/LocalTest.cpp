@@ -18,12 +18,10 @@
 #include "LocalTest.h"
 
 LocalTest::LocalTest(const char *name, TestFunction func)
-    : TestInstance(name)
-{
+        : TestInstance(name) {
     m_func = func;
 }
 
-TestResult LocalTest::run(void)
-{
+TestResult LocalTest::run(void) {
     return m_func();
 }

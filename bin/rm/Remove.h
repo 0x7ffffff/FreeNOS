@@ -28,9 +28,8 @@
 /**
  * Remove file from the filesystem
  */
-class Remove : public POSIXApplication
-{
-  public:
+class Remove : public POSIXApplication {
+public:
 
     /**
      * Constructor

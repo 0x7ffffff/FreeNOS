@@ -18,15 +18,13 @@
 #include "IntelPIC.h"
 
 IntelPIC::IntelPIC()
-    : IntController()
-{
+        : IntController() {
     m_base = InterruptBase;
     m_master.setPortBase(MasterBase);
     m_slave.setPortBase(SlaveBase);
 }
 
-IntelPIC::Result IntelPIC::initialize()
-{
+IntelPIC::Result IntelPIC::initialize() {
     // ICW1: Initialize PIC's (Edge triggered, Cascade)
     m_master.outb(Command, Init1 | CascadeMode | LevelTriggered);
     m_slave.outb(Command, Init1 | CascadeMode | LevelTriggered);
@@ -52,8 +50,7 @@ IntelPIC::Result IntelPIC::initialize()
     return Success;
 }
 
-IntelPIC::Result IntelPIC::enable(uint irq)
-{
+IntelPIC::Result IntelPIC::enable(uint irq) {
     if (irq > 15)
         return InvalidIRQ;
 
@@ -65,8 +62,7 @@ IntelPIC::Result IntelPIC::enable(uint irq)
     return Success;
 }
 
-IntelPIC::Result IntelPIC::disable(uint irq)
-{
+IntelPIC::Result IntelPIC::disable(uint irq) {
     if (irq > 15)
         return InvalidIRQ;
 
@@ -78,8 +74,7 @@ IntelPIC::Result IntelPIC::disable(uint irq)
     return Success;
 }
 
-IntelPIC::Result IntelPIC::clear(uint irq)
-{
+IntelPIC::Result IntelPIC::clear(uint irq) {
     if (irq > 15)
         return InvalidIRQ;
 

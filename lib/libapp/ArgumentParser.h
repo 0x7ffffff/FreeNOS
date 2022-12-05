@@ -37,22 +37,20 @@
 /**
  * Generic command-line argument parser.
  */
-class ArgumentParser
-{
-  public:
+class ArgumentParser {
+public:
 
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         InvalidArgument,
         NotFound,
         AlreadyExists
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -76,7 +74,7 @@ class ArgumentParser
      *
      * @return Program name
      */
-    const String & name() const;
+    const String &name() const;
 
     /**
      * Set program name.
@@ -90,7 +88,7 @@ class ArgumentParser
      *
      * @param desc Program description string.
      */
-    void setDescription(const String & desc);
+    void setDescription(const String &desc);
 
     /**
      * Register a flag Argument
@@ -132,9 +130,9 @@ class ArgumentParser
      */
     Result parse(int argc,
                  char **argv,
-                 ArgumentContainer & output);
+                 ArgumentContainer &output);
 
-  private:
+private:
 
     /** Contains all registered flag arguments by name. */
     HashTable<String, Argument *> m_flags;

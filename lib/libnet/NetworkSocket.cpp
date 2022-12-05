@@ -21,19 +21,13 @@
 NetworkSocket::NetworkSocket(const u32 inode,
                              const Size packetSize,
                              const ProcessID pid)
-    : File(inode)
-    , m_pid(pid)
-    , m_receive(packetSize)
-    , m_transmit(packetSize)
-{
+        : File(inode), m_pid(pid), m_receive(packetSize), m_transmit(packetSize) {
     MemoryBlock::set(&m_info, 0, sizeof(m_info));
 }
 
-NetworkSocket::~NetworkSocket()
-{
+NetworkSocket::~NetworkSocket() {
 }
 
-ProcessID NetworkSocket::getProcessID() const
-{
+ProcessID NetworkSocket::getProcessID() const {
     return m_pid;
 }

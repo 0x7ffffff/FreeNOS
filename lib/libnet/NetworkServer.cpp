@@ -19,50 +19,40 @@
 #include "NetworkServer.h"
 
 NetworkServer::NetworkServer(const char *path)
-    : DeviceServer(path)
-    , m_device(ZERO)
-{
+        : DeviceServer(path), m_device(ZERO) {
 }
 
-NetworkServer::~NetworkServer()
-{
+NetworkServer::~NetworkServer() {
 }
 
-void NetworkServer::registerNetworkDevice(NetworkDevice *dev)
-{
+void NetworkServer::registerNetworkDevice(NetworkDevice *dev) {
     registerDevice(dev, "io");
     m_device = dev;
 }
 
-FileSystem::Result NetworkServer::initialize()
-{
+FileSystem::Result NetworkServer::initialize() {
     DEBUG("");
     return DeviceServer::initialize();
 }
 
-void NetworkServer::onProcessTerminated(const ProcessID pid)
-{
+void NetworkServer::onProcessTerminated(const ProcessID pid) {
     DEBUG("pid = " << pid);
 
-    if (m_device != ZERO)
-    {
+    if (m_device != ZERO) {
         m_device->unregisterSockets(pid);
     }
 }
 
-bool NetworkServer::retryRequests()
-{
+bool NetworkServer::retryRequests() {
     assert(m_device != ZERO);
 
     // Process all pending requests
-    while (DeviceServer::retryRequests())
-    {
+    while (DeviceServer::retryRequests()) {
     }
 
     // Start DMA engine
     const FileSystem::Result result = m_device->startDMA();
-    if (result != FileSystem::Success)
-    {
+    if (result != FileSystem::Success) {
         ERROR("failed to start DMA: result = " << (int) result);
     }
 

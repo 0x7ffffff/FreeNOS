@@ -36,19 +36,17 @@
 /**
  * Input/Output operations specific to the ARM architecture
  */
-class ARMIO : public IO
-{
-  public:
+class ARMIO : public IO {
+public:
 
     /**
      * write to memory mapped I/O register
      */
-    inline void write(u32 reg, u32 data)
-    {
+    inline void write(u32 reg, u32 data) {
         dmb();
         u32 addr = reg + m_base;
         asm volatile("str %[data], [%[reg]]"
-                 : : [reg]"r"(addr), [data]"r"(data));
+                : : [reg]"r"(addr), [data]"r"(data));
         dmb();
     }
 
@@ -59,13 +57,12 @@ class ARMIO : public IO
      *
      * @return 32-bit value
      */
-    inline u32 read(u32 reg) const
-    {
+    inline u32 read(u32 reg) const {
         dmb();
         u32 addr = reg + m_base;
         u32 data;
         asm volatile("ldr %[data], [%[reg]]"
-                 : [data]"=r"(data) : [reg]"r"(addr));
+                : [data]"=r"(data) : [reg]"r"(addr));
         dmb();
         return data;
     }
@@ -77,11 +74,9 @@ class ARMIO : public IO
      * @param count Number of bytes to read.
      * @param buf Output buffer.
      */
-    inline void read(Address addr, Size count, void *buf) const
-    {
-        for (Size i = 0; i < count; i+= sizeof(u32))
-        {
-            *(u32 *)(((u8 *)buf) + i) = read(addr + i);
+    inline void read(Address addr, Size count, void *buf) const {
+        for (Size i = 0; i < count; i += sizeof(u32)) {
+            *(u32 * )(((u8 *) buf) + i) = read(addr + i);
         }
     }
 
@@ -92,11 +87,9 @@ class ARMIO : public IO
      * @param count Number of bytes to write.
      * @param buf Input buffer.
      */
-    inline void write(Address addr, Size count, const void *buf)
-    {
-        for (Size i = 0; i < count; i+= sizeof(u32))
-        {
-            write(addr + i, *(u32 *) (((u8 *)buf) + i));
+    inline void write(Address addr, Size count, const void *buf) {
+        for (Size i = 0; i < count; i += sizeof(u32)) {
+            write(addr + i, *(u32 * )(((u8 *) buf) + i));
         }
     }
 
@@ -106,8 +99,7 @@ class ARMIO : public IO
      * @param addr Address of the register to write.
      * @param data 32-bit value containing the bits to set (bitwise or).
      */
-    inline void set(Address addr, u32 data)
-    {
+    inline void set(Address addr, u32 data) {
         volatile u32 current = read(addr);
         current |= data;
         write(addr, current);
@@ -119,16 +111,14 @@ class ARMIO : public IO
      * @param addr Address of the register to write.
      * @param data 32-bit value containing the bits to set (bitwise or).
      */
-    inline void unset(Address addr, u32 data)
-    {
+    inline void unset(Address addr, u32 data) {
         volatile u32 current = read(addr);
         current &= ~(data);
         write(addr, current);
     }
 };
 
-namespace Arch
-{
+namespace Arch {
     typedef ARMIO IO;
 };
 

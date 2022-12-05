@@ -33,9 +33,8 @@ typedef TestResult TestFunction(void);
 /**
  * Represents test inside the same process
  */
-class LocalTest : public TestInstance
-{
-  public:
+class LocalTest : public TestInstance {
+public:
 
     /**
      * Class constructor
@@ -52,7 +51,7 @@ class LocalTest : public TestInstance
      */
     virtual TestResult run();
 
-  private:
+private:
 
     /** Contains the test to run */
     TestFunction *m_func;

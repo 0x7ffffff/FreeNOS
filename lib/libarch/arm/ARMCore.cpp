@@ -19,13 +19,11 @@
 #include <String.h>
 #include "ARMCore.h"
 
-void ARMCore::logException(CPUState *state) const
-{
+void ARMCore::logException(CPUState *state) const {
     logState(state);
 }
 
-void ARMCore::logState(CPUState *state) const
-{
+void ARMCore::logState(CPUState *state) const {
     ARMControl ctrl;
 
     logRegister("cpsr", state->cpsr);
@@ -37,53 +35,112 @@ void ARMCore::logState(CPUState *state) const
 
     u32 ifsr = ctrl.read(ARMControl::InstructionFaultStatus) & 0xf;
     const char *ifsrText = "unknown";
-    switch (ifsr)
-    {
-        case 0: ifsrText = "no function"; break;
-        case 1: ifsrText = "alignment fault"; break;
-        case 2: ifsrText = "instruction debug event fault"; break;
-        case 3: ifsrText = "access bit fault on section"; break;
-        case 4: ifsrText = "no function"; break;
-        case 5: ifsrText = "translation section fault"; break;
-        case 6: ifsrText = "access bit fault on page"; break;
-        case 7: ifsrText = "translation page fault"; break;
-        case 8: ifsrText = "precise external abort"; break;
-        case 9: ifsrText = "domain section fault"; break;
-        case 10: ifsrText = "no function"; break;
-        case 11: ifsrText = "domain page fault"; break;
-        case 12: ifsrText = "external abort on translation first level"; break;
-        case 13: ifsrText = "permission section fault"; break;
-        case 14: ifsrText = "external abort on translation second level"; break;
-        case 15: ifsrText = "permission page fault"; break;
+    switch (ifsr) {
+        case 0:
+            ifsrText = "no function";
+            break;
+        case 1:
+            ifsrText = "alignment fault";
+            break;
+        case 2:
+            ifsrText = "instruction debug event fault";
+            break;
+        case 3:
+            ifsrText = "access bit fault on section";
+            break;
+        case 4:
+            ifsrText = "no function";
+            break;
+        case 5:
+            ifsrText = "translation section fault";
+            break;
+        case 6:
+            ifsrText = "access bit fault on page";
+            break;
+        case 7:
+            ifsrText = "translation page fault";
+            break;
+        case 8:
+            ifsrText = "precise external abort";
+            break;
+        case 9:
+            ifsrText = "domain section fault";
+            break;
+        case 10:
+            ifsrText = "no function";
+            break;
+        case 11:
+            ifsrText = "domain page fault";
+            break;
+        case 12:
+            ifsrText = "external abort on translation first level";
+            break;
+        case 13:
+            ifsrText = "permission section fault";
+            break;
+        case 14:
+            ifsrText = "external abort on translation second level";
+            break;
+        case 15:
+            ifsrText = "permission page fault";
+            break;
     }
     logRegister("ifsr", ifsr, ifsrText);
 
     u32 dfsr = ctrl.read(ARMControl::DataFaultStatus) & 0xf;
     const char *dfsrText = "unknown";
-    if (ctrl.read(ARMControl::DataFaultStatus) & (1 << 10))
-    {
+    if (ctrl.read(ARMControl::DataFaultStatus) & (1 << 10)) {
         dfsrText = (dfsr == 6 ? "imprecise external abort" : "no function");
-    }
-    else
-    {
-        switch (dfsr)
-        {
-            case 0: dfsrText = "no function"; break;
-            case 1: dfsrText = "alignment fault"; break;
-            case 2: dfsrText = "instruction debug event fault"; break;
-            case 3: dfsrText = "access bit fault on section"; break;
-            case 4: dfsrText = "instruction cache maintenance operation fault"; break;
-            case 5: dfsrText = "translation section fault"; break;
-            case 6: dfsrText = "access bit fault on page"; break;
-            case 7: dfsrText = "translation page fault"; break;
-            case 8: dfsrText = "precise external abort"; break;
-            case 9: dfsrText = "domain section fault"; break;
-            case 10: dfsrText = "no function"; break;
-            case 11: dfsrText = "domain page fault"; break;
-            case 12: dfsrText = "external abort on translation first level"; break;
-            case 13: dfsrText = "permission section fault"; break;
-            case 14: dfsrText = "external abort on translation second level"; break;
-            case 15: dfsrText = "permission page fault"; break;
+    } else {
+        switch (dfsr) {
+            case 0:
+                dfsrText = "no function";
+                break;
+            case 1:
+                dfsrText = "alignment fault";
+                break;
+            case 2:
+                dfsrText = "instruction debug event fault";
+                break;
+            case 3:
+                dfsrText = "access bit fault on section";
+                break;
+            case 4:
+                dfsrText = "instruction cache maintenance operation fault";
+                break;
+            case 5:
+                dfsrText = "translation section fault";
+                break;
+            case 6:
+                dfsrText = "access bit fault on page";
+                break;
+            case 7:
+                dfsrText = "translation page fault";
+                break;
+            case 8:
+                dfsrText = "precise external abort";
+                break;
+            case 9:
+                dfsrText = "domain section fault";
+                break;
+            case 10:
+                dfsrText = "no function";
+                break;
+            case 11:
+                dfsrText = "domain page fault";
+                break;
+            case 12:
+                dfsrText = "external abort on translation first level";
+                break;
+            case 13:
+                dfsrText = "permission section fault";
+                break;
+            case 14:
+                dfsrText = "external abort on translation second level";
+                break;
+            case 15:
+                dfsrText = "permission page fault";
+                break;
         }
     }
     logRegister("dfsr", dfsr, dfsrText);
@@ -103,8 +160,7 @@ void ARMCore::logState(CPUState *state) const
     logRegister("r12", state->r12);
 }
 
-void ARMCore::logRegister(const char *name, u32 reg, const char *text) const
-{
+void ARMCore::logRegister(const char *name, u32 reg, const char *text) const {
     String s;
     s << Number::Hex << name << " = " << reg << Number::Dec << " (" << reg << ") " << text;
     ERROR(*s);

@@ -31,9 +31,8 @@
 /**
  * Log to standard output.
  */
-class StdioLog : public Log
-{
-  public:
+class StdioLog : public Log {
+public:
 
     /**
      * Constructor

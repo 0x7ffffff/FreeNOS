@@ -17,13 +17,11 @@
 
 #include <FreeNOS/System.h>
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     PrivExec(Idle);
     ProcessCtl(SELF, Schedule);
 
-    while (true)
-    {
+    while (true) {
         idle();
     }
 }

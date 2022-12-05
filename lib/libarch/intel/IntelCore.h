@@ -38,8 +38,7 @@
  *
  * @return 64-bit integer.
  */
-inline u64 timestamp()
-{
+inline u64 timestamp() {
     unsigned long long val;
     asm volatile ("rdtsc\n" : "=A"(val));
     return val;
@@ -149,8 +148,7 @@ inline u64 timestamp()
  * are the esp0 and ss0, which contain the kernel stack address and
  * segment used when processing an interrupt.
  */
-typedef struct TSS
-{
+typedef struct TSS {
     u32 backlink;
     u32 esp0, ss0;
     u32 esp1, ss1;
@@ -158,50 +156,47 @@ typedef struct TSS
     u32 cr3;
     u32 eip;
     u32 eflags;
-    u32 eax,ecx,edx,ebx;
+    u32 eax, ecx, edx, ebx;
     u32 esp, ebp;
     u32 esi, edi;
     u32 es, cs, ss, ds, fs, gs;
     u32 ldt;
     u32 bitmap;
 }
-TSS;
+        TSS;
 
 /**
  * Segment descriptor used in the GDT.
  */
-typedef struct Segment
-{
-    u32 limitLow:16;
-    u32 baseLow:16;
-    u32 baseMid:8;
-    u32 type:5;
-    u32 privilege:2;
-    u32 present:1;
-    u32 limitHigh:4;
-    u32 granularity:4;
-    u32 baseHigh:8;
+typedef struct Segment {
+    u32 limitLow: 16;
+    u32 baseLow: 16;
+    u32 baseMid: 8;
+    u32 type: 5;
+    u32 privilege: 2;
+    u32 present: 1;
+    u32 limitHigh: 4;
+    u32 granularity: 4;
+    u32 baseHigh: 8;
 }
-Segment;
+        Segment;
 
 /**
  * Segmentation registers.
  */
-typedef struct SegRegs
-{
+typedef struct SegRegs {
     /* Segments. */
     u32 gs, fs, es, ds, ss0;
 }
-SegRegs;
+        SegRegs;
 
 /**
  * Structure represents the pusha/popa format.
  */
-typedef struct CPURegs
-{
+typedef struct CPURegs {
     u32 edi, esi, ebp, esp0, ebx, edx, ecx, eax;
 }
-CPURegs;
+        CPURegs;
 
 /**
  * Privileged Interrupt Registers (ring 0)
@@ -209,11 +204,10 @@ CPURegs;
  * Consumed by a 'iretd'. Does not switch
  * privilege level, i.e. no ESP/SS for ring3 needed.
  */
-typedef struct IRQRegs0
-{
+typedef struct IRQRegs0 {
     u32 eip, cs, eflags;
 }
-IRQRegs0;
+        IRQRegs0;
 
 /**
  * Unprivileged Interrupt Registers (ring 3)
@@ -226,17 +220,15 @@ IRQRegs0;
  * the stack contains the information needed for a
  * atomic privilege level switch.
  */
-typedef struct IRQRegs3
-{
+typedef struct IRQRegs3 {
     u32 eip, cs, eflags, esp3, ss3;
 }
-IRQRegs3;
+        IRQRegs3;
 
 /**
  * Contains all the CPU registers.
  */
-typedef struct CPUState
-{
+typedef struct CPUState {
     /* Segments. */
     SegRegs seg;
 
@@ -249,14 +241,13 @@ typedef struct CPUState
     /* Pushed by processor. */
     IRQRegs3 irq;
 }
-CPUState;
+        CPUState;
 
 /**
  * Intel CPU Core.
  */
-class IntelCore
-{
-  public:
+class IntelCore {
+public:
 
     /**
      * Log a CPU exception.

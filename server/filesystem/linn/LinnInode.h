@@ -77,7 +77,7 @@
  *
  * @return Number of blocks used.
  */
-#define LINN_INODE_NUM_BLOCKS(super,inode) \
+#define LINN_INODE_NUM_BLOCKS(super, inode) \
     ((inode)->size % (super)->blockSize ? \
      (inode)->size / (super)->blockSize + 1 : \
      (inode)->size / (super)->blockSize)
@@ -89,10 +89,9 @@
 /**
  * Structure of an inode on the disk in the LinnFS filesystem.
  */
-typedef struct LinnInode
-{
-    le16 type:3;        /**< Type of file, as an FileType. */
-    le16 mode:13;       /**< Access permissions, as an FileMode. */
+typedef struct LinnInode {
+    le16 type: 3;        /**< Type of file, as an FileType. */
+    le16 mode: 13;       /**< Access permissions, as an FileMode. */
     le16 uid;           /**< User Identity. */
     le16 gid;           /**< Group Identity. */
     le32 size;          /**< Size in bytes. */
@@ -103,7 +102,7 @@ typedef struct LinnInode
     le16 links;         /**< Links count. */
     le32 block[LINN_INODE_BLOCKS]; /**< Pointers to blocks. */
 }
-LinnInode;
+        LinnInode;
 
 /**
  * @}

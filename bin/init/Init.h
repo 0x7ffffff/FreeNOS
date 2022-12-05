@@ -28,9 +28,8 @@
 /**
  * Initialize system processes.
  */
-class Init : public POSIXApplication
-{
-  public:
+class Init : public POSIXApplication {
+public:
 
     /**
      * Constructor

@@ -36,20 +36,18 @@
 /**
  * Implements a MPI backend for the host OS which communicates with mpiproxy servers
  */
-class MpiHost : public MpiBackend
-{
-  private:
+class MpiHost : public MpiBackend {
+private:
 
     /** Maximum number of supported nodes */
     static const Size MaximumNodes = 512;
 
-  private:
+private:
 
     /**
      * Describes a remote CPU node accessible via MPI.
      */
-    struct Node
-    {
+    struct Node {
         in_addr_t ipAddress; /**@< IP address of the node */
         u16 udpPort;         /**@< UDP port of the node */
         u32 coreId;          /**@< Local identifier of the core at the node */
@@ -58,13 +56,12 @@ class MpiHost : public MpiBackend
     /**
      * Describes data received via UDP
      */
-    struct Packet
-    {
+    struct Packet {
         u8 *data;            /**@< Payload data */
         Size size;           /**@< Payload size in bytes */
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -151,7 +148,7 @@ class MpiHost : public MpiBackend
                            MPI_Comm comm,
                            MPI_Status *status);
 
-  private:
+private:
 
     /**
      * Parse the given hosts file
@@ -199,18 +196,18 @@ class MpiHost : public MpiBackend
     Result receivePacket(const Size nodeId,
                          const MpiProxy::Operation operation,
                          void *packet,
-                         Size & size);
+                         Size &size);
 
-  private:
+private:
 
     /** UDP socket for communicating with remote nodes */
     int m_sock;
 
     /** Contains all known nodes that participate in the computation */
-    Index<Node, MaximumNodes> m_nodes;
+    Index <Node, MaximumNodes> m_nodes;
 
     /** Buffers incoming packets for later processing */
-    Index<List<Packet *>, MaximumNodes> m_packetBuffers;
+    Index <List<Packet *>, MaximumNodes> m_packetBuffers;
 };
 
 /**

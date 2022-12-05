@@ -20,13 +20,11 @@
 #include "ARMTimer.h"
 
 ARMTimer::ARMTimer()
-    : m_initialTimerCounter(0)
-{
+        : m_initialTimerCounter(0) {
     m_int = ARMTIMER_IRQ;
 }
 
-u32 ARMTimer::getSystemFrequency(void) const
-{
+u32 ARMTimer::getSystemFrequency(void) const {
     u32 f = mrc(p15, 0, 0, c14, c0);
 
 #ifdef SYSTEM_FREQ
@@ -39,26 +37,22 @@ u32 ARMTimer::getSystemFrequency(void) const
     return f;
 }
 
-void ARMTimer::setPL1PhysicalTimerValue(const u32 value)
-{
+void ARMTimer::setPL1PhysicalTimerValue(const u32 value) {
     mcr(p15, 0, 0, c14, c2, value);
 }
 
-void ARMTimer::setPL1PhysicalTimerControl(const u32 value)
-{
+void ARMTimer::setPL1PhysicalTimerControl(const u32 value) {
     mcr(p15, 0, 1, c14, c2, value);
 }
 
-ARMTimer::Result ARMTimer::setFrequency(const Size hertz)
-{
+ARMTimer::Result ARMTimer::setFrequency(const Size hertz) {
     m_initialTimerCounter = getSystemFrequency() / hertz;
     tick();
 
     return Timer::setFrequency(hertz);
 }
 
-ARMTimer::Result ARMTimer::tick()
-{
+ARMTimer::Result ARMTimer::tick() {
     setPL1PhysicalTimerValue(m_initialTimerCounter);
     setPL1PhysicalTimerControl(TimerControlEnable);
 

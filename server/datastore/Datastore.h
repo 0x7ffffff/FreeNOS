@@ -26,21 +26,18 @@
  * @{
  */
 
-namespace Datastore
-{
+namespace Datastore {
     /**
      * Actions which may be performed on the datastore.
      */
-    enum Action
-    {
+    enum Action {
         RegisterBuffer = 1
     };
 
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success = 0,
         IOError,
         InvalidArgument,

@@ -31,9 +31,9 @@
 /**
  * Abstracts an iteration process.
  */
-template <class T> class Iterator
-{
-  public:
+template<class T>
+class Iterator {
+public:
 
     /**
      * Destructor.
@@ -64,14 +64,14 @@ template <class T> class Iterator
      *
      * @return Reference to the next item.
      */
-    virtual const T & current() const = 0;
+    virtual const T &current() const = 0;
 
     /**
      * Get the current item modifiable.
      *
      * @return Reference to the next item.
      */
-    virtual T & current() = 0;
+    virtual T &current() = 0;
 
     /**
      * Fetch the next item modifiable.
@@ -81,7 +81,7 @@ template <class T> class Iterator
      *
      * @return Reference to the next item.
      */
-    virtual T & next() = 0;
+    virtual T &next() = 0;
 
     /**
      * Remove the current item from the underlying Container.
@@ -96,7 +96,7 @@ template <class T> class Iterator
      * This function first increment the current item
      * and then updates the next item pointer.
      */
-    virtual void operator ++(int num) = 0;
+    virtual void operator++(int num) = 0;
 };
 
 /**

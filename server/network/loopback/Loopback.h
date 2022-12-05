@@ -33,9 +33,8 @@
 /**
  * Loopback network device implementation.
  */
-class Loopback : public NetworkDevice
-{
-  public:
+class Loopback : public NetworkDevice {
+public:
 
     /**
      * Constructor
@@ -83,7 +82,7 @@ class Loopback : public NetworkDevice
      */
     virtual FileSystem::Result transmit(NetworkQueue::Packet *pkt);
 
-  private:
+private:
 
     /** Ethernet address for the loopback device */
     Ethernet::Address m_address;

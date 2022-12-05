@@ -20,13 +20,11 @@
 #include "FileSystem.h"
 #include "DeviceLog.h"
 
-DeviceLog::DeviceLog(Device & device)
-    : m_device(device)
-{
+DeviceLog::DeviceLog(Device &device)
+        : m_device(device) {
 }
 
-void DeviceLog::write(const char *str)
-{
+void DeviceLog::write(const char *str) {
     Size len = String::length(str);
 
     FileSystemMessage msg;

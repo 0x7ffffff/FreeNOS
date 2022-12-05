@@ -22,15 +22,12 @@
 #include "TmpFileSystem.h"
 
 TmpFileSystem::TmpFileSystem(const char *path)
-    : FileSystemServer(new Directory(1), path)
-{
+        : FileSystemServer(new Directory(1), path) {
 }
 
-File * TmpFileSystem::createFile(const FileSystem::FileType type)
-{
+File *TmpFileSystem::createFile(const FileSystem::FileType type) {
     // Create the appropriate file type
-    switch (type)
-    {
+    switch (type) {
         case FileSystem::RegularFile: {
             PseudoFile *file = new PseudoFile(getNextInode());
             assert(file != NULL);

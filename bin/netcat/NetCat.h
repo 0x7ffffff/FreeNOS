@@ -31,9 +31,8 @@
 /**
  * Network send/receive (cat) application.
  */
-class NetCat : public POSIXApplication
-{
-  public:
+class NetCat : public POSIXApplication {
+public:
 
     /**
      * Class constructor.
@@ -55,7 +54,7 @@ class NetCat : public POSIXApplication
      */
     virtual Result exec();
 
-  private:
+private:
 
     /**
      * Read one line from standard input.

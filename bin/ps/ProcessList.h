@@ -28,9 +28,8 @@
 /**
  * Output the system process list.
  */
-class ProcessList : public POSIXApplication
-{
-  public:
+class ProcessList : public POSIXApplication {
+public:
 
     /**
      * Constructor

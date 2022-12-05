@@ -20,18 +20,14 @@
 #include "ELF.h"
 
 ExecutableFormat::ExecutableFormat(const u8 *image, const Size size)
-    : m_image(image)
-    , m_size(size)
-{
+        : m_image(image), m_size(size) {
 }
 
-ExecutableFormat::~ExecutableFormat()
-{
+ExecutableFormat::~ExecutableFormat() {
 }
 
 ExecutableFormat::Result ExecutableFormat::find(const u8 *image,
                                                 const Size size,
-                                                ExecutableFormat **fmt)
-{
+                                                ExecutableFormat **fmt) {
     return ELF::detect(image, size, fmt);
 }

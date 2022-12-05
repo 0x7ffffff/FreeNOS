@@ -22,14 +22,13 @@
 #include "string.h"
 #include "sys/stat.h"
 
-int mkdir(const char *path, mode_t mode)
-{
+int mkdir(const char *path, mode_t mode) {
     const FileSystemClient filesystem;
 
     // Ask FileSystem to create the file for us
     const FileSystem::Result result = filesystem.createFile(path,
                                                             FileSystem::DirectoryFile,
-                                                           (FileSystem::FileModes) (mode & FILEMODE_MASK));
+                                                            (FileSystem::FileModes)(mode & FILEMODE_MASK));
     // Set errno
     if (result == FileSystem::Success)
         errno = ESUCCESS;

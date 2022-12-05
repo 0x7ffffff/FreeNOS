@@ -40,9 +40,8 @@ class SplitAllocator;
 /**
  * ARM first level page table
  */
-class ARMFirstTable
-{
-  public:
+class ARMFirstTable {
+public:
 
     /**
      * Map a virtual address to a physical address.
@@ -133,7 +132,7 @@ class ARMFirstTable
     MemoryContext::Result releaseRange(const Memory::Range range,
                                        SplitAllocator *alloc);
 
-  private:
+private:
 
     /**
      * Release a single physical page
@@ -152,8 +151,8 @@ class ARMFirstTable
      *
      * @return Second level page table
      */
-    ARMSecondTable * getSecondTable(Address virt,
-                                    SplitAllocator *alloc) const;
+    ARMSecondTable *getSecondTable(Address virt,
+                                   SplitAllocator *alloc) const;
 
     /**
      * Convert Memory::Access to first level page table flags.
@@ -164,7 +163,7 @@ class ARMFirstTable
      */
     u32 flags(Memory::Access access) const;
 
-  private:
+private:
 
     /** Array of page table entries. */
     u32 m_tables[4096];

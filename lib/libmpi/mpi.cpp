@@ -21,14 +21,12 @@
 
 static MpiBackend *mpiBackend = MpiBackend::create();
 
-extern C int MPI_Init(int *argc, char ***argv)
-{
+extern C int MPI_Init(int *argc, char ***argv) {
     assert(mpiBackend != ZERO);
     return mpiBackend->initialize(argc, argv);
 }
 
-extern C int MPI_Finalize(void)
-{
+extern C int MPI_Finalize(void) {
     assert(mpiBackend != ZERO);
     return mpiBackend->terminate();
 }
@@ -38,8 +36,7 @@ extern C int MPI_Send(const void *buf,
                       MPI_Datatype datatype,
                       int dest,
                       int tag,
-                      MPI_Comm comm)
-{
+                      MPI_Comm comm) {
     assert(mpiBackend != ZERO);
     return mpiBackend->send(buf, count, datatype, dest, tag, comm);
 }
@@ -50,22 +47,19 @@ extern C int MPI_Recv(void *buf,
                       int source,
                       int tag,
                       MPI_Comm comm,
-                      MPI_Status *status)
-{
+                      MPI_Status *status) {
     assert(mpiBackend != ZERO);
     return mpiBackend->receive(buf, count, datatype, source, tag, comm, status);
 }
 
 extern C int MPI_Comm_rank(MPI_Comm comm,
-                           int *rank)
-{
+                           int *rank) {
     assert(mpiBackend != ZERO);
     return mpiBackend->getCommRank(comm, rank);
 }
 
 extern C int MPI_Comm_size(MPI_Comm comm,
-                           int *size)
-{
+                           int *size) {
     assert(mpiBackend != ZERO);
     return mpiBackend->getCommSize(comm, size);
 }

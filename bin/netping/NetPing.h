@@ -30,9 +30,8 @@
 /**
  * Network ping/pong application.
  */
-class NetPing : public POSIXApplication
-{
-  public:
+class NetPing : public POSIXApplication {
+public:
 
     /**
      * Class constructor.
@@ -49,7 +48,7 @@ class NetPing : public POSIXApplication
      */
     virtual Result exec();
 
-  private:
+private:
 
     /**
      * Send ARP ping/pong.

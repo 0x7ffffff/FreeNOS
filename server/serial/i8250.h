@@ -33,32 +33,30 @@
 /**
  * i8250 serial UART.
  */
-class i8250 : public SerialDevice
-{
-  private:
+class i8250 : public SerialDevice {
+private:
 
     /**
      * Constants used to communicate with the UART.
      */
-    enum Constants
-    {
-        TRANSMIT     = 0,
-        RECEIVE      = 0,
-        DIVISORLOW   = 0,
-        DIVISORHIGH  = 1,
-        RXREADY      = 1,
-        IRQCONTROL   = 1,
-        IRQSTATUS    = 2,
-        FIFOCONTROL  = 2,
-        LINECONTROL  = 3,
+    enum Constants {
+        TRANSMIT = 0,
+        RECEIVE = 0,
+        DIVISORLOW = 0,
+        DIVISORHIGH = 1,
+        RXREADY = 1,
+        IRQCONTROL = 1,
+        IRQSTATUS = 2,
+        FIFOCONTROL = 2,
+        LINECONTROL = 3,
         MODEMCONTROL = 4,
-        LINESTATUS   = 5,
-        TXREADY      = 0x20,
-        DLAB         = 0x80,
-        BAUDRATE     = 9600,
+        LINESTATUS = 5,
+        TXREADY = 0x20,
+        DLAB = 0x80,
+        BAUDRATE = 9600,
     };
 
-  public:
+public:
 
     /**
      * Constructor function.
@@ -94,8 +92,8 @@ class i8250 : public SerialDevice
      *
      * @return Result code
      */
-    virtual FileSystem::Result read(IOBuffer & buffer,
-                                    Size & size,
+    virtual FileSystem::Result read(IOBuffer &buffer,
+                                    Size &size,
                                     const Size offset);
 
     /**
@@ -108,8 +106,8 @@ class i8250 : public SerialDevice
      *
      * @return Result code
      */
-    virtual FileSystem::Result write(IOBuffer & buffer,
-                                     Size & size,
+    virtual FileSystem::Result write(IOBuffer &buffer,
+                                     Size &size,
                                      const Size offset);
 };
 

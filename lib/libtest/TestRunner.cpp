@@ -24,58 +24,47 @@
 #include "TAPReporter.h"
 #include "XMLReporter.h"
 
-TestRunner::TestRunner(int argc, char **argv)
-{
+TestRunner::TestRunner(int argc, char **argv) {
     // Set member default values.
     m_argc = argc;
     m_argv = argv;
     m_reporter = new StdoutReporter(argc, argv);
 
     // Check for command-line specified arguments.
-    for (int i = 0; i < argc; i++)
-    {
-        if (strcmp(argv[i], "-t") == 0 || strcmp(argv[i], "--tap") == 0)
-        {
+    for (int i = 0; i < argc; i++) {
+        if (strcmp(argv[i], "-t") == 0 || strcmp(argv[i], "--tap") == 0) {
             if (m_reporter)
                 delete m_reporter;
 
             m_reporter = new TAPReporter(argc, argv);
             break;
-        }
-        else if (strcmp(argv[i], "-x") == 0 || strcmp(argv[i], "--xml") == 0)
-        {
+        } else if (strcmp(argv[i], "-x") == 0 || strcmp(argv[i], "--xml") == 0) {
             if (m_reporter)
                 delete m_reporter;
 
             m_reporter = new XMLReporter(argc, argv);
             break;
-        }
-        else if (strcmp(argv[i], "-n") == 0)
-        {
+        } else if (strcmp(argv[i], "-n") == 0) {
             m_reporter->setStatistics(false);
         }
     }
 }
 
-TestRunner::~TestRunner()
-{
+TestRunner::~TestRunner() {
     delete m_reporter;
 }
 
-TestReporter * TestRunner::getReporter()
-{
+TestReporter *TestRunner::getReporter() {
     return m_reporter;
 }
 
-int TestRunner::run(void)
-{
+int TestRunner::run(void) {
     // Prepare for testing.
-    List<TestInstance *> *tests = TestSuite::instance()->getTests();
+    List < TestInstance * > *tests = TestSuite::instance()->getTests();
     m_reporter->begin(*tests);
 
     // Execute tests. Report per-test stats.
-    for (ListIterator<TestInstance *> i(tests); i.hasCurrent(); i++)
-    {
+    for (ListIterator < TestInstance * > i(tests); i.hasCurrent(); i++) {
         TestInstance *test = i.current();
         if (!test)
             break;

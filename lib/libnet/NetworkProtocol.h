@@ -23,6 +23,7 @@
 #include "NetworkQueue.h"
 
 class NetworkServer;
+
 class NetworkDevice;
 
 /**
@@ -36,15 +37,13 @@ class NetworkDevice;
 /**
  * Network protocol abstraction class.
  */
-class NetworkProtocol : public Directory
-{
-  protected:
+class NetworkProtocol : public Directory {
+protected:
 
     /**
      * List of known network protocol identifiers
      */
-    enum Identifier
-    {
+    enum Identifier {
         Ethernet = 1,
         IPV4,
         ARP,
@@ -53,7 +52,7 @@ class NetworkProtocol : public Directory
         TCP
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -114,7 +113,7 @@ class NetworkProtocol : public Directory
     virtual FileSystem::Result process(const NetworkQueue::Packet *pkt,
                                        const Size offset) = 0;
 
-  protected:
+protected:
 
     /** Network server instance */
     NetworkServer &m_server;

@@ -18,10 +18,8 @@
 #include "ARMCore.h"
 #include "ARMCacheV6.h"
 
-ARMCacheV6::Result ARMCacheV6::invalidate(ARMCacheV6::Type type)
-{
-    switch (type)
-    {
+ARMCacheV6::Result ARMCacheV6::invalidate(ARMCacheV6::Type type) {
+    switch (type) {
         case Instruction:
             return cleanInvalidate(type);
 
@@ -38,10 +36,8 @@ ARMCacheV6::Result ARMCacheV6::invalidate(ARMCacheV6::Type type)
     return Success;
 }
 
-ARMCacheV6::Result ARMCacheV6::cleanInvalidate(ARMCacheV6::Type type)
-{
-    switch (type)
-    {
+ARMCacheV6::Result ARMCacheV6::cleanInvalidate(ARMCacheV6::Type type) {
+    switch (type) {
         case Instruction:
             //
             // Invalidate all instruction caches to PoU.
@@ -64,9 +60,9 @@ ARMCacheV6::Result ARMCacheV6::cleanInvalidate(ARMCacheV6::Type type)
             break;
 
         case Unified:
-            mcr(p15, 0, 0, c7, c5,  0);    // invalidate entire instruction cache
+            mcr(p15, 0, 0, c7, c5, 0);    // invalidate entire instruction cache
             mcr(p15, 0, 0, c7, c10, 0);    // clean entire data cache
-            mcr(p15, 0, 0, c7, c7,  0);    // invalidate entire cache
+            mcr(p15, 0, 0, c7, c7, 0);    // invalidate entire cache
             flushBranchPrediction();
             dsb();
             flushPrefetchBuffer();
@@ -75,10 +71,8 @@ ARMCacheV6::Result ARMCacheV6::cleanInvalidate(ARMCacheV6::Type type)
     return Success;
 }
 
-ARMCacheV6::Result ARMCacheV6::cleanInvalidateAddress(Type type, Address addr)
-{
-    switch (type)
-    {
+ARMCacheV6::Result ARMCacheV6::cleanInvalidateAddress(Type type, Address addr) {
+    switch (type) {
         case Instruction:
             mcr(p15, 0, 1, c7, c5, addr);
             break;
@@ -93,10 +87,8 @@ ARMCacheV6::Result ARMCacheV6::cleanInvalidateAddress(Type type, Address addr)
     return Success;
 }
 
-ARMCacheV6::Result ARMCacheV6::cleanAddress(ARMCacheV6::Type type, Address addr)
-{
-    switch (type)
-    {
+ARMCacheV6::Result ARMCacheV6::cleanAddress(ARMCacheV6::Type type, Address addr) {
+    switch (type) {
         case Instruction:
             break;
 
@@ -110,7 +102,6 @@ ARMCacheV6::Result ARMCacheV6::cleanAddress(ARMCacheV6::Type type, Address addr)
     return Success;
 }
 
-ARMCacheV6::Result ARMCacheV6::invalidateAddress(ARMCacheV6::Type type, Address addr)
-{
+ARMCacheV6::Result ARMCacheV6::invalidateAddress(ARMCacheV6::Type type, Address addr) {
     return ARMCacheV6::NotSupported;
 }

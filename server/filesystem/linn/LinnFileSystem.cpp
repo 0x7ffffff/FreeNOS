@@ -23,8 +23,7 @@
 #include "LinnDirectory.h"
 
 LinnFileSystem::LinnFileSystem(const char *p, Storage *s)
-    : FileSystemServer(ZERO, p), storage(s), groups(ZERO)
-{
+        : FileSystemServer(ZERO, p), storage(s), groups(ZERO) {
     LinnInode *rootInode;
     LinnGroup *group;
     Size offset;
@@ -32,14 +31,12 @@ LinnFileSystem::LinnFileSystem(const char *p, Storage *s)
 
     // Read out the superblock.
     if ((e = s->read(LINN_SUPER_OFFSET, &super,
-                     sizeof(super))) != FileSystem::Success)
-    {
+                     sizeof(super))) != FileSystem::Success) {
         FATAL("reading superblock failed: result = " << (int) e);
     }
     // Verify magic.
     if (super.magic0 != LINN_SUPER_MAGIC0 ||
-        super.magic1 != LINN_SUPER_MAGIC1)
-    {
+        super.magic1 != LINN_SUPER_MAGIC1) {
         FATAL("magic mismatch");
     }
     // Create groups vector.
@@ -48,17 +45,15 @@ LinnFileSystem::LinnFileSystem(const char *p, Storage *s)
     groups->fill(ZERO);
 
     // Read out group descriptors.
-    for (Size i = 0; i < LINN_GROUP_COUNT(&super); i++)
-    {
+    for (Size i = 0; i < LINN_GROUP_COUNT(&super); i++) {
         // Allocate buffer.
-        group  = new LinnGroup;
+        group = new LinnGroup;
         assert(group != NULL);
         offset = (super.groupsTable * super.blockSize) +
-                 (sizeof(LinnGroup)  * i);
+                 (sizeof(LinnGroup) * i);
 
         // Read from storage.
-        if ((e = s->read(offset, group, sizeof(LinnGroup))) != FileSystem::Success)
-        {
+        if ((e = s->read(offset, group, sizeof(LinnGroup))) != FileSystem::Success) {
             FATAL("reading group descriptor failed: result = " << (int) e);
         }
         // Insert in the groups vector.
@@ -68,7 +63,7 @@ LinnFileSystem::LinnFileSystem(const char *p, Storage *s)
 
     INFO(LINN_GROUP_COUNT(&super) << " group descriptors");
     INFO(super.inodesCount - super.freeInodesCount << " inodes, " <<
-         super.blocksCount - super.freeBlocksCount << " blocks");
+                                                   super.blocksCount - super.freeBlocksCount << " blocks");
 
     // Read out the root directory.
     rootInode = getInode(LINN_INODE_ROOT);
@@ -80,37 +75,32 @@ LinnFileSystem::LinnFileSystem(const char *p, Storage *s)
     NOTICE("mounted at " << p);
 }
 
-LinnInode * LinnFileSystem::getInode(u32 inodeNum)
-{
+LinnInode *LinnFileSystem::getInode(u32 inodeNum) {
     LinnGroup *group;
     LinnInode *inode;
     Size offset;
     FileSystem::Result e;
 
     // Validate the inode number.
-    if (inodeNum >= super.inodesCount)
-    {
+    if (inodeNum >= super.inodesCount) {
         return ZERO;
     }
     // Do we have this Inode cached already?
-    if (inodes.contains(inodeNum))
-    {
+    if (inodes.contains(inodeNum)) {
         return inodes.value(inodeNum);
     }
     // Get the group descriptor.
-    if (!(group = getGroupByInode(inodeNum)))
-    {
+    if (!(group = getGroupByInode(inodeNum))) {
         return ZERO;
     }
     // Allocate inode buffer.
-    inode  = new LinnInode;
+    inode = new LinnInode;
     assert(inode != NULL);
     offset = (group->inodeTable * super.blockSize) +
-                ((inodeNum % super.inodesPerGroup) * sizeof(LinnInode));
+             ((inodeNum % super.inodesPerGroup) * sizeof(LinnInode));
 
     // Read inode from storage.
-    if ((e = storage->read(offset, inode, sizeof(LinnInode))) != FileSystem::Success)
-    {
+    if ((e = storage->read(offset, inode, sizeof(LinnInode))) != FileSystem::Success) {
         ERROR("reading inode failed: result = " << (int) e);
         return ZERO;
     }
@@ -119,20 +109,17 @@ LinnInode * LinnFileSystem::getInode(u32 inodeNum)
     return inode;
 }
 
-LinnGroup * LinnFileSystem::getGroup(u32 groupNum)
-{
+LinnGroup *LinnFileSystem::getGroup(u32 groupNum) {
     return (*groups)[groupNum];
 }
 
-LinnGroup * LinnFileSystem::getGroupByInode(u32 inodeNum)
-{
+LinnGroup *LinnFileSystem::getGroupByInode(u32 inodeNum) {
     return getGroup(inodeNum ? inodeNum / super.inodesPerGroup : 0);
 }
 
 u64 LinnFileSystem::getOffsetRange(const LinnInode *inode,
                                    const u32 blk,
-                                   Size & numContiguous)
-{
+                                   Size &numContiguous) {
     static u32 block[LINN_MAX_BLOCK_SIZE / sizeof(u32)];
     const u64 numPerBlock = LINN_SUPER_NUM_PTRS(&super);
     const Size numBlocks = LINN_INODE_NUM_BLOCKS(&super, inode);
@@ -142,13 +129,11 @@ u64 LinnFileSystem::getOffsetRange(const LinnInode *inode,
     assert(LINN_SUPER_NUM_PTRS(&super) <= sizeof(block) / sizeof(u32));
 
     // Direct blocks.
-    if (blk < LINN_INODE_DIR_BLOCKS)
-    {
+    if (blk < LINN_INODE_DIR_BLOCKS) {
         const u32 offsetBlock = inode->block[blk];
         numContiguous = 1;
 
-        for (Size i = blk + 1; i < numBlocks && i < LINN_INODE_DIR_BLOCKS; i++)
-        {
+        for (Size i = blk + 1; i < numBlocks && i < LINN_INODE_DIR_BLOCKS; i++) {
             if (inode->block[i] == offsetBlock + numContiguous)
                 numContiguous++;
             else
@@ -158,47 +143,40 @@ u64 LinnFileSystem::getOffsetRange(const LinnInode *inode,
         return offsetBlock * super.blockSize;
     }
     // Indirect blocks.
-    if (blk - LINN_INODE_DIR_BLOCKS < numPerBlock)
-    {
+    if (blk - LINN_INODE_DIR_BLOCKS < numPerBlock) {
         depth = 1;
     }
-    // Double indirect blocks.
-    else if (blk - LINN_INODE_DIR_BLOCKS < numPerBlock * numPerBlock)
-    {
+        // Double indirect blocks.
+    else if (blk - LINN_INODE_DIR_BLOCKS < numPerBlock * numPerBlock) {
         depth = 2;
     }
-    // Triple indirect blocks.
-    else
-    {
+        // Triple indirect blocks.
+    else {
         depth = 3;
     }
 
     // Prepare read offset for the lookup
-    offset  = inode->block[(LINN_INODE_DIR_BLOCKS + depth - 1)];
+    offset = inode->block[(LINN_INODE_DIR_BLOCKS + depth - 1)];
     offset *= super.blockSize;
 
     // Lookup the block number.
-    while (true)
-    {
+    while (true) {
         // Fetch block.
-        if (storage->read(offset, block, super.blockSize) != FileSystem::Success)
-        {
+        if (storage->read(offset, block, super.blockSize) != FileSystem::Success) {
             return 0;
         }
         // Calculate the number of blocks remaining per entry.
-        for (Size i = 0; i < depth - 1; i++)
-        {
+        for (Size i = 0; i < depth - 1; i++) {
             remain *= LINN_SUPER_NUM_PTRS(&super);
         }
         // More indirection?
-        if (remain == 1)
-        {
+        if (remain == 1) {
             break;
         }
         // Calculate the next offset.
-        offset  = block[ (blk - LINN_INODE_DIR_BLOCKS) / remain ];
+        offset = block[(blk - LINN_INODE_DIR_BLOCKS) / remain];
         offset *= super.blockSize;
-        remain  = 1;
+        remain = 1;
         depth--;
     }
 
@@ -208,8 +186,7 @@ u64 LinnFileSystem::getOffsetRange(const LinnInode *inode,
     // Calculate number of contiguous blocks following this block
     numContiguous = 1;
 
-    for (Size i = blk + 1; i < numBlocks && (i % numPerBlock) != 0; i++)
-    {
+    for (Size i = blk + 1; i < numBlocks && (i % numPerBlock) != 0; i++) {
         if (block[(i - LINN_INODE_DIR_BLOCKS) % numPerBlock] == offsetBlock + numContiguous)
             numContiguous++;
         else
@@ -220,8 +197,7 @@ u64 LinnFileSystem::getOffsetRange(const LinnInode *inode,
     return offsetBlock * super.blockSize;
 }
 
-void LinnFileSystem::notSupportedHandler(FileSystemMessage *msg)
-{
+void LinnFileSystem::notSupportedHandler(FileSystemMessage *msg) {
     msg->result = FileSystem::NotSupported;
     sendResponse(msg);
 }

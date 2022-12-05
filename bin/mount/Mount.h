@@ -28,9 +28,8 @@
 /**
  * Mount filesystems on the system.
  */
-class Mount : public POSIXApplication
-{
-  public:
+class Mount : public POSIXApplication {
+public:
 
     /**
      * Constructor
@@ -52,7 +51,7 @@ class Mount : public POSIXApplication
      */
     virtual Result exec();
 
-  private:
+private:
 
     /**
      * Print currently mounted file systems.

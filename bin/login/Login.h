@@ -28,9 +28,8 @@
 /**
  * Login program which starts the user shell.
  */
-class Login : public POSIXApplication
-{
-  public:
+class Login : public POSIXApplication {
+public:
 
     /**
      * Constructor
@@ -52,14 +51,14 @@ class Login : public POSIXApplication
      */
     virtual Result exec();
 
-  private:
+private:
 
     /**
      * Read username from standard input
      *
      * @return Username of the user.
      */
-    const char * getUsername() const;
+    const char *getUsername() const;
 
     /**
      * Print the login program prompt

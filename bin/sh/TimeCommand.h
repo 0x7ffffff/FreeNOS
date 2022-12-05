@@ -34,9 +34,8 @@ class Shell;
 /**
  * Measure the execution time of a program.
  */
-class TimeCommand : public ShellCommand
-{
-  public:
+class TimeCommand : public ShellCommand {
+public:
 
     /**
      * Constructor function.
@@ -52,7 +51,7 @@ class TimeCommand : public ShellCommand
      */
     virtual int execute(const Size nparams, const char **params);
 
-  private:
+private:
 
     /** Shell object */
     Shell *m_shell;

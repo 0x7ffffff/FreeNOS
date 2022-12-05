@@ -26,9 +26,9 @@
 #include "RaspberryKernel.h"
 
 RaspberryKernel::RaspberryKernel(CoreInfo *info)
-    : ARMKernel(info)
+        : ARMKernel(info)
 #ifdef BCM2836
-    , m_bcm(info->coreId)
+, m_bcm(info->coreId)
 #endif /* BMC2836 */
 {
     ARMControl ctrl;
@@ -59,17 +59,15 @@ RaspberryKernel::RaspberryKernel(CoreInfo *info)
 #endif /* BCM2836 */
 
     /* Default to broadcom timer and interrupt handling */
-    if (m_timer == NULL)
-    {
+    if (m_timer == NULL) {
         m_timer = &m_bcmTimer;
         m_timerIrq = BCM_IRQ_SYSTIMERM1;
-        m_bcmTimer.setFrequency( 250 ); /* trigger timer interrupts at 250Hz (clock runs at 1Mhz) */
+        m_bcmTimer.setFrequency(250); /* trigger timer interrupts at 250Hz (clock runs at 1Mhz) */
         m_intControl->enable(BCM_IRQ_SYSTIMERM1);
     }
 }
 
-void RaspberryKernel::interrupt(volatile CPUState state)
-{
+void RaspberryKernel::interrupt(volatile CPUState state) {
     RaspberryKernel *kernel = (RaspberryKernel *) Kernel::instance();
     ARMProcess *proc = (ARMProcess *) Kernel::instance()->getProcessManager()->current(), *next;
     bool tick;
@@ -87,24 +85,20 @@ void RaspberryKernel::interrupt(volatile CPUState state)
         tick = kernel->m_intControl->isTriggered(BCM_IRQ_SYSTIMERM1);
     }
 
-    if (tick)
-    {
+    if (tick) {
         kernel->m_timer->tick();
         kernel->getProcessManager()->schedule();
     }
 
-    for (uint i = kernel->m_timerIrq + 1; i < 64; i++)
-    {
-        if (kernel->m_intControl->isTriggered(i))
-        {
-            kernel->executeIntVector(i, (CPUState *)&state);
+    for (uint i = kernel->m_timerIrq + 1; i < 64; i++) {
+        if (kernel->m_intControl->isTriggered(i)) {
+            kernel->executeIntVector(i, (CPUState * ) & state);
         }
     }
 
     next = (ARMProcess *) kernel->getProcessManager()->current();
-    if (next != proc)
-    {
-        proc->setCpuState((const CPUState *)&state);
-        MemoryBlock::copy((void *)&state, next->cpuState(), sizeof(state));
+    if (next != proc) {
+        proc->setCpuState((const CPUState *) &state);
+        MemoryBlock::copy((void *) &state, next->cpuState(), sizeof(state));
     }
 }

@@ -33,9 +33,8 @@
  *
  * @see http://en.wikipedia.org/wiki/Linear_congruential_generator
  */
-class Randomizer
-{
-  private:
+class Randomizer {
+private:
 
     /** Used in modulus operation of calculated value */
     static const ulong Modulus = 1 << 31;
@@ -46,7 +45,7 @@ class Randomizer
     /** Added to calculated value */
     static const ulong Constant = 12345;
 
-  public:
+public:
 
     /**
      * Set a value as the current state
@@ -62,7 +61,7 @@ class Randomizer
      */
     ulong next();
 
-  private:
+private:
 
     /** Current randomizer value */
     static ulong m_value;

@@ -32,9 +32,8 @@
 /**
  * Implements a CoreServer for ARM/Allwinner (sunxi) based System-on-Chips.
  */
-class SunxiCoreServer : public CoreServer
-{
-  public:
+class SunxiCoreServer : public CoreServer {
+public:
 
     /** Offset of the CoreInfo struct relative to the kernel's physical base address. */
     static const Address SecondaryCoreInfoOffset = (1024 * 1024 * 33);
@@ -42,12 +41,12 @@ class SunxiCoreServer : public CoreServer
     /** Physical memory address for CoreInfo passed to secondary cores during bootup. */
     static const Address SecondaryCoreInfoAddress = RAM_ADDR + SecondaryCoreInfoOffset;
 
-  private:
+private:
 
     /** Software Generated Interrupt number for sending/receiving between cores. */
     static const Size SoftwareInterruptNumber = 0x1;
 
-  public:
+public:
 
     /**
      * Class constructor function.
@@ -92,7 +91,7 @@ class SunxiCoreServer : public CoreServer
      */
     virtual Core::Result sendIPI(uint coreId);
 
-  private:
+private:
 
     /** CPU Configuration Module instance */
     SunxiCpuConfig m_cpuConfig;

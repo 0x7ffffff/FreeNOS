@@ -34,9 +34,8 @@
 /**
  * @brief Abstract Input/Output buffer.
  */
-class IOBuffer
-{
-  public:
+class IOBuffer {
+public:
 
     /**
      * Default empty constructor
@@ -84,14 +83,14 @@ class IOBuffer
      *
      * @return FileSystemMessage pointer.
      */
-    const FileSystemMessage * getMessage() const;
+    const FileSystemMessage *getMessage() const;
 
     /**
      * Get raw buffer.
      *
      * @return Buffer pointer.
      */
-    u8 * getBuffer();
+    u8 *getBuffer();
 
     /**
      * @brief Read bytes from the I/O buffer.
@@ -151,9 +150,9 @@ class IOBuffer
      *
      * @return Byte value at the given index or 0 if index is invalid.
      */
-    u8 operator[] (Size index) const;
+    u8 operator[](Size index) const;
 
-  private:
+private:
 
     /**
      * @brief Current request being processed.

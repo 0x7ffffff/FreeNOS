@@ -18,31 +18,25 @@
 #include "TestResult.h"
 
 TestResult::TestResult(Result result, const char *description)
-    : m_result(result), m_description(description, true)
-{
+        : m_result(result), m_description(description, true) {
 }
 
-bool TestResult::isOK() const
-{
+bool TestResult::isOK() const {
     return m_result == Success;
 }
 
-bool TestResult::isFailed() const
-{
+bool TestResult::isFailed() const {
     return m_result == Failure;
 }
 
-bool TestResult::isSkipped() const
-{
+bool TestResult::isSkipped() const {
     return m_result == Skipped;
 }
 
-const TestResult::Result TestResult::getResult() const
-{
+const TestResult::Result TestResult::getResult() const {
     return m_result;
 }
 
-String & TestResult::getDescription()
-{
+String &TestResult::getDescription() {
     return m_description;
 }

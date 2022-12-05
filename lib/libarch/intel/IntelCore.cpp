@@ -23,12 +23,10 @@
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
 
-void IntelCore::logException(CPUState *state) const
-{
+void IntelCore::logException(CPUState *state) const {
     String s;
 
-    switch (state->vector)
-    {
+    switch (state->vector) {
         case INTEL_DIVZERO:
             ERROR("Divide Error Exception");
             break;
@@ -118,8 +116,7 @@ void IntelCore::logException(CPUState *state) const
     logState(state);
 }
 
-void IntelCore::logState(CPUState *state) const
-{
+void IntelCore::logState(CPUState *state) const {
     logRegister("eip", state->irq.eip);
     logRegister("eax", state->regs.eax);
     logRegister("ebx", state->regs.ebx);
@@ -131,32 +128,28 @@ void IntelCore::logState(CPUState *state) const
     logRegister("esp", state->regs.esp0);
 }
 
-void IntelCore::logRegister(const char *name, u32 reg) const
-{
+void IntelCore::logRegister(const char *name, u32 reg) const {
     String s;
     s << Number::Hex << name << " = " << reg << Number::Dec << " (" << reg << ")";
 
     ERROR(*s);
 }
 
-volatile u32 IntelCore::readCR2() const
-{
+volatile u32 IntelCore::readCR2() const {
     volatile u32 cr2;
     asm volatile("mov %%cr2, %%eax\n"
                  "mov %%eax, %0\n" : "=r" (cr2));
     return cr2;
 }
 
-volatile u32 IntelCore::readCR3() const
-{
+volatile u32 IntelCore::readCR3() const {
     volatile u32 cr3;
     asm volatile("mov %%cr3, %%eax\n"
                  "mov %%eax, %0\n" : "=r" (cr3));
     return cr3;
 }
 
-void IntelCore::writeCR3(u32 cr3) const
-{
+void IntelCore::writeCR3(u32 cr3) const {
     asm volatile("mov %0, %%eax\n"
-                 "mov %%eax, %%cr3" :: "r" (cr3));
+                 "mov %%eax, %%cr3"::"r" (cr3));
 }

@@ -35,9 +35,8 @@
 /**
  * Represents a file on a mounted LinnFS filesystem.
  */
-class LinnFile : public File
-{
-  public:
+class LinnFile : public File {
+public:
 
     /**
      * Constructor function.
@@ -65,11 +64,11 @@ class LinnFile : public File
      *
      * @return Result code
      */
-    virtual FileSystem::Result read(IOBuffer & buffer,
-                                    Size & size,
+    virtual FileSystem::Result read(IOBuffer &buffer,
+                                    Size &size,
                                     const Size offset);
 
-  private:
+private:
 
     /** Filesystem pointer. */
     LinnFileSystem *m_fs;

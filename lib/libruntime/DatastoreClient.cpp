@@ -21,27 +21,22 @@
 #include "DatastoreClient.h"
 
 DatastoreClient::DatastoreClient(const ProcessID pid)
-    : m_pid(pid)
-{
+        : m_pid(pid) {
 }
 
 Datastore::Result DatastoreClient::registerBuffer(const char *key,
                                                   void *buffer,
-                                                  const Size size) const
-{
+                                                  const Size size) const {
     DatastoreMessage msg;
-    msg.type   = ChannelMessage::Request;
+    msg.type = ChannelMessage::Request;
     msg.action = Datastore::RegisterBuffer;
-    msg.size   = size;
+    msg.size = size;
     MemoryBlock::copy(msg.key, key, sizeof(msg.key));
 
-    if (ChannelClient::instance()->syncSendReceive(&msg, sizeof(msg), m_pid) == ChannelClient::Success)
-    {
+    if (ChannelClient::instance()->syncSendReceive(&msg, sizeof(msg), m_pid) == ChannelClient::Success) {
         *(Address *) buffer = msg.address;
         return msg.result;
-    }
-    else
-    {
+    } else {
         return Datastore::IpcError;
     }
 }

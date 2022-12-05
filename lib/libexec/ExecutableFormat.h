@@ -40,40 +40,37 @@ class ExecutableFormat;
  * Confirms if we understand the given format.
  * @return true on success and false on failure.
  */
-typedef ExecutableFormat * FormatDetector(u8 *image, Size size);
+typedef ExecutableFormat *FormatDetector(u8 *image, Size size);
 
 /**
  * Abstraction class of various executable formats.
  */
-class ExecutableFormat
-{
-  public:
+class ExecutableFormat {
+public:
 
     /**
      * Memory region.
      */
-    typedef struct Region
-    {
+    typedef struct Region {
         Address virt;
         Address dataOffset;
         Size dataSize;
         Size memorySize;
         Memory::Access access;
     }
-    Region;
+            Region;
 
     /**
      * Result code
      */
-    enum Result
-    {
+    enum Result {
         Success,
         NotFound,
         InvalidFormat,
         OutOfMemory
     };
 
-  public:
+public:
 
     /**
      * Class constructor.
@@ -120,7 +117,7 @@ class ExecutableFormat
      */
     static Result find(const u8 *image, const Size size, ExecutableFormat **fmt);
 
-  protected:
+protected:
 
     /** Input image raw data */
     const u8 *m_image;

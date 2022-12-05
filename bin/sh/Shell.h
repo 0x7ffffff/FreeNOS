@@ -30,9 +30,8 @@
 /**
  * System command shell interpreter
  */
-class Shell : public POSIXApplication
-{
-  public:
+class Shell : public POSIXApplication {
+public:
 
     /**
      * Constructor
@@ -60,14 +59,14 @@ class Shell : public POSIXApplication
      * @param name ShellCommand name.
      * @return ShellCommand object pointer.
      */
-    ShellCommand * getCommand(const char *name);
+    ShellCommand *getCommand(const char *name);
 
     /**
      * Get all shell commands.
      *
      * @return HashTable with ShellCommands
      */
-    HashTable<String, ShellCommand *> & getCommands();
+    HashTable<String, ShellCommand *> &getCommands();
 
     /**
      * Register a new ShellCommand.
@@ -95,7 +94,7 @@ class Shell : public POSIXApplication
      */
     int executeInput(char *cmdline);
 
-  private:
+private:
 
     /**
      * Executes the Shell by entering an infinite loop.
@@ -108,7 +107,7 @@ class Shell : public POSIXApplication
      * Fetch a command text from standard input.
      * @return Pointer to a command text.
      */
-    char * getInput() const;
+    char *getInput() const;
 
     /**
      * Output a prompt.
@@ -125,7 +124,7 @@ class Shell : public POSIXApplication
      */
     Size parse(char *cmdline, char **argv, Size maxArgv, bool *background);
 
-  private:
+private:
 
     /** All known ShellCommands. */
     HashTable<String, ShellCommand *> m_commands;

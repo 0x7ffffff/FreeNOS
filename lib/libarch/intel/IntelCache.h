@@ -36,9 +36,8 @@
 /**
  * Intel cache management implementation.
  */
-class IntelCache : public Cache
-{
-  public:
+class IntelCache : public Cache {
+public:
 
     /**
      * Invalidate the entire cache.
@@ -92,8 +91,7 @@ class IntelCache : public Cache
     virtual Result invalidateAddress(Type type, Address addr);
 };
 
-namespace Arch
-{
+namespace Arch {
     typedef IntelCache Cache;
 };
 

@@ -32,22 +32,20 @@
 /**
  * Helper class to launch an external program.
  */
-class ApplicationLauncher
-{
-  public:
+class ApplicationLauncher {
+public:
 
     /**
      * Result code
      */
-    enum Result
-    {
+    enum Result {
         Success,
         InvalidArgument,
         NotFound,
         IOError
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -92,7 +90,7 @@ class ApplicationLauncher
      */
     Result wait();
 
-  private:
+private:
 
     /** Absolute path to the program to run */
     const String m_path;

@@ -26,28 +26,25 @@
 #include "ExternalTest.h"
 
 ExternalTest::ExternalTest(const char *name, int argc, char **argv)
-    : TestInstance(name)
-{
+        : TestInstance(name) {
     m_argc = argc;
     m_argv = argv;
 }
 
-ExternalTest::~ExternalTest()
-{
+ExternalTest::~ExternalTest() {
 }
 
-TestResult ExternalTest::run()
-{
+TestResult ExternalTest::run() {
     int status;
     pid_t pid;
-    char **argv = new char * [m_argc + 2];
+    char **argv = new char *[m_argc + 2];
 
     for (int i = 1; i < m_argc; i++)
         argv[i] = m_argv[i];
 
-    argv[0]        = *m_name;
-    argv[m_argc]   = (char *) "-n";
-    argv[m_argc+1] = 0;
+    argv[0] = *m_name;
+    argv[m_argc] = (char *) "-n";
+    argv[m_argc + 1] = 0;
 
 #ifdef __HOST__
     if ((pid = fork()) == 0)

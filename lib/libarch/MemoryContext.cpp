@@ -23,33 +23,25 @@
 #include <SplitAllocator.h>
 #include "MemoryContext.h"
 
-MemoryContext * MemoryContext::m_current = 0;
+MemoryContext *MemoryContext::m_current = 0;
 
 MemoryContext::MemoryContext(MemoryMap *map, SplitAllocator *alloc)
-    : m_alloc(alloc)
-    , m_map(map)
-    , m_mapRangeSparseCallback(this, &MemoryContext::mapRangeSparseCallback)
-    , m_savedRange(ZERO)
-    , m_numSparsePages(ZERO)
-{
+        : m_alloc(alloc), m_map(map), m_mapRangeSparseCallback(this, &MemoryContext::mapRangeSparseCallback),
+          m_savedRange(ZERO), m_numSparsePages(ZERO) {
 }
 
-MemoryContext::~MemoryContext()
-{
+MemoryContext::~MemoryContext() {
 }
 
-MemoryContext * MemoryContext::getCurrent()
-{
+MemoryContext *MemoryContext::getCurrent() {
     return m_current;
 }
 
-MemoryContext::Result MemoryContext::mapRangeContiguous(Memory::Range *range)
-{
+MemoryContext::Result MemoryContext::mapRangeContiguous(Memory::Range *range) {
     Result r = Success;
 
     // Allocate a block of contiguous physical pages, if needed.
-    if (!range->phys)
-    {
+    if (!range->phys) {
         Allocator::Range alloc_args;
         alloc_args.address = 0;
         alloc_args.size = range->size;
@@ -62,8 +54,7 @@ MemoryContext::Result MemoryContext::mapRangeContiguous(Memory::Range *range)
     }
 
     // Insert virtual page(s)
-    for (Size i = 0; i < range->size; i += PAGESIZE)
-    {
+    for (Size i = 0; i < range->size; i += PAGESIZE) {
         if ((r = map(range->virt + i,
                      range->phys + i,
                      range->access)) != Success)
@@ -73,8 +64,7 @@ MemoryContext::Result MemoryContext::mapRangeContiguous(Memory::Range *range)
     return r;
 }
 
-MemoryContext::Result MemoryContext::mapRangeSparse(Memory::Range *range)
-{
+MemoryContext::Result MemoryContext::mapRangeSparse(Memory::Range *range) {
     Allocator::Range alloc_args;
 
     // Allocate a set of physical pages (non-contiguous)
@@ -92,8 +82,7 @@ MemoryContext::Result MemoryContext::mapRangeSparse(Memory::Range *range)
     return Success;
 }
 
-MemoryContext::Result MemoryContext::unmapRange(Memory::Range *range)
-{
+MemoryContext::Result MemoryContext::unmapRange(Memory::Range *range) {
     Result r = Success;
 
     for (Size i = 0; i < range->size; i += PAGESIZE)
@@ -103,8 +92,7 @@ MemoryContext::Result MemoryContext::unmapRange(Memory::Range *range)
     return r;
 }
 
-MemoryContext::Result MemoryContext::release(Address virt)
-{
+MemoryContext::Result MemoryContext::release(Address virt) {
     Address phys;
     Result result = lookup(virt, &phys);
 
@@ -114,41 +102,32 @@ MemoryContext::Result MemoryContext::release(Address virt)
     return result;
 }
 
-MemoryContext::Result MemoryContext::findFree(Size size, MemoryMap::Region region, Address *virt) const
-{
+MemoryContext::Result MemoryContext::findFree(Size size, MemoryMap::Region region, Address *virt) const {
     Memory::Range r = m_map->range(region);
     Size currentSize = 0;
     Address addr = r.virt, currentAddr = r.virt, tmp;
 
-    while (addr < r.virt+r.size && currentSize < size)
-    {
-        if (lookup(addr, &tmp) == InvalidAddress)
-        {
+    while (addr < r.virt + r.size && currentSize < size) {
+        if (lookup(addr, &tmp) == InvalidAddress) {
             currentSize += PAGESIZE;
-        }
-        else
-        {
-            currentSize = 0; 
+        } else {
+            currentSize = 0;
             currentAddr = addr + PAGESIZE;
         }
         addr += PAGESIZE;
     }
 
-    if (currentSize >= size)
-    {
+    if (currentSize >= size) {
         *virt = currentAddr;
         return Success;
-    }
-    else
+    } else
         return OutOfMemory;
 }
 
-void MemoryContext::mapRangeSparseCallback(Address *phys)
-{
+void MemoryContext::mapRangeSparseCallback(Address *phys) {
     Result r = Success;
 
-    for (Size i = 0; i < 8U * PAGESIZE; i += PAGESIZE)
-    {
+    for (Size i = 0; i < 8U * PAGESIZE; i += PAGESIZE) {
         r = map(m_savedRange->virt + m_numSparsePages, (*phys) + i, m_savedRange->access);
         if (r != Success)
             break;

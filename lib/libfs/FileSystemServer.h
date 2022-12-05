@@ -41,9 +41,8 @@
 /**
  * Abstract filesystem class.
  */
-class FileSystemServer : public ChannelServer<FileSystemServer, FileSystemMessage>
-{
-  private:
+class FileSystemServer : public ChannelServer<FileSystemServer, FileSystemMessage> {
+private:
 
     /** Maximum number of supported file system mount entries */
     static const Size MaximumFileSystemMounts = 32;
@@ -51,7 +50,7 @@ class FileSystemServer : public ChannelServer<FileSystemServer, FileSystemMessag
     /** Maximum number of WaitSet entries supported */
     static const Size MaximumWaitSetCount = 32;
 
-  public:
+public:
 
     /**
      * Constructor function.
@@ -71,7 +70,7 @@ class FileSystemServer : public ChannelServer<FileSystemServer, FileSystemMessag
      *
      * @return Mount path of the filesystem
      */
-    const char * getMountPath() const;
+    const char *getMountPath() const;
 
     /**
      * Get next unused inode
@@ -126,7 +125,7 @@ class FileSystemServer : public ChannelServer<FileSystemServer, FileSystemMessag
      *
      * @return Pointer to a new File on success or ZERO on failure.
      */
-    virtual File * createFile(const FileSystem::FileType type);
+    virtual File *createFile(const FileSystem::FileType type);
 
     /**
      * Process an incoming filesystem request using a path.
@@ -162,7 +161,7 @@ class FileSystemServer : public ChannelServer<FileSystemServer, FileSystemMessag
      */
     virtual bool retryRequests();
 
-  protected:
+protected:
 
     /**
      * Process a FileSystemRequest.
@@ -228,7 +227,7 @@ class FileSystemServer : public ChannelServer<FileSystemServer, FileSystemMessag
      *
      * @return Directory pointer on success or NULL on failure
      */
-    Directory * getParentDirectory(const char *path);
+    Directory *getParentDirectory(const char *path);
 
     /**
      * Retrieve a File from storage.
@@ -242,7 +241,7 @@ class FileSystemServer : public ChannelServer<FileSystemServer, FileSystemMessag
      *
      * @return Pointer to a FileCache on success, ZERO otherwise.
      */
-    FileCache * lookupFile(const FileSystemPath &path);
+    FileCache *lookupFile(const FileSystemPath &path);
 
     /**
      * Search the cache for an entry.
@@ -251,7 +250,7 @@ class FileSystemServer : public ChannelServer<FileSystemServer, FileSystemMessag
      *
      * @return Pointer to FileCache object on success, NULL on failure.
      */
-    FileCache * findFileCache(const char *path) const;
+    FileCache *findFileCache(const char *path) const;
 
     /**
      * Search the cache for an entry.
@@ -260,7 +259,7 @@ class FileSystemServer : public ChannelServer<FileSystemServer, FileSystemMessag
      *
      * @return Pointer to FileCache object on success, NULL on failure.
      */
-    FileCache * findFileCache(const String &path) const;
+    FileCache *findFileCache(const String &path) const;
 
     /**
      * Search the cache for an entry.
@@ -269,7 +268,7 @@ class FileSystemServer : public ChannelServer<FileSystemServer, FileSystemMessag
      *
      * @return Pointer to FileCache object on success, NULL on failure.
      */
-    FileCache * findFileCache(const FileSystemPath &path) const;
+    FileCache *findFileCache(const FileSystemPath &path) const;
 
     /**
      * Inserts a file into the in-memory filesystem tree.
@@ -279,7 +278,7 @@ class FileSystemServer : public ChannelServer<FileSystemServer, FileSystemMessag
      *
      * @return Pointer to the newly created FileCache, or NULL on failure.
      */
-    FileCache * insertFileCache(File *file, const char *pathFormat);
+    FileCache *insertFileCache(File *file, const char *pathFormat);
 
     /**
      * Remove a File from the cache.
@@ -296,7 +295,7 @@ class FileSystemServer : public ChannelServer<FileSystemServer, FileSystemMessag
      */
     void clearFileCache(FileCache *cache = ZERO);
 
-  protected:
+protected:
 
     /** Process identifier */
     const ProcessID m_pid;

@@ -70,9 +70,8 @@
  * @see FileSystemServer
  * @see Ext2FileSystem
  */
-class LinnFileSystem : public FileSystemServer
-{
-  public:
+class LinnFileSystem : public FileSystemServer {
+public:
 
     /**
      * Class constructor function.
@@ -89,8 +88,7 @@ class LinnFileSystem : public FileSystemServer
      *
      * @see LinnSuperBlock
      */
-    LinnSuperBlock * getSuperBlock()
-    {
+    LinnSuperBlock *getSuperBlock() {
         return &super;
     }
 
@@ -101,8 +99,7 @@ class LinnFileSystem : public FileSystemServer
      *
      * @see Storage
      */
-    Storage * getStorage()
-    {
+    Storage *getStorage() {
         return storage;
     }
 
@@ -115,7 +112,7 @@ class LinnFileSystem : public FileSystemServer
      *
      * @see LinnInode
      */
-    LinnInode * getInode(u32 inodeNum);
+    LinnInode *getInode(u32 inodeNum);
 
     /**
      * Read a group descriptor from the filesystem.
@@ -126,7 +123,7 @@ class LinnFileSystem : public FileSystemServer
      *
      * @see LinnGroup
      */
-    LinnGroup * getGroup(u32 groupNum);
+    LinnGroup *getGroup(u32 groupNum);
 
     /**
      * Read a group descriptor from the filesystem, given an inode number.
@@ -138,7 +135,7 @@ class LinnFileSystem : public FileSystemServer
      * @see LinnGroup
      * @see LinnInode
      */
-    LinnGroup * getGroupByInode(u32 inodeNum);
+    LinnGroup *getGroupByInode(u32 inodeNum);
 
     /**
      * Calculates the offset inside storage for a given block.
@@ -154,9 +151,9 @@ class LinnFileSystem : public FileSystemServer
      */
     u64 getOffsetRange(const LinnInode *inode,
                        const u32 blk,
-                       Size & numContiguous);
+                       Size &numContiguous);
 
-  private:
+private:
 
     /**
      * Callback handler for unsupported operations
@@ -165,7 +162,7 @@ class LinnFileSystem : public FileSystemServer
      */
     void notSupportedHandler(FileSystemMessage *msg);
 
-  private:
+private:
 
     /** Provides storage. */
     Storage *storage;

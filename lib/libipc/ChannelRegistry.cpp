@@ -19,65 +19,56 @@
 #include "Channel.h"
 #include "ChannelRegistry.h"
 
-ChannelRegistry::ChannelRegistry()
-{
+ChannelRegistry::ChannelRegistry() {
 }
 
-ChannelRegistry::~ChannelRegistry()
-{
-    for (HashIterator<ProcessID, Channel *> i(m_consumer); i.hasCurrent(); i++)
+ChannelRegistry::~ChannelRegistry() {
+    for (HashIterator < ProcessID, Channel * > i(m_consumer); i.hasCurrent(); i++)
         delete i.current();
 
-    for (HashIterator<ProcessID, Channel *> i(m_producer); i.hasCurrent(); i++)
+    for (HashIterator < ProcessID, Channel * > i(m_producer); i.hasCurrent(); i++)
         delete i.current();
 }
 
-Channel * ChannelRegistry::getConsumer(const ProcessID pid)
-{
-    Channel * const *ch = m_consumer.get(pid);
+Channel *ChannelRegistry::getConsumer(const ProcessID pid) {
+    Channel *const *ch = m_consumer.get(pid);
     if (ch)
         return *ch;
     else
         return ZERO;
 }
 
-Channel * ChannelRegistry::getProducer(const ProcessID pid)
-{
-    Channel * const *ch = m_producer.get(pid);
+Channel *ChannelRegistry::getProducer(const ProcessID pid) {
+    Channel *const *ch = m_producer.get(pid);
     if (ch)
         return *ch;
     else
         return ZERO;
 }
 
-HashTable<ProcessID, Channel *> & ChannelRegistry::getConsumers()
-{
+HashTable<ProcessID, Channel *> &ChannelRegistry::getConsumers() {
     return m_consumer;
 }
 
-HashTable<ProcessID, Channel *> & ChannelRegistry::getProducers()
-{
+HashTable<ProcessID, Channel *> &ChannelRegistry::getProducers() {
     return m_producer;
 }
 
 ChannelRegistry::Result ChannelRegistry::registerConsumer(
-    const ProcessID pid,
-    Channel *channel)
-{
+        const ProcessID pid,
+        Channel *channel) {
     m_consumer.insert(pid, channel);
     return Success;
 }
 
 ChannelRegistry::Result ChannelRegistry::registerProducer(
-    const ProcessID pid,
-    Channel *channel)
-{
+        const ProcessID pid,
+        Channel *channel) {
     m_producer.insert(pid, channel);
     return Success;
 }
 
-ChannelRegistry::Result ChannelRegistry::unregisterConsumer(const ProcessID pid)
-{
+ChannelRegistry::Result ChannelRegistry::unregisterConsumer(const ProcessID pid) {
     Channel *ch = getConsumer(pid);
     if (ch)
         delete ch;
@@ -88,8 +79,7 @@ ChannelRegistry::Result ChannelRegistry::unregisterConsumer(const ProcessID pid)
         return NotFound;
 }
 
-ChannelRegistry::Result ChannelRegistry::unregisterProducer(const ProcessID pid)
-{
+ChannelRegistry::Result ChannelRegistry::unregisterProducer(const ProcessID pid) {
     Channel *ch = getProducer(pid);
     if (ch)
         delete ch;

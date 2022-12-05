@@ -33,14 +33,13 @@
 /**
  * Allocates virtual memory using the memory server.
  */
-class PageAllocator : public Allocator
-{
-  private:
+class PageAllocator : public Allocator {
+private:
 
     /** Minimum size required for allocations */
     static const Size MinimumAllocationSize = PAGESIZE * 32U;
 
-  public:
+public:
 
     /**
      * Class constructor.
@@ -64,7 +63,7 @@ class PageAllocator : public Allocator
      *
      * @return Result value.
      */
-    virtual Result allocate(Range & args);
+    virtual Result allocate(Range &args);
 
     /**
      * Release memory.
@@ -81,7 +80,7 @@ class PageAllocator : public Allocator
      */
     virtual Result release(const Address addr);
 
-  private:
+private:
 
     /** Total number of bytes allocated. */
     Size m_allocated;

@@ -33,14 +33,13 @@
 /**
  * Recovery IPC message.
  */
-typedef struct RecoveryMessage : public ChannelMessage
-{
+typedef struct RecoveryMessage : public ChannelMessage {
     ProcessID from;          /**< Source of the message */
     Recovery::Action action; /**< Action to perform. */
     Recovery::Result result; /**< Result of action. */
     ProcessID pid;           /**< Process identifier of target process. */
 }
-RecoveryMessage;
+        RecoveryMessage;
 
 /**
  * @}

@@ -28,9 +28,8 @@
 /**
  * Perform system benchmarking tests.
  */
-class BenchMark : public POSIXApplication
-{
-  public:
+class BenchMark : public POSIXApplication {
+public:
 
     /**
      * Constructor

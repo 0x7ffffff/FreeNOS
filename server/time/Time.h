@@ -92,9 +92,8 @@
  * @see http://git.kernel.org/?p=linux/kernel/git/stable/linux-2.6.30.y.git;a=blob_plain;f=arch/x86/kernel/rtc.c;hb=HEAD
  */
 
-class Time : public Device
-{
-    public:
+class Time : public Device {
+public:
 
     /**
      * Constructor
@@ -120,11 +119,11 @@ class Time : public Device
      *
      * @return Result code
      */
-    virtual FileSystem::Result read(IOBuffer & buffer,
-                                    Size & size,
+    virtual FileSystem::Result read(IOBuffer &buffer,
+                                    Size &size,
                                     const Size offset);
 
-  private:
+private:
 
     /**
      * @brief Returns the value stored at the given address
@@ -148,7 +147,7 @@ class Time : public Device
      */
     unsigned bcd2bin(unsigned char val);
 
-  private:
+private:
 
     /** Port I/O object. */
     Arch::IO m_io;

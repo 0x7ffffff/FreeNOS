@@ -33,8 +33,7 @@
 /**
  * Datastore IPC message.
  */
-typedef struct DatastoreMessage : public ChannelMessage
-{
+typedef struct DatastoreMessage : public ChannelMessage {
     ProcessID from;           /**< Source of the message */
     Datastore::Action action; /**< Action to perform. */
     Datastore::Result result; /**< Result of action. */
@@ -42,7 +41,7 @@ typedef struct DatastoreMessage : public ChannelMessage
     Size size;                /**< Size of the buffer */
     Address address;          /**< Address of mapped buffer inside client process */
 }
-DatastoreMessage;
+        DatastoreMessage;
 
 /**
  * @}

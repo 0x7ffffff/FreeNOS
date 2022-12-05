@@ -41,22 +41,20 @@
 /**
  * Efficient key -> value lookups.
  */
-template <class K, class V> class HashTable : public Associative<K,V>
-{
-  public:
+template<class K, class V>
+class HashTable : public Associative<K, V> {
+public:
 
     /**
      * Describes a bucket in the HashTable, for collision avoidance.
      */
-    class Bucket
-    {
-      public:
+    class Bucket {
+    public:
 
         /**
          * Default constructor.
          */
-        Bucket()
-        {
+        Bucket() {
         }
 
         /**
@@ -66,16 +64,14 @@ template <class K, class V> class HashTable : public Associative<K,V>
          * @param v V of the bucket.
          */
         Bucket(K k, V v)
-            : key(k), value(v)
-        {
+                : key(k), value(v) {
         }
 
         /**
          * Copy constructor.
          */
-        Bucket(const Bucket & b)
-            : key(b.key), value(b.value)
-        {
+        Bucket(const Bucket &b)
+                : key(b.key), value(b.value) {
         }
 
         /**
@@ -83,16 +79,14 @@ template <class K, class V> class HashTable : public Associative<K,V>
          *
          * @param b HashBucket instance to compare us with.
          */
-        bool operator == (const Bucket & b) const
-        {
+        bool operator==(const Bucket &b) const {
             return key == b.key && value == b.value;
         }
 
         /**
          * Inequality operator.
          */
-        bool operator != (const Bucket & b) const
-        {
+        bool operator!=(const Bucket &b) const {
             return !(key == b.key && value == b.value);
         }
 
@@ -109,8 +103,7 @@ template <class K, class V> class HashTable : public Associative<K,V>
      * @param size Initial size of the internal table.
      */
     HashTable(Size size = HASHTABLE_DEFAULT_SIZE)
-        : m_table(size)
-    {
+            : m_table(size) {
         assert(size > 0);
 
         m_count = ZERO;
@@ -130,16 +123,13 @@ template <class K, class V> class HashTable : public Associative<K,V>
      *
      * @return bool Whether inserting the item at the given position succeeded.
      */
-    virtual bool insert(const K & key, const V & value)
-    {
+    virtual bool insert(const K &key, const V &value) {
 
         Size idx = hash(key, m_table.size());
 
         // See if the given key exists. Overwrite if so.
-        for (ListIterator<Bucket> i(m_table[idx]); i.hasCurrent(); i++)
-        {
-            if (i.current().key == key)
-            {
+        for (ListIterator<Bucket> i(m_table[idx]); i.hasCurrent(); i++) {
+            if (i.current().key == key) {
                 i.current().value = value;
                 return true;
             }
@@ -159,8 +149,7 @@ template <class K, class V> class HashTable : public Associative<K,V>
      *
      * @return True if append successfull, false otherwise.
      */
-    virtual bool append(const K & key, const V & value)
-    {
+    virtual bool append(const K &key, const V &value) {
 
         // Always append
         m_table[hash(key, m_table.size())].append(Bucket(key, value));
@@ -175,19 +164,15 @@ template <class K, class V> class HashTable : public Associative<K,V>
      *
      * @return Number of values removed.
      */
-    virtual int remove(const K & key)
-    {
+    virtual int remove(const K &key) {
         int removed = 0;
 
-        for (ListIterator<Bucket> i(m_table[hash(key, m_table.size())]); i.hasCurrent(); )
-        {
-            if (i.current().key == key)
-            {
+        for (ListIterator<Bucket> i(m_table[hash(key, m_table.size())]); i.hasCurrent();) {
+            if (i.current().key == key) {
                 i.remove();
                 m_count--;
                 removed++;
-            }
-            else
+            } else
                 i++;
         }
         return removed;
@@ -198,8 +183,7 @@ template <class K, class V> class HashTable : public Associative<K,V>
      *
      * @return Size of the internal array.
      */
-    virtual Size size() const
-    {
+    virtual Size size() const {
         return m_table.size();
     }
 
@@ -208,8 +192,7 @@ template <class K, class V> class HashTable : public Associative<K,V>
      *
      * @return Number of items in the HashTable.
      */
-    virtual Size count() const
-    {
+    virtual Size count() const {
         return m_count;
     }
 
@@ -218,8 +201,7 @@ template <class K, class V> class HashTable : public Associative<K,V>
      *
      * @return A List of keys.
      */
-    virtual List<K> keys() const
-    {
+    virtual List<K> keys() const {
         List<K> lst;
 
         for (Size i = 0; i < m_table.count(); i++)
@@ -233,8 +215,7 @@ template <class K, class V> class HashTable : public Associative<K,V>
     /**
      * Retrieve list of Keys for the given value.
      */
-    virtual List<K> keys(const V & value) const
-    {
+    virtual List<K> keys(const V &value) const {
         List<K> lst;
 
         for (Size i = 0; i < m_table.count(); i++)
@@ -250,8 +231,7 @@ template <class K, class V> class HashTable : public Associative<K,V>
      *
      * @return A List of values.
      */
-    virtual List<V> values() const
-    {
+    virtual List<V> values() const {
         List<V> lst;
 
         for (Size i = 0; i < m_table.count(); i++)
@@ -266,8 +246,7 @@ template <class K, class V> class HashTable : public Associative<K,V>
      *
      * @return A List of values.
      */
-    virtual List<V> values(const K & key) const
-    {
+    virtual List<V> values(const K &key) const {
         List<V> lst;
 
         for (ListIterator<Bucket> i(m_table[hash(key, m_table.size())]); i.hasCurrent(); i++)
@@ -284,9 +263,8 @@ template <class K, class V> class HashTable : public Associative<K,V>
      *
      * @return Pointer to the first value for the given key or ZERO if not found.
      */
-    virtual const V * get(const K & key) const
-    {
-        const List<Bucket> & lst = m_table[hash(key, m_table.size())];
+    virtual const V *get(const K &key) const {
+        const List<Bucket> &lst = m_table[hash(key, m_table.size())];
 
         for (ListIterator<Bucket> i(lst); i.hasCurrent(); i++)
             if (i.current().key == key)
@@ -304,9 +282,8 @@ template <class K, class V> class HashTable : public Associative<K,V>
      *
      * @note This function assumes the key exists.
      */
-    virtual const V & at(const K & key) const
-    {
-        const List<Bucket> & lst = m_table[hash(key, m_table.size())];
+    virtual const V &at(const K &key) const {
+        const List<Bucket> &lst = m_table[hash(key, m_table.size())];
 
         for (ListIterator<Bucket> i(lst); i.hasCurrent(); i++)
             if (i.current().key == key)
@@ -322,9 +299,8 @@ template <class K, class V> class HashTable : public Associative<K,V>
      *
      * @return First value for the given key, or the defaultValue.
      */
-    virtual const V value(const K & key, const V defaultValue = V()) const
-    {
-        const List<Bucket> & lst = m_table[hash(key, m_table.size())];
+    virtual const V value(const K &key, const V defaultValue = V()) const {
+        const List<Bucket> &lst = m_table[hash(key, m_table.size())];
 
         for (ListIterator<Bucket> i(lst); i.hasCurrent(); i++)
             if (i.current().key == key)
@@ -338,28 +314,25 @@ template <class K, class V> class HashTable : public Associative<K,V>
      *
      * @return Reference to the Vector with Buckets.
      */
-    Vector<List<Bucket> > & table()
-    {
+    Vector<List<Bucket> > &table() {
         return m_table;
     }
 
     /**
      * Modifiable index operator.
      */
-    V & operator[](const K & key)
-    {
+    V &operator[](const K &key) {
         return (V &) at(key);
     }
 
     /**
      * Constant index operator.
      */
-    const V & operator[](const K & key) const
-    {
+    const V &operator[](const K &key) const {
         return (const V &) at(key);
     }
 
-  private:
+private:
 
     /** Internal table. */
     Vector<List<Bucket> > m_table;

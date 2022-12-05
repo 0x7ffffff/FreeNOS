@@ -36,9 +36,8 @@
  *       For example, a virtual or physical memory range. Capabilities may be transferred between core local
  *       and remote processes.
  */
-class API
-{
-  public:
+class API {
+public:
 
     /**
      * Enumeration of supported generic kernel API functions.
@@ -46,8 +45,7 @@ class API
      * Architectures or System implementations can optionally
      * introduce additional specific APIs.
      */
-    typedef enum Number
-    {
+    typedef enum Number {
         PrivExecNumber = 1,
         ProcessCtlNumber,
         SystemInfoNumber,
@@ -55,7 +53,7 @@ class API
         VMCtlNumber,
         VMShareNumber
     }
-    Number;
+            Number;
 
     /**
      * Enumeration of generic kernel API result codes.
@@ -65,8 +63,7 @@ class API
      *       Some API handlers will return additional data in upper bits of
      *       return value which has the type API::Result 
      */
-    enum Result
-    {
+    enum Result {
         Success = 0,
         AccessViolation,
         RangeError,
@@ -88,20 +85,19 @@ class API
     /**
      * Various actions which may be performed inside an APIHandler.
      */
-    typedef enum Operation
-    {
-        Create      = 0,
-        Delete      = 1,
-        Send        = 2,
-        Receive     = 3,
+    typedef enum Operation {
+        Create = 0,
+        Delete = 1,
+        Send = 2,
+        Receive = 3,
         SendReceive = 4,
-        Read        = 5,
-        Write       = 6,
-        ReadPhys    = 7
+        Read = 5,
+        Write = 6,
+        ReadPhys = 7
     }
-    Operation;
+            Operation;
 
-  public:
+public:
 
     /**
      * Constructor
@@ -118,7 +114,7 @@ class API
                   ulong arg4,
                   ulong arg5);
 
-  private:
+private:
 
     /** API handlers */
     Vector<Handler *> m_apis;
@@ -129,7 +125,7 @@ class API
  */
 
 /** Operator to print a Operation to a Log */
-Log & operator << (Log &log, API::Operation op);
+Log &operator<<(Log &log, API::Operation op);
 
 /*
  * Include generic kernel API functions.

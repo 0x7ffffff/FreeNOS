@@ -32,9 +32,8 @@
 /**
  * Encapsulates a pending FileSystemMessage.
  */
-class FileSystemRequest
-{
-  public:
+class FileSystemRequest {
+public:
 
     /**
      * Constructor
@@ -46,16 +45,16 @@ class FileSystemRequest
      *
      * @return FileSystemMessage pointer
      */
-    FileSystemMessage * getMessage();
+    FileSystemMessage *getMessage();
 
     /**
      * Get IOBuffer.
      *
      * @return IOBuffer reference
      */
-    IOBuffer & getBuffer();
+    IOBuffer &getBuffer();
 
-  private:
+private:
 
     /** Message that was received */
     FileSystemMessage m_msg;

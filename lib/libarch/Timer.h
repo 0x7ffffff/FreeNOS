@@ -32,25 +32,25 @@
 /**
  * Represents a configurable timer device.
  */
-class Timer
-{
-  public:
+class Timer {
+public:
 
     /**
      * Timer information structure.
      */
-    typedef struct Info
-    {
+    typedef struct Info {
         u32 ticks;
         Size frequency;
     }
-    ALIGN(8) Info;
+            ALIGN(
+
+    8)
+    Info;
 
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         NotFound,
         IOError,
@@ -151,9 +151,9 @@ class Timer
      *
      * @bug This function does not take into account a potential wrap-around of the m_ticks member (integer overflow)
      */
-    bool isExpired(const Info & info) const;
+    bool isExpired(const Info &info) const;
 
-  protected:
+protected:
 
     /** The current timer ticks */
     Size m_ticks;

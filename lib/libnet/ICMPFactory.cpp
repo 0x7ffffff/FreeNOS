@@ -20,34 +20,29 @@
 
 ICMPFactory::ICMPFactory(const u32 inode,
                          ICMP *icmp)
-    : File(inode)
-{
+        : File(inode) {
     m_icmp = icmp;
 }
 
-ICMPFactory::~ICMPFactory()
-{
+ICMPFactory::~ICMPFactory() {
 }
 
-FileSystem::Result ICMPFactory::read(IOBuffer & buffer,
-                                     Size & size,
-                                     const Size offset)
-{
+FileSystem::Result ICMPFactory::read(IOBuffer &buffer,
+                                     Size &size,
+                                     const Size offset) {
     DEBUG("");
 
     String path;
     ICMPSocket *sock;
     const FileSystemMessage *msg = buffer.getMessage();
 
-    if (offset > 0)
-    {
+    if (offset > 0) {
         size = 0;
         return FileSystem::Success;
     }
 
     sock = m_icmp->createSocket(path, msg->from);
-    if (!sock)
-    {
+    if (!sock) {
         ERROR("failed to create ICMP socket");
         return FileSystem::IOError;
     }

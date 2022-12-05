@@ -32,9 +32,8 @@
 /**
  * Implements a CoreServer for a single core only.
  */
-class SingleCoreServer : public CoreServer
-{
-  public:
+class SingleCoreServer : public CoreServer {
+public:
 
     /**
      * Class constructor function.

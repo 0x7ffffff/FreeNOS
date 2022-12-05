@@ -29,13 +29,21 @@
 
 /** Forward declarations. */
 class API;
+
 class BootImageStorage;
+
 class MemoryContext;
+
 class Process;
+
 class ProcessManager;
+
 class SplitAllocator;
+
 class IntController;
+
 class Timer;
+
 struct CPUState;
 
 /**
@@ -55,16 +63,14 @@ typedef void InterruptHandler(struct CPUState *state, ulong param, ulong vector)
 /**
  * Interrupt hook class.
  */
-typedef struct InterruptHook
-{
+typedef struct InterruptHook {
     /**
      * Constructor function.
      *
      * @param h Handler function for the hook.
      * @param p Parameter to pass.
      */
-    InterruptHook(InterruptHandler *h, ulong p) : handler(h), param(p)
-    {
+    InterruptHook(InterruptHandler *h, ulong p) : handler(h), param(p) {
     }
 
     /**
@@ -73,8 +79,7 @@ typedef struct InterruptHook
      * @param i InterruptHook pointer.
      * @return True if equal, false otherwise.
      */
-    bool operator == (InterruptHook *i)
-    {
+    bool operator==(InterruptHook *i) {
         return handler == i->handler && param == i->param;
     }
 
@@ -84,20 +89,18 @@ typedef struct InterruptHook
     /** Passed to the handler. */
     ulong param;
 }
-InterruptHook;
+        InterruptHook;
 
 /**
  * FreeNOS kernel implementation.
  */
-class Kernel : public WeakSingleton<Kernel>
-{
-  public:
+class Kernel : public WeakSingleton<Kernel> {
+public:
 
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         InvalidBootImage,
         ProcessError,
@@ -128,42 +131,42 @@ class Kernel : public WeakSingleton<Kernel>
      *
      * @return SplitAllocator object pointer
      */
-    SplitAllocator * getAllocator();
+    SplitAllocator *getAllocator();
 
     /**
      * Get process manager.
      *
      * @return Kernel ProcessManager object pointer.
      */
-    ProcessManager * getProcessManager();
+    ProcessManager *getProcessManager();
 
     /**
      * Get API.
      *
      * @return Kernel API object pointer.
      */
-    API * getAPI();
+    API *getAPI();
 
     /**
      * Get the current MMU context.
      *
      * @return MemoryContext object pointer
      */
-    MemoryContext * getMemoryContext();
+    MemoryContext *getMemoryContext();
 
     /**
      * Get CoreInfo.
      *
      * @return CoreInfo object pointer
      */
-    CoreInfo * getCoreInfo();
+    CoreInfo *getCoreInfo();
 
     /**
      * Get Timer.
      *
      * @return Timer object pointer
      */
-    Timer * getTimer();
+    Timer *getTimer();
 
     /**
      * Execute the kernel.
@@ -210,7 +213,7 @@ class Kernel : public WeakSingleton<Kernel>
      */
     virtual Result loadBootImage();
 
-  private:
+private:
 
     /**
      * Load a boot program.
@@ -221,7 +224,7 @@ class Kernel : public WeakSingleton<Kernel>
     virtual Result loadBootProgram(const BootImageStorage &bootImage,
                                    const BootSymbol &program);
 
-  protected:
+protected:
 
     /** Physical memory allocator */
     SplitAllocator *m_alloc;
@@ -236,7 +239,8 @@ class Kernel : public WeakSingleton<Kernel>
     CoreInfo *m_coreInfo;
 
     /** Interrupt handlers. */
-    Vector<List<InterruptHook *> *> m_interrupts;
+    Vector<List < InterruptHook * > *>
+    m_interrupts;
 
     /** Interrupt Controller. */
     IntController *m_intControl;

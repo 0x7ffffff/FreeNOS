@@ -31,15 +31,13 @@
 /**
  * Unidirectional point-to-point messaging channel.
  */
-class Channel
-{
-  public:
+class Channel {
+public:
 
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         InvalidArgument,
         InvalidMode,
@@ -53,13 +51,12 @@ class Channel
     /**
      * Channel modes.
      */
-    enum Mode
-    {
+    enum Mode {
         Producer,
         Consumer
     };
 
-  public:
+public:
 
     /**
      * Constructor.
@@ -108,7 +105,7 @@ class Channel
      */
     virtual Result flush();
 
-  protected:
+protected:
 
     /** Channel mode. */
     const Mode m_mode;

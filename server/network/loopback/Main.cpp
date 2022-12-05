@@ -19,16 +19,14 @@
 #include <NetworkServer.h>
 #include "Loopback.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     KernelLog log;
     NetworkServer server("/network/loopback");
     server.registerNetworkDevice(new Loopback(server.getNextInode(), server));
 
     // Initialize
     const FileSystem::Result result = server.initialize();
-    if (result != FileSystem::Success)
-    {
+    if (result != FileSystem::Success) {
         ERROR("failed to initialize: result = " << (int) result);
         return 1;
     }

@@ -173,8 +173,7 @@
 /**
  * The <sys/stat.h> header shall define the stat structure.
  */
-struct stat
-{
+struct stat {
 #ifdef CPP
     /**
      * Instantiates the structure given an FileStat object.

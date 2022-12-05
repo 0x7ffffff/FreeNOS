@@ -25,27 +25,23 @@
 #include "Time.h"
 
 Time::Time(const u32 inode)
-    : Device(inode, FileSystem::CharacterDeviceFile)
-{
+        : Device(inode, FileSystem::CharacterDeviceFile) {
     m_identifier << "time0";
 }
 
-FileSystem::Result Time::initialize()
-{
+FileSystem::Result Time::initialize() {
     return FileSystem::Success;
 }
 
-FileSystem::Result Time::read(IOBuffer & buffer,
-                              Size & size,
-                              const Size offset)
-{
+FileSystem::Result Time::read(IOBuffer &buffer,
+                              Size &size,
+                              const Size offset) {
     unsigned int year, month, day, hour, min, sec = 0, time;
     char tmp[16];
     int n;
 
     // PHONY read
-    if(offset >= 10)
-    {
+    if (offset >= 10) {
         size = 0;
         return FileSystem::Success;
     }
@@ -54,19 +50,18 @@ FileSystem::Result Time::read(IOBuffer & buffer,
     // RTC registers will be updated.  Spec sheet says that this
     // is the reliable way to read RTC - registers. If UIP is set
     // then the register access might be invalid
-    while((readCMOS(RTC_STATUS_A) & RTC_UIP));
+    while ((readCMOS(RTC_STATUS_A) & RTC_UIP));
 
     // Read the date/time values from the CMOS
-    sec   = readCMOS(RTC_SECONDS);
-    min   = readCMOS(RTC_MINUTES);
-    hour  = readCMOS(RTC_HOURS);
-    day   = readCMOS(RTC_DAY_OF_MONTH);
+    sec = readCMOS(RTC_SECONDS);
+    min = readCMOS(RTC_MINUTES);
+    hour = readCMOS(RTC_HOURS);
+    day = readCMOS(RTC_DAY_OF_MONTH);
     month = readCMOS(RTC_MONTH);
-    year  = readCMOS(RTC_YEAR);
+    year = readCMOS(RTC_YEAR);
 
     // Check if the time values are stored in binary or BCD format
-    if( (readCMOS(RTC_STATUS_B) & RTC_BCD) )
-    {
+    if ((readCMOS(RTC_STATUS_B) & RTC_BCD)) {
         // Convert from binary coded decimal (bcd) to machine numbers
         sec = bcd2bin(sec);
         min = bcd2bin(min);
@@ -77,8 +72,7 @@ FileSystem::Result Time::read(IOBuffer & buffer,
     }
 
     // Assume that a two-digit year is after 2000
-    if(year < 100)
-    {
+    if (year < 100) {
         year += CMOS_YEARS_OFFS;
     }
 
@@ -91,13 +85,11 @@ FileSystem::Result Time::read(IOBuffer & buffer,
     return FileSystem::Success;
 }
 
-unsigned char Time::readCMOS(unsigned char addr)
-{
+unsigned char Time::readCMOS(unsigned char addr) {
     m_io.outb(RTC_PORT(0), addr);
     return m_io.inb(RTC_PORT(1));
 }
 
-unsigned Time::bcd2bin(unsigned char val)
-{
+unsigned Time::bcd2bin(unsigned char val) {
     return (val & 0x0f) + (val >> 4) * 10;
 }

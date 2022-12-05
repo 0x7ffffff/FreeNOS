@@ -142,15 +142,14 @@ typedef u32 ProcessID;
 /**
  * Describes a device ID number.
  */
-typedef struct DeviceID
-{
+typedef struct DeviceID {
     /** Major device ID number is a PID. */
     ProcessID major;
 
     /** Device specific minor ID number. */
     u16 minor;
 }
-DeviceID;
+        DeviceID;
 
 /**
  * Error code defined in Error.h

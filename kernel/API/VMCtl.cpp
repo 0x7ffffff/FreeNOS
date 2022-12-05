@@ -23,8 +23,7 @@
 
 API::Result VMCtlHandler(const ProcessID procID,
                          const MemoryOperation op,
-                         Memory::Range *range)
-{
+                         Memory::Range *range) {
     ProcessManager *procs = Kernel::instance()->getProcessManager();
     MemoryContext::Result memResult = MemoryContext::Success;
     API::Result ret = API::Success;
@@ -35,8 +34,7 @@ API::Result VMCtlHandler(const ProcessID procID,
     // Find the given process
     if (procID == SELF)
         proc = procs->current();
-    else if (!(proc = procs->get(procID)))
-    {
+    else if (!(proc = procs->get(procID))) {
         return API::NotFound;
     }
 
@@ -44,15 +42,13 @@ API::Result VMCtlHandler(const ProcessID procID,
     MemoryContext *mem = proc->getMemoryContext();
 
     // Perform operation
-    switch (op)
-    {
+    switch (op) {
         case LookupVirtual:
             // Translate virtual address to physical address (page boundary)
             memResult = mem->lookup(range->virt, &range->phys);
-            if (memResult != MemoryContext::Success)
-            {
+            if (memResult != MemoryContext::Success) {
                 ERROR("failed to lookup virtual address " << (void *) range->virt <<
-                      ": " << (int) memResult);
+                                                          ": " << (int) memResult);
                 return API::AccessViolation;
             }
             assert(!(range->phys & ~PAGEMASK));
@@ -63,13 +59,11 @@ API::Result VMCtlHandler(const ProcessID procID,
 
         case MapContiguous:
         case MapSparse:
-            if (!range->virt)
-            {
+            if (!range->virt) {
                 memResult = mem->findFree(range->size, MemoryMap::UserPrivate, &range->virt);
-                if (memResult != MemoryContext::Success)
-                {
+                if (memResult != MemoryContext::Success) {
                     ERROR("failed to find free virtual address in UserPrivate: " <<
-                         (int) memResult);
+                                                                                 (int) memResult);
                     return API::IOError;
                 }
                 range->virt += range->phys & ~PAGEMASK;
@@ -79,40 +73,36 @@ API::Result VMCtlHandler(const ProcessID procID,
             else
                 memResult = mem->mapRangeSparse(range);
 
-            if (memResult != MemoryContext::Success)
-            {
-                ERROR("failed to map memory range " << (void *)range->virt << "->" <<
-                     (void *) range->phys << ": " << (int) memResult);
+            if (memResult != MemoryContext::Success) {
+                ERROR("failed to map memory range " << (void *) range->virt << "->" <<
+                                                    (void *) range->phys << ": " << (int) memResult);
                 return API::IOError;
             }
             break;
 
         case UnMap:
             memResult = mem->unmapRange(range);
-            if (memResult != MemoryContext::Success)
-            {
-                ERROR("failed to unmap range at virtual address " << (void *)range->virt <<
-                      ": " << (int) memResult);
+            if (memResult != MemoryContext::Success) {
+                ERROR("failed to unmap range at virtual address " << (void *) range->virt <<
+                                                                  ": " << (int) memResult);
                 return API::IOError;
             }
             break;
 
         case Release:
             memResult = mem->releaseRange(range);
-            if (memResult != MemoryContext::Success)
-            {
-                ERROR("failed to release range at virtual address " << (void *)range->virt <<
-                      ": " << (int) memResult);
+            if (memResult != MemoryContext::Success) {
+                ERROR("failed to release range at virtual address " << (void *) range->virt <<
+                                                                    ": " << (int) memResult);
                 return API::IOError;
             }
             break;
 
         case ReleaseSections:
             memResult = mem->releaseSection(*range);
-            if (memResult != MemoryContext::Success)
-            {
-                ERROR("failed to release sections at virtual address " << (void *)range->virt <<
-                      ": " << (int) memResult);
+            if (memResult != MemoryContext::Success) {
+                ERROR("failed to release sections at virtual address " << (void *) range->virt <<
+                                                                       ": " << (int) memResult);
                 return API::IOError;
             }
             break;
@@ -126,10 +116,9 @@ API::Result VMCtlHandler(const ProcessID procID,
         case CacheInvalidate: {
             Arch::Cache cache;
             const Cache::Result r = cache.invalidateAddress(Cache::Data, range->virt);
-            if (r != Cache::Success)
-            {
+            if (r != Cache::Success) {
                 ERROR("failed to invalidate cache at address " << (void *) range->virt <<
-                      ": result = " << (int) r);
+                                                               ": result = " << (int) r);
                 return API::IOError;
             }
             break;
@@ -150,23 +139,18 @@ API::Result VMCtlHandler(const ProcessID procID,
             break;
         }
 
-        case ReserveMem:
-        {
+        case ReserveMem: {
             SplitAllocator *alloc = Kernel::instance()->getAllocator();
             Allocator::Result allocResult = Allocator::Success;
 
-            for (Size i = 0; i < range->size; i += PAGESIZE)
-            {
+            for (Size i = 0; i < range->size; i += PAGESIZE) {
                 const Address addr = range->phys + i;
 
-                if (alloc->isAllocated(addr))
-                {
-                    ERROR("address " << (void *)addr << " is already allocated");
+                if (alloc->isAllocated(addr)) {
+                    ERROR("address " << (void *) addr << " is already allocated");
                     return API::InvalidArgument;
-                }
-                else if ((allocResult = alloc->allocate(addr)) != Allocator::Success)
-                {
-                    ERROR("failed to allocate " << (void *)addr << ", result = " << (int)allocResult);
+                } else if ((allocResult = alloc->allocate(addr)) != Allocator::Success) {
+                    ERROR("failed to allocate " << (void *) addr << ", result = " << (int) allocResult);
                     return API::IOError;
                 }
             }

@@ -18,26 +18,21 @@
 #include "IntController.h"
 
 IntController::IntController()
-    : m_base(0)
-{
+        : m_base(0) {
 }
 
-uint IntController::getBase() const
-{
+uint IntController::getBase() const {
     return m_base;
 }
 
-IntController::Result IntController::nextPending(uint & irq)
-{
+IntController::Result IntController::nextPending(uint &irq) {
     return NotFound;
 }
 
-bool IntController::isTriggered(uint irq)
-{
+bool IntController::isTriggered(uint irq) {
     return false;
 }
 
-IntController::Result IntController::send(const uint targetCoreId, const uint irq)
-{
+IntController::Result IntController::send(const uint targetCoreId, const uint irq) {
     return IOError;
 }

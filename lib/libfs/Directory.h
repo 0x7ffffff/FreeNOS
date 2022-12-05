@@ -36,15 +36,14 @@
 /**
  * @brief Describes an entry inside a Directory.
  */
-typedef struct Dirent
-{
+typedef struct Dirent {
     /** Name of the file. */
     char name[DIRENT_LEN];
 
     /** Type of file. */
     FileSystem::FileType type;
 }
-Dirent;
+        Dirent;
 
 /**
  * @brief Directory File functionality.
@@ -56,9 +55,8 @@ Dirent;
  * @see FileSystem
  * @see File
  */
-class Directory : public File
-{
-  public:
+class Directory : public File {
+public:
 
     /**
      * Constructor
@@ -92,8 +90,8 @@ class Directory : public File
      * @see Storage
      * @see Dirent
      */
-    virtual FileSystem::Result read(IOBuffer & buffer,
-                                    Size & size,
+    virtual FileSystem::Result read(IOBuffer &buffer,
+                                    Size &size,
                                     const Size offset);
 
     /**
@@ -112,7 +110,7 @@ class Directory : public File
      * @see Dirent
      * @see Storage
      */
-    virtual File * lookup(const char *name);
+    virtual File *lookup(const char *name);
 
     /**
      * Insert a new directory entry.
@@ -149,7 +147,7 @@ class Directory : public File
      */
     void clear();
 
-  private:
+private:
 
     /**
      * Retrieve a directory entry by it's name.
@@ -158,9 +156,9 @@ class Directory : public File
      *
      * @return Direct pointer on success, ZERO otherwise.
      */
-    Dirent * get(const char *name);
+    Dirent *get(const char *name);
 
-  private:
+private:
 
     /**
      * List of directory entries.

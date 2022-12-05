@@ -21,36 +21,30 @@
 #include <Factory.h>
 #include "SingleCoreServer.h"
 
-template<> CoreServer* AbstractFactory<CoreServer>::create()
-{
+template<>
+CoreServer *AbstractFactory<CoreServer>::create() {
     return new SingleCoreServer();
 }
 
 SingleCoreServer::SingleCoreServer()
-    : CoreServer()
-{
+        : CoreServer() {
 }
 
-SingleCoreServer::Result SingleCoreServer::initialize()
-{
+SingleCoreServer::Result SingleCoreServer::initialize() {
     return Success;
 }
 
-Core::Result SingleCoreServer::bootCore(uint coreId, CoreInfo *info)
-{
+Core::Result SingleCoreServer::bootCore(uint coreId, CoreInfo *info) {
     return coreId == 0 ? Core::Success : Core::BootError;
 }
 
-Core::Result SingleCoreServer::discoverCores()
-{
+Core::Result SingleCoreServer::discoverCores() {
     return Core::Success;
 }
 
-void SingleCoreServer::waitIPI() const
-{
+void SingleCoreServer::waitIPI() const {
 }
 
-Core::Result SingleCoreServer::sendIPI(uint coreId)
-{
+Core::Result SingleCoreServer::sendIPI(uint coreId) {
     return Core::IOError;
 }

@@ -20,31 +20,24 @@
 #include "CoreClient.h"
 
 CoreClient::CoreClient(const ProcessID pid)
-    : m_pid(pid)
-{
+        : m_pid(pid) {
 }
 
-inline Core::Result CoreClient::request(CoreMessage &msg) const
-{
-    if (ChannelClient::instance()->syncSendReceive(&msg, sizeof(msg), m_pid) == ChannelClient::Success)
-    {
+inline Core::Result CoreClient::request(CoreMessage &msg) const {
+    if (ChannelClient::instance()->syncSendReceive(&msg, sizeof(msg), m_pid) == ChannelClient::Success) {
         return msg.result;
-    }
-    else
-    {
+    } else {
         return Core::IpcError;
     }
 }
 
-Core::Result CoreClient::getCoreCount(Size &coreCount) const
-{
+Core::Result CoreClient::getCoreCount(Size &coreCount) const {
     CoreMessage msg;
-    msg.type     = ChannelMessage::Request;
-    msg.action   = Core::GetCoreCount;
+    msg.type = ChannelMessage::Request;
+    msg.action = Core::GetCoreCount;
 
     const Core::Result result = request(msg);
-    if (result == Core::Success)
-    {
+    if (result == Core::Success) {
         coreCount = msg.coreNumber;
     }
 
@@ -54,15 +47,14 @@ Core::Result CoreClient::getCoreCount(Size &coreCount) const
 Core::Result CoreClient::createProcess(const Size coreId,
                                        const Address programAddr,
                                        const Size programSize,
-                                       const char *programCmd) const
-{
+                                       const char *programCmd) const {
     CoreMessage msg;
-    msg.type        = ChannelMessage::Request;
-    msg.action      = Core::CreateProcess;
-    msg.coreNumber  = coreId;
+    msg.type = ChannelMessage::Request;
+    msg.action = Core::CreateProcess;
+    msg.coreNumber = coreId;
     msg.programAddr = programAddr;
     msg.programSize = programSize;
-    msg.programCmd  = programCmd;
+    msg.programCmd = programCmd;
 
     return request(msg);
 }

@@ -34,15 +34,13 @@ class Channel;
 /**
  * Registration for Channels.
  */
-class ChannelRegistry
-{
-  public:
+class ChannelRegistry {
+public:
 
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         InvalidArgument,
         InvalidSize,
@@ -50,7 +48,7 @@ class ChannelRegistry
         NotFound
     };
 
-  public:
+public:
 
     /**
      * Constructor.
@@ -69,7 +67,7 @@ class ChannelRegistry
      *
      * @return Channel pointer if found or ZERO
      */
-    Channel * getConsumer(const ProcessID pid);
+    Channel *getConsumer(const ProcessID pid);
 
     /**
      * Get one producer.
@@ -78,21 +76,21 @@ class ChannelRegistry
      *
      * @return Channel pointer if found or ZERO
      */
-    Channel * getProducer(const ProcessID pid);
+    Channel *getProducer(const ProcessID pid);
 
     /**
      * Get all consumers
      *
      * @return HashTable with consumer channels
      */
-    HashTable<ProcessID, Channel *> & getConsumers();
+    HashTable<ProcessID, Channel *> &getConsumers();
 
     /**
      * Get all producers
      *
      * @return HashTable with all producer channels
      */
-    HashTable<ProcessID, Channel *> & getProducers();
+    HashTable<ProcessID, Channel *> &getProducers();
 
     /**
      * Register consumer channel.
@@ -132,7 +130,7 @@ class ChannelRegistry
      */
     Result unregisterProducer(const ProcessID pid);
 
-  private:
+private:
 
     /** Contains registered consumer channels */
     HashTable<ProcessID, Channel *> m_consumer;

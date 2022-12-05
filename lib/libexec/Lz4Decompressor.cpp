@@ -22,31 +22,22 @@
 #include "Lz4Decompressor.h"
 
 Lz4Decompressor::Lz4Decompressor(const void *data, const Size size)
-    : m_inputData(static_cast<const u8 *>(data))
-    , m_inputSize(size)
-    , m_frameDescSize(3)
-    , m_blockChecksums(false)
-    , m_contentChecksum(false)
-    , m_contentSize(0)
-    , m_blockMaximumSize(0)
-{
+        : m_inputData(static_cast<const u8 *>(data)), m_inputSize(size), m_frameDescSize(3), m_blockChecksums(false),
+          m_contentChecksum(false), m_contentSize(0), m_blockMaximumSize(0) {
 }
 
-Lz4Decompressor::Result Lz4Decompressor::initialize()
-{
+Lz4Decompressor::Result Lz4Decompressor::initialize() {
     // Reset state
     m_frameDescSize = 3;
 
     // Verify minimum input size
-    if (m_inputSize < 27)
-    {
+    if (m_inputSize < 27) {
         ERROR("invalid size of input data: " << m_inputSize);
         return InvalidArgument;
     }
 
     // Verify the input is an actual LZ4 frame
-    if (readLe32(m_inputData) != FrameMagic)
-    {
+    if (readLe32(m_inputData) != FrameMagic) {
         ERROR("invalid magic value " << readLe32(m_inputData) << " != " << FrameMagic);
         return InvalidArgument;
     }
@@ -56,16 +47,14 @@ Lz4Decompressor::Result Lz4Decompressor::initialize()
 
     // Verify the version bits
     const u8 version = flg >> FrameVersionShift;
-    if (version != FrameVersion)
-    {
+    if (version != FrameVersion) {
         ERROR("invalid version value " << version << " != " << FrameVersion);
         return InvalidArgument;
     }
 
     // This code only supports independent blocks
     const bool independent = (flg >> FrameBlockIndShift) & 0x1;
-    if (!independent)
-    {
+    if (!independent) {
         ERROR("inter-dependent blocks not supported");
         return NotSupported;
     }
@@ -74,15 +63,13 @@ Lz4Decompressor::Result Lz4Decompressor::initialize()
     m_blockChecksums = (flg >> FrameBlockChkShift) & 0x1;
 
     // Check for content size flag
-    if ((flg >> FrameContentSzShift) & 0x1)
-    {
+    if ((flg >> FrameContentSzShift) & 0x1) {
         m_contentSize = readLe64(m_inputData + sizeof(u32) + (sizeof(u8) * 2));
         m_frameDescSize += 8;
     }
 
     // Content size must be non-zero
-    if (m_contentSize == 0)
-    {
+    if (m_contentSize == 0) {
         ERROR("content size must not be zero");
         return NotSupported;
     }
@@ -91,15 +78,13 @@ Lz4Decompressor::Result Lz4Decompressor::initialize()
     m_contentChecksum = (flg >> FrameContentChkShift) & 0x1 ? true : false;
 
     // Check for the DictID flag
-    if ((flg >> FrameDictIdShift) & 0x1)
-    {
+    if ((flg >> FrameDictIdShift) & 0x1) {
         m_frameDescSize += 4;
     }
 
     // Read the BD byte which contains the maximum block size
     const u8 bd = *(m_inputData + sizeof(u32) + sizeof(u8));
-    switch (bd >> 4)
-    {
+    switch (bd >> 4) {
         case 4:
             m_blockMaximumSize = KiloByte(64);
             break;
@@ -112,8 +97,7 @@ Lz4Decompressor::Result Lz4Decompressor::initialize()
         case 7:
             m_blockMaximumSize = MegaByte(4);
             break;
-        default:
-        {
+        default: {
             ERROR("invalid maximum block size value: " << (bd >> 4));
             return InvalidArgument;
         }
@@ -122,21 +106,18 @@ Lz4Decompressor::Result Lz4Decompressor::initialize()
     return Success;
 }
 
-u64 Lz4Decompressor::getUncompressedSize() const
-{
+u64 Lz4Decompressor::getUncompressedSize() const {
     return m_contentSize;
 }
 
 Lz4Decompressor::Result Lz4Decompressor::read(void *buffer,
-                                              const Size size) const
-{
+                                              const Size size) const {
     const u8 *input = m_inputData + m_frameDescSize + sizeof(u32);
     const u8 *inputEnd = m_inputData + m_inputSize;
     u8 *output = static_cast<u8 *>(buffer);
     Size copied = 0;
 
-    while (copied < size && input < inputEnd)
-    {
+    while (copied < size && input < inputEnd) {
         // Fetch the next block
         const u32 blockSizeByte = readLe32(input);
         const u32 blockSize = blockSizeByte & ~(1 << 31);
@@ -144,21 +125,18 @@ Lz4Decompressor::Result Lz4Decompressor::read(void *buffer,
         Size uncompSize;
 
         // Last block has the EndMark as size value
-        if (blockSize == EndMark)
-        {
+        if (blockSize == EndMark) {
             break;
         }
         assert(blockSize <= m_blockMaximumSize);
         input += sizeof(u32);
 
         // Decompress the block
-        if (isCompressed)
-        {
+        if (isCompressed) {
             uncompSize = decompress(input, blockSize, output, size - copied);
         }
-        // Return data as-is when the block is not compressed
-        else
-        {
+            // Return data as-is when the block is not compressed
+        else {
             MemoryBlock::copy(output, input, blockSize);
             uncompSize = blockSize;
         }
@@ -167,8 +145,7 @@ Lz4Decompressor::Result Lz4Decompressor::read(void *buffer,
         copied += uncompSize;
         output += uncompSize;
         input += blockSize;
-        if (m_blockChecksums)
-        {
+        if (m_blockChecksums) {
             input += sizeof(u32);
         }
     }
@@ -178,22 +155,18 @@ Lz4Decompressor::Result Lz4Decompressor::read(void *buffer,
 
 inline const u32 Lz4Decompressor::integerDecode(const u32 initial,
                                                 const u8 *next,
-                                                Size &byteCount) const
-{
+                                                Size &byteCount) const {
     u32 value = initial;
 
-    if (initial < 0xf)
-    {
+    if (initial < 0xf) {
         return initial;
     }
 
-    for (byteCount = 1; ; byteCount++)
-    {
+    for (byteCount = 1;; byteCount++) {
         const u8 byte = *next++;
         value += byte;
 
-        if (byte < 0xff)
-        {
+        if (byte < 0xff) {
             break;
         }
     }
@@ -204,14 +177,12 @@ inline const u32 Lz4Decompressor::integerDecode(const u32 initial,
 const u32 Lz4Decompressor::decompress(const u8 *input,
                                       const Size inputSize,
                                       u8 *output,
-                                      const Size outputSize) const
-{
+                                      const Size outputSize) const {
     const u8 *inputEnd = input + inputSize;
     Size outputOffset = 0;
 
     // Decompress the whole block
-    while (input < inputEnd && outputOffset < outputSize)
-    {
+    while (input < inputEnd && outputOffset < outputSize) {
         u32 literalBytes = 0;
         u32 matchBytes = 0;
 
@@ -225,16 +196,14 @@ const u32 Lz4Decompressor::decompress(const u8 *input,
         DEBUG("token = " << token << " literalsCount = " << literalsCount << " literalBytes = " << literalBytes);
 
         // Copy literals
-        if (literalsCount > 0)
-        {
+        if (literalsCount > 0) {
             MemoryBlock::copy(output + outputOffset, input, literalsCount);
             input += literalsCount;
             outputOffset += literalsCount;
         }
 
         // End of block reached? Last 5 bytes are only literals
-        if (input >= inputEnd)
-        {
+        if (input >= inputEnd) {
             break;
         }
 

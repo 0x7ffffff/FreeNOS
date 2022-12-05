@@ -23,30 +23,26 @@
 #include "Init.h"
 
 Init::Init(int argc, char **argv)
-    : POSIXApplication(argc, argv)
-{
+        : POSIXApplication(argc, argv) {
     parser().setDescription("Initialize system processes");
     parser().registerFlag('s', "script", "Set shell startup script");
 }
 
-Init::~Init()
-{
+Init::~Init() {
 }
 
-Init::Result Init::exec()
-{
+Init::Result Init::exec() {
     const char *script = arguments().get("script") ?
                          arguments().get("script") : "/etc/init.sh";
-    const char *av[] = { "/bin/sh", script, ZERO };
+    const char *av[] = {"/bin/sh", script, ZERO};
     int pid, status;
 
     NOTICE("Starting init script: " << script);
 
     // Execute the run commands file
-    if ((pid = runProgram("/bin/sh", av)) == -1)
-    {
+    if ((pid = runProgram("/bin/sh", av)) == -1) {
         ERROR("failed to execute /bin/sh: " <<
-              strerror(errno));
+                                            strerror(errno));
         return IOError;
     }
 

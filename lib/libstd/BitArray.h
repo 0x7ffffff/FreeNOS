@@ -33,21 +33,19 @@
 /**
  * Represents an array of bits.
  */
-class BitArray
-{
-  public:
+class BitArray {
+public:
 
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         InvalidArgument,
         OutOfMemory
     };
 
-  public:
+public:
 
     /**
      * Class constructor.
@@ -135,7 +133,7 @@ class BitArray
      *
      * @return Internal BitArray.
      */
-    u8 * array() const;
+    u8 *array() const;
 
     /**
      * Use the given pointer as the BitArray buffer.
@@ -163,7 +161,7 @@ class BitArray
      */
     bool operator[](const int bit) const;
 
-  private:
+private:
 
     /**
      * Calculate required size of bitmap array in bytes.
@@ -174,7 +172,7 @@ class BitArray
      */
     Size calculateBitmapSize(const Size bitCount) const;
 
-  private:
+private:
 
     /** Total number of bits in the array. */
     Size m_bitCount;

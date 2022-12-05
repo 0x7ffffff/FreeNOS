@@ -36,9 +36,9 @@
 /**
  * Associatives are containers that provide a mapping of keys to values.
  */
-template <class K, class V> class Associative : public Container, public Comparable<Associative<K,V> >
-{
-  public:
+template<class K, class V>
+class Associative : public Container, public Comparable<Associative<K, V> > {
+public:
 
     /**
      * Inserts the given item to the Assocation.
@@ -50,8 +50,7 @@ template <class K, class V> class Associative : public Container, public Compara
      *
      * @return bool Whether inserting the item at the given position succeeded.
      */
-    virtual bool insert(const K & key, const V & item)
-    {
+    virtual bool insert(const K &key, const V &item) {
         return false;
     }
 
@@ -63,8 +62,7 @@ template <class K, class V> class Associative : public Container, public Compara
      *
      * @return True on success and false otherwise
      */
-    virtual bool append(const K & key, const V & item)
-    {
+    virtual bool append(const K &key, const V &item) {
         return false;
     }
 
@@ -75,16 +73,14 @@ template <class K, class V> class Associative : public Container, public Compara
      *
      * @return Number of items removed associated with the key.
      */
-    virtual int remove(const K & key)
-    {
+    virtual int remove(const K &key) {
         return 0;
     }
 
     /**
      * Removes all items from the Association
      */
-    virtual void clear()
-    {
+    virtual void clear() {
         List<K> k = keys();
 
         for (ListIterator<K> i(k); i.hasNext(); i++)
@@ -101,15 +97,14 @@ template <class K, class V> class Associative : public Container, public Compara
     /**
      * Retrieve list of Keys for the given value.
      */
-    virtual List<K> keys(const V & value) const = 0;
+    virtual List<K> keys(const V &value) const = 0;
 
     /**
      * Check if the given key exists.
      *
      * @return True if exists, false otherwise.
      */
-    virtual bool contains(const K & key) const
-    {
+    virtual bool contains(const K &key) const {
         return values(key).count() > 0;
     }
 
@@ -125,7 +120,7 @@ template <class K, class V> class Associative : public Container, public Compara
      *
      * @return A List of values.
      */
-    virtual List<V> values(const K & key) const = 0;
+    virtual List<V> values(const K &key) const = 0;
 
     /**
      * Returns the first value for the given key.
@@ -134,7 +129,7 @@ template <class K, class V> class Associative : public Container, public Compara
      *
      * @return Pointer to the first value for the given key or ZERO if not found.
      */
-    virtual const V * get(const K & key) const = 0;
+    virtual const V *get(const K &key) const = 0;
 
     /**
      * Returns a reference to the first value for the given key.
@@ -145,7 +140,7 @@ template <class K, class V> class Associative : public Container, public Compara
      *
      * @return Reference to the first value for the key.
      */
-    virtual const V & at(const K & key) const = 0;
+    virtual const V &at(const K &key) const = 0;
 
     /**
      * Return the first value for the given key.
@@ -157,7 +152,7 @@ template <class K, class V> class Associative : public Container, public Compara
      *
      * @return First value for the given key, or the defaultValue.
      */
-    virtual const V value(const K & key, const V defaultValue = V()) const = 0;
+    virtual const V value(const K &key, const V defaultValue = V()) const = 0;
 
     /**
      * Compare this instance to another instance
@@ -166,8 +161,7 @@ template <class K, class V> class Associative : public Container, public Compara
      *
      * @return Zero if equal, non-zero otherwise
      */
-    virtual int compareTo(const Associative<K,V> &a) const
-    {
+    virtual int compareTo(const Associative<K, V> &a) const {
         Size sz = size();
         Size cnt = count();
         List<V> vals = a.values();
@@ -195,8 +189,7 @@ template <class K, class V> class Associative : public Container, public Compara
      *
      * @return True if equal, false otherwise.
      */
-    virtual bool equals(const Associative<K,V> &a) const
-    {
+    virtual bool equals(const Associative<K, V> &a) const {
         return compareTo(a) == 0;
     }
 
@@ -210,8 +203,7 @@ template <class K, class V> class Associative : public Container, public Compara
      *
      * @return The first value for the key.
      */
-    const V & operator [] (K key) const
-    {
+    const V &operator[](K key) const {
         return at(key);
     }
 };

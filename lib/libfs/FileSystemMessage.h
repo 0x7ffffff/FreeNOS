@@ -34,8 +34,7 @@
 /**
  * FileSystem IPC message.
  */
-typedef struct FileSystemMessage : public ChannelMessage
-{
+typedef struct FileSystemMessage : public ChannelMessage {
     FileSystem::Action action;     /**< Action to perform. */
     FileSystem::Result result;     /**< Result code. */
     char *buffer;                  /**< Points to a buffer for I/O. */
@@ -47,7 +46,7 @@ typedef struct FileSystemMessage : public ChannelMessage
     ProcessID pid;                 /**< Process identifier (used for redirection) */
     Size pathMountLength;          /**< Length of the mounted path (used for redirection) */
 }
-FileSystemMessage;
+        FileSystemMessage;
 
 /**
  * @}

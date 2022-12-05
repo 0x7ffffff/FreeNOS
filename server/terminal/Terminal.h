@@ -41,9 +41,8 @@
 /**
  * @brief A Terminal enables user to interact with the system.
  */
-class Terminal : public Device
-{
-  public:
+class Terminal : public Device {
+public:
 
     /**
      * @brief Class constructor.
@@ -99,14 +98,14 @@ class Terminal : public Device
      *
      * @return Pointer to the local buffer.
      */
-    u16 * getBuffer();
+    u16 *getBuffer();
 
     /**
      * Saved byte and attribute value at cursor position.
      *
      * @return Saved value.
      */
-    u16 * getCursorValue();
+    u16 *getCursorValue();
 
     /**
      * Hides the cursor from the VGA screen.
@@ -142,8 +141,8 @@ class Terminal : public Device
      *
      * @return Result code
      */
-    virtual FileSystem::Result read(IOBuffer & buffer,
-                                    Size & size,
+    virtual FileSystem::Result read(IOBuffer &buffer,
+                                    Size &size,
                                     const Size offset);
 
     /**
@@ -156,11 +155,11 @@ class Terminal : public Device
      *
      * @return Result code
      */
-    virtual FileSystem::Result write(IOBuffer & buffer,
-                                     Size & size,
+    virtual FileSystem::Result write(IOBuffer &buffer,
+                                     Size &size,
                                      const Size offset);
 
-  private:
+private:
 
     /**
      * Write bytes to the output device
@@ -173,7 +172,7 @@ class Terminal : public Device
     FileSystem::Result writeTerminal(const u8 *bytes,
                                      const Size size);
 
-  private:
+private:
 
     /** Terminal state. */
     teken_t state;
@@ -188,7 +187,7 @@ class Terminal : public Device
     teken_pos_t cursorPos;
 
     /** Saved value at cursor position. */
-        u16 cursorValue;
+    u16 cursorValue;
 
     /**
      * @brief Path to the input and output files.
@@ -220,7 +219,7 @@ void bell(Terminal *term);
  * @param attr Attributes for this character.
  */
 void putchar(Terminal *term, const teken_pos_t *pos,
-         teken_char_t ch, const teken_attr_t *attr);
+             teken_char_t ch, const teken_attr_t *attr);
 
 /**
  * Sets the Terminal cursor.
@@ -239,7 +238,7 @@ void cursor(Terminal *term, const teken_pos_t *pos);
  * @param attr Attributes for this character.
  */
 void fill(Terminal *ctx, const teken_rect_t *rect,
-      teken_char_t ch, const teken_attr_t *attr);
+          teken_char_t ch, const teken_attr_t *attr);
 
 /**
  * Copy bytes to the terminal.
@@ -249,7 +248,7 @@ void fill(Terminal *ctx, const teken_rect_t *rect,
  * @param pos Position to copy the rect to.
  */
 void copy(Terminal *ctx, const teken_rect_t *rect,
-      const teken_pos_t *pos);
+          const teken_pos_t *pos);
 
 /**
  * Set terminal parameters.

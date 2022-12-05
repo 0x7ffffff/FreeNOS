@@ -35,9 +35,8 @@
  *
  * @see Storage
  */
-class FileStorage : public Storage
-{
-  public:
+class FileStorage : public Storage {
+public:
 
     /**
      * Constructor function.
@@ -83,7 +82,7 @@ class FileStorage : public Storage
      */
     virtual u64 capacity() const;
 
-  private:
+private:
 
     /** Path to the file */
     const char *m_path;

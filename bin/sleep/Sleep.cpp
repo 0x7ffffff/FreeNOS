@@ -23,30 +23,25 @@
 #include "Sleep.h"
 
 Sleep::Sleep(int argc, char **argv)
-    : POSIXApplication(argc, argv)
-{
+        : POSIXApplication(argc, argv) {
     parser().setDescription("Stop executing for some time");
     parser().registerPositional("SECONDS", "Stop executing for the given number of seconds");
 }
 
-Sleep::~Sleep()
-{
+Sleep::~Sleep() {
 }
 
-Sleep::Result Sleep::exec()
-{
+Sleep::Result Sleep::exec() {
     int sec = 0;
 
     // Convert input to seconds
-    if ((sec = atoi(arguments().get("SECONDS"))) <= 0)
-    {
+    if ((sec = atoi(arguments().get("SECONDS"))) <= 0) {
         ERROR("invalid sleep time `" << arguments().get("SECONDS") << "'");
         return InvalidArgument;
     }
 
     // Sleep now
-    if (sleep(sec) != 0)
-    {
+    if (sleep(sec) != 0) {
         ERROR("failed to sleep: " << strerror(errno));
         return IOError;
     }

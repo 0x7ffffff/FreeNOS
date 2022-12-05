@@ -33,22 +33,20 @@
 /**
  * Simple linked list template class.
  */
-template <class T> class List : public Sequence<T>
-{
-  public:
+template<class T>
+class List : public Sequence<T> {
+public:
 
     /**
      * Represents an item on the List.
      */
-    class Node
-    {
-      public:
+    class Node {
+    public:
 
         /**
          * Constructor.
          */
-        Node(T t) : data(t)
-        {
+        Node(T t) : data(t) {
             prev = ZERO;
             next = ZERO;
         }
@@ -66,10 +64,9 @@ template <class T> class List : public Sequence<T>
     /**
      * Class constructor.
      */
-    List()
-    {
-        m_head  = ZERO;
-        m_tail  = ZERO;
+    List() {
+        m_head = ZERO;
+        m_tail = ZERO;
         m_count = 0;
     }
 
@@ -78,10 +75,9 @@ template <class T> class List : public Sequence<T>
      *
      * @param lst List instance to copy from
      */
-    List(const List<T> & lst)
-    {
-        m_head  = ZERO;
-        m_tail  = ZERO;
+    List(const List<T> &lst) {
+        m_head = ZERO;
+        m_tail = ZERO;
         m_count = 0;
 
         for (Node *node = lst.m_head; node; node = node->next)
@@ -91,12 +87,10 @@ template <class T> class List : public Sequence<T>
     /**
      * Class destructor.
      */
-    virtual ~List()
-    {
+    virtual ~List() {
         Node *node = m_head;
 
-        while (node)
-        {
+        while (node) {
             Node *tmp = node;
             node = node->next;
             delete tmp;
@@ -108,15 +102,13 @@ template <class T> class List : public Sequence<T>
      *
      * @param t Data item to te inserted.
      */
-    void prepend(T t)
-    {
+    void prepend(T t) {
 
         // Create a new node with the item.
         Node *node = new Node(t);
 
         // Connect the item to the list head, if set
-        if (m_head)
-        {
+        if (m_head) {
             m_head->prev = node;
             node->next = m_head;
         }
@@ -136,8 +128,7 @@ template <class T> class List : public Sequence<T>
      *
      * @param t Item to insert.
      */
-    void append(T t)
-    {
+    void append(T t) {
         Node *node = new Node(t);
         node->prev = m_tail;
 
@@ -163,18 +154,15 @@ template <class T> class List : public Sequence<T>
      *
      * @return Number of items removed from the list.
      */
-    virtual int remove(T t)
-    {
+    virtual int remove(T t) {
         Node *node = m_head;
         Node *next;
         int num = 0;
 
-        while (node)
-        {
+        while (node) {
             next = node->next;
 
-            if (node->data == t)
-            {
+            if (node->data == t) {
                 remove(node);
                 num++;
             }
@@ -190,8 +178,7 @@ template <class T> class List : public Sequence<T>
      *
      * @return True on success, false otherwise
      */
-    virtual int remove(Node *node)
-    {
+    virtual int remove(Node *node) {
         if (node->prev)
             node->prev->next = node->next;
 
@@ -216,8 +203,7 @@ template <class T> class List : public Sequence<T>
      *
      * @return true if the element is on the List, false otherwise.
      */
-    virtual bool contains(const T t) const
-    {
+    virtual bool contains(const T t) const {
 
         for (Node *i = m_head; i; i = i->next)
             if (i->data == t)
@@ -229,20 +215,18 @@ template <class T> class List : public Sequence<T>
     /**
      * Clears the entire List.
      */
-    virtual void clear()
-    {
+    virtual void clear() {
         Node *node = m_head, *next = ZERO;
 
         // Delete all Node and optionally items too.
-        while (node)
-        {
+        while (node) {
             next = node->next;
             delete node;
             node = next;
         }
         // Clear administration
-        m_head  = ZERO;
-        m_tail  = ZERO;
+        m_head = ZERO;
+        m_tail = ZERO;
         m_count = 0;
     }
 
@@ -251,16 +235,14 @@ template <class T> class List : public Sequence<T>
      *
      * @return First Node on the List.
      */
-    Node * head()
-    {
+    Node *head() {
         return m_head;
     }
 
     /**
      * Get the first Node on the List (read-only).
      */
-    const Node * head() const
-    {
+    const Node *head() const {
         return m_head;
     }
 
@@ -269,16 +251,14 @@ template <class T> class List : public Sequence<T>
      *
      * @return Last Node on the list.
      */
-    Node * tail()
-    {
+    Node *tail() {
         return m_tail;
     }
 
     /**
      * Get the last Node on the List (read-only).
      */
-    const Node * tail() const
-    {
+    const Node *tail() const {
         return m_tail;
     }
 
@@ -289,8 +269,7 @@ template <class T> class List : public Sequence<T>
      *
      * @note Assumes that the list is not empty.
      */
-    T first()
-    {
+    T first() {
         return m_head->data;
     }
 
@@ -301,8 +280,7 @@ template <class T> class List : public Sequence<T>
      *
      * @note Assumes that the list is not empty.
      */
-    const T first() const
-    {
+    const T first() const {
         return m_head->data;
     }
 
@@ -313,8 +291,7 @@ template <class T> class List : public Sequence<T>
      *
      * @note Assumes that the list is not empty.
      */
-    T last()
-    {
+    T last() {
         return m_tail->data;
     }
 
@@ -325,8 +302,7 @@ template <class T> class List : public Sequence<T>
      *
      * @note Assumes that the list is not empty.
      */
-    const T last() const
-    {
+    const T last() const {
         return m_tail->data;
     }
 
@@ -337,8 +313,7 @@ template <class T> class List : public Sequence<T>
      *
      * @return Pointer to the item or ZERO if not available.
      */
-    virtual const T * get(Size position) const
-    {
+    virtual const T *get(Size position) const {
         Size num = 0;
         Node *node = m_head;
 
@@ -362,8 +337,7 @@ template <class T> class List : public Sequence<T>
      *
      * @note Assumes that the item is available.
      */
-    virtual const T & at(Size position) const
-    {
+    virtual const T &at(Size position) const {
         Size num = 0;
         Node *node = m_head;
 
@@ -379,8 +353,7 @@ template <class T> class List : public Sequence<T>
      *
      * @return true if empty, false if not.
      */
-    virtual bool isEmpty() const
-    {
+    virtual bool isEmpty() const {
         return !m_head;
     }
 
@@ -389,8 +362,7 @@ template <class T> class List : public Sequence<T>
      *
      * @return Size of the list.
      */
-    Size size() const
-    {
+    Size size() const {
         return m_count;
     }
 
@@ -399,16 +371,14 @@ template <class T> class List : public Sequence<T>
      *
      * @return The number of items on the List.
      */
-    Size count() const
-    {
+    Size count() const {
         return m_count;
     }
 
     /**
      * Append operator.
      */
-    List & operator << (T t)
-    {
+    List &operator<<(T t) {
         append(t);
         return (*this);
     }
@@ -416,8 +386,7 @@ template <class T> class List : public Sequence<T>
     /**
      * Comparison operator.
      */
-    bool operator == (const List<T> & lst) const
-    {
+    bool operator==(const List<T> &lst) const {
         if (lst.count() != m_count)
             return false;
 
@@ -431,8 +400,7 @@ template <class T> class List : public Sequence<T>
     /**
      * Inequality operator.
      */
-    bool operator != (const List<T> & lst) const
-    {
+    bool operator!=(const List<T> &lst) const {
         if (lst.count() != m_count)
             return true;
 
@@ -443,7 +411,7 @@ template <class T> class List : public Sequence<T>
         return false;
     }
 
-  private:
+private:
 
     /** Head of the List. */
     Node *m_head;

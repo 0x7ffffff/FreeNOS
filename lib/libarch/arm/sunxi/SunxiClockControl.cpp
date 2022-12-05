@@ -18,14 +18,12 @@
 #include <Log.h>
 #include "SunxiClockControl.h"
 
-SunxiClockControl::Result SunxiClockControl::initialize()
-{
+SunxiClockControl::Result SunxiClockControl::initialize() {
     DEBUG("");
 
     if (m_io.map(IOBase & ~0xfff, PAGESIZE,
                  Memory::User | Memory::Readable |
-                 Memory::Writable | Memory::Device) != IO::Success)
-    {
+                 Memory::Writable | Memory::Device) != IO::Success) {
         ERROR("failed to map I/O memory");
         return IOError;
     }
@@ -34,15 +32,13 @@ SunxiClockControl::Result SunxiClockControl::initialize()
     return Success;
 }
 
-SunxiClockControl::Result SunxiClockControl::enable(const SunxiClockControl::Clock clock)
-{
+SunxiClockControl::Result SunxiClockControl::enable(const SunxiClockControl::Clock clock) {
     DEBUG("clock = " << (int) clock);
 
     u32 offset = 0x0;
     u32 bit;
 
-    switch (clock)
-    {
+    switch (clock) {
         case ClockEmacTx:
             offset = 0x060;
             bit = 17;
@@ -62,15 +58,13 @@ SunxiClockControl::Result SunxiClockControl::enable(const SunxiClockControl::Clo
     return Success;
 }
 
-SunxiClockControl::Result SunxiClockControl::deassert(const SunxiClockControl::Reset reset)
-{
+SunxiClockControl::Result SunxiClockControl::deassert(const SunxiClockControl::Reset reset) {
     DEBUG("reset = " << (int) reset);
 
     u32 offset = 0x0;
     u32 bit;
 
-    switch (reset)
-    {
+    switch (reset) {
         case ResetEmacTx:
             offset = 0x2c0;
             bit = 17;

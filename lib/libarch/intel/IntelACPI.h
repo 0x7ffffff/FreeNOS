@@ -36,9 +36,8 @@
 /**
  * Intel Advanced Configuration and Power Interface (ACPI).
  */
-class IntelACPI : public CoreManager
-{
-  private:
+class IntelACPI : public CoreManager {
+private:
 
     /** Memory base address for searching the RootSystemDescriptor. */
     static const uint RSDBase = 0x1000;
@@ -64,108 +63,99 @@ class IntelACPI : public CoreManager
     /**
      * Root System Description Pointer (ACPI v1.0).
      */
-    typedef struct RootSystemDescriptor1
-    {
-        u32  signature[2];
-        u8   checksum;
+    typedef struct RootSystemDescriptor1 {
+        u32 signature[2];
+        u8 checksum;
         char vendorId[6];
-        u8   revision;
-        u32  rsdtAddress;
+        u8 revision;
+        u32 rsdtAddress;
     } __attribute__((packed))
-    RootSystemDescriptor1;
+            RootSystemDescriptor1;
 
     /**
      * Root System Description Pointer (ACPI v2.0)
      */
-    typedef struct RootSystemDescriptor2
-    {
+    typedef struct RootSystemDescriptor2 {
         RootSystemDescriptor1 v1;
         u32 length;
         u64 xsdtAddress;
-        u8  extendedChecksum;
-        u8  reserved[3];
+        u8 extendedChecksum;
+        u8 reserved[3];
     } __attribute__((packed))
-    RootSystemDescriptor2;
+            RootSystemDescriptor2;
 
     /**
      * System Descriptor Header (ACPI v3.0)
      */
-    typedef struct SystemDescriptorHeader
-    {
+    typedef struct SystemDescriptorHeader {
         u32 signature;
         u32 length;
-        u8  revision;
-        u8  checksum;
+        u8 revision;
+        u8 checksum;
         char vendorId[6];
         char vendorTableId[8];
-        u32  vendorRevision;
-        u32  creatorId;
-        u32  creatorRevision;
+        u32 vendorRevision;
+        u32 creatorId;
+        u32 creatorRevision;
     } __attribute__((packed))
-    SystemDescriptorHeader;
+            SystemDescriptorHeader;
 
     /**
      * Root System Descriptor Table (RSDT)
      */
-    typedef struct RootSystemTable
-    {
+    typedef struct RootSystemTable {
         SystemDescriptorHeader header;
         u32 entry[];
     } __attribute__((packed))
-    RootSystemTable;
+            RootSystemTable;
 
     /**
      * Extended System Descriptor Table (XSDT)
      */
-    typedef struct ExtendedSystemTable
-    {
+    typedef struct ExtendedSystemTable {
         SystemDescriptorHeader header;
         u64 entry[];
     } __attribute__((packed))
-    ExtendedSystemTable;
+            ExtendedSystemTable;
 
     /**
      * Multiple APIC Description Table (MADT) entry.
      */
-    typedef struct MultipleAPICTableEntry
-    {
+    typedef struct MultipleAPICTableEntry {
         u8 type;
         u8 length;
     } __attribute__((packed))
-    MultipleAPICTableEntry;
+            MultipleAPICTableEntry;
 
     /**
      * Multiple APIC Description Table (MADT) processor entry.
      */
-    typedef struct MultipleAPICTableProc
-    {
+    typedef struct MultipleAPICTableProc {
         MultipleAPICTableEntry header;
         u8 coreId;
         u8 apicId;
         u32 flags;
     } __attribute__((packed))
-    MultipleAPICTableProc;
+            MultipleAPICTableProc;
 
     /**
      * Multiple APIC Description Table (MADT).
      */
-    typedef struct MultipleAPICTable
-    {
+    typedef struct MultipleAPICTable {
         SystemDescriptorHeader header;
         u32 ctrlAddress;
         u32 flags;
         MultipleAPICTableEntry entry[];
     } __attribute__((packed))
-    MultipleAPICTable;
+            MultipleAPICTable;
 
     /**
      * Hardware registers.
      */
-    enum Registers
-    {
+    enum Registers {
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -195,7 +185,7 @@ class IntelACPI : public CoreManager
      */
     virtual Result boot(CoreInfo *info);
 
-  private:
+private:
 
     /**
      * Scan for cores in the APIC tables.
@@ -204,7 +194,7 @@ class IntelACPI : public CoreManager
      */
     Result scanAPIC(MultipleAPICTable *madt);
 
-  private:
+private:
 
     /** I/O object for searching the RootSystemDescriptor. */
     IntelIO m_bios;

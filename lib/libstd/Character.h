@@ -26,8 +26,7 @@
  * @{
  */
 
-namespace Character
-{
+namespace Character {
     /**
      * Test for a decimal digit.
      *
@@ -35,8 +34,7 @@ namespace Character
      *
      * @return Boolean
      */
-    inline bool isDigit(char c)
-    {
+    inline bool isDigit(char c) {
         return c >= '0' && c <= '9';
     }
 
@@ -47,8 +45,7 @@ namespace Character
      *
      * @return True if wildcard, false otherwise.
      */
-    inline bool isWildcard(char c)
-    {
+    inline bool isWildcard(char c) {
         return c == '*';
     }
 
@@ -59,8 +56,7 @@ namespace Character
      *
      * @return Boolean
      */
-    inline bool isLower(char c)
-    {
+    inline bool isLower(char c) {
         return (c) >= 'a' && (c) <= 'z';
     }
 
@@ -71,8 +67,7 @@ namespace Character
      *
      * @return Boolean
      */
-    inline bool isUpper(char c)
-    {
+    inline bool isUpper(char c) {
         return (c) >= 'A' && (c) <= 'Z';
     }
 
@@ -83,8 +78,7 @@ namespace Character
      *
      * @return Boolean
      */
-    inline bool isAlpha(char c)
-    {
+    inline bool isAlpha(char c) {
         return isUpper(c) || isLower(c);
     }
 
@@ -95,8 +89,7 @@ namespace Character
      *
      * @return Boolean
      */
-    inline bool isAlnum(char c)
-    {
+    inline bool isAlnum(char c) {
         return isAlpha(c) || isDigit(c);
     }
 
@@ -107,8 +100,7 @@ namespace Character
      *
      * @return Boolean
      */
-    inline bool isBlank(char c)
-    {
+    inline bool isBlank(char c) {
         return (c) == ' ' || (c) == '\t';
     }
 
@@ -119,8 +111,7 @@ namespace Character
      *
      * @return Boolean
      */
-    inline bool isWhitespace(char c)
-    {
+    inline bool isWhitespace(char c) {
         return (c) == '\v' || (c) == '\f' ||
                (c) == '\r' || (c) == '\n' || isBlank(c);
     }
@@ -132,8 +123,7 @@ namespace Character
      *
      * @return The converted letter, or c if conversion was not possible.
      */
-    inline char lower(char c)
-    {
+    inline char lower(char c) {
         return (c >= 'A' && c <= 'Z') ? (c + 32) : (c);
     }
 
@@ -144,8 +134,7 @@ namespace Character
      *
      * @return The converted letter, or c if conversion was not possible.
      */
-    inline char upper(char c)
-    {
+    inline char upper(char c) {
         return (c >= 'a' && c <= 'z') ? (c - 32) : (c);
     }
 };

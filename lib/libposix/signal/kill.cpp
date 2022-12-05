@@ -20,20 +20,14 @@
 #include "errno.h"
 #include "signal.h"
 
-extern C int kill(pid_t pid, int sig)
-{
-    switch (sig)
-    {
+extern C int kill(pid_t pid, int sig) {
+    switch (sig) {
         case SIGTERM:
-        case SIGKILL:
-        {
+        case SIGKILL: {
             const API::Result result = ProcessCtl(pid, KillPID, EXIT_FAILURE);
-            if (result == API::Success)
-            {
+            if (result == API::Success) {
                 return 0;
-            }
-            else
-            {
+            } else {
                 errno = EIO;
                 return -1;
             }

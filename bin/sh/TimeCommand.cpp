@@ -28,14 +28,11 @@
 #include "TimeCommand.h"
 
 TimeCommand::TimeCommand(Shell *shell)
-    : ShellCommand("time", 1)
-    , m_shell(shell)
-{
+        : ShellCommand("time", 1), m_shell(shell) {
     m_help = "Measure the execution time of a program";
 }
 
-int TimeCommand::execute(const Size nparams, const char **params)
-{
+int TimeCommand::execute(const Size nparams, const char **params) {
     SystemClock t1, t2;
 
     // Get timestamp before
@@ -43,8 +40,7 @@ int TimeCommand::execute(const Size nparams, const char **params)
 
     // Run command
     int result = m_shell->executeInput(nparams, params, false);
-    if (result != EXIT_SUCCESS)
-    {
+    if (result != EXIT_SUCCESS) {
         return result;
     }
 

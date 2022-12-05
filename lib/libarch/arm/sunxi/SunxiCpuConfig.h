@@ -36,9 +36,8 @@
 /**
  * Allwinner sunxi CPU configuration module support
  */
-class SunxiCpuConfig : public CoreManager
-{
-  private:
+class SunxiCpuConfig : public CoreManager {
+private:
 
     /** Number of CPU processor cores is fixed */
     static const Size NumberOfCores = 4;
@@ -49,45 +48,43 @@ class SunxiCpuConfig : public CoreManager
     /**
      * Hardware registers.
      */
-    enum Registers
-    {
-        CpusRstCtrl  = 0x0000, /**< CPUs Reset Control */
-        Cpu0RstCtrl  = 0x0040, /**< CPU#0 Reset Control */
-        Cpu0Ctrl     = 0x0044, /**< CPU#0 Control */
-        Cpu0Status   = 0x0048, /**< CPU#0 Status */
-        Cpu1RstCtrl  = 0x0080, /**< CPU#1 Reset Control */
-        Cpu1Ctrl     = 0x0084, /**< CPU#1 Control */
-        Cpu1Status   = 0x0088, /**< CPU#1 Status */
-        Cpu2RstCtrl  = 0x00C0, /**< CPU#2 Reset Control */
-        Cpu2Ctrl     = 0x00C4, /**< CPU#2 Control */
-        Cpu2Status   = 0x00C8, /**< CPU#2 Status */
-        Cpu3RstCtrl  = 0x0100, /**< CPU#3 Reset Control */
-        Cpu3Ctrl     = 0x0104, /**< CPU#3 Control */
-        Cpu3Status   = 0x0108, /**< CPU#3 Status */
+    enum Registers {
+        CpusRstCtrl = 0x0000, /**< CPUs Reset Control */
+        Cpu0RstCtrl = 0x0040, /**< CPU#0 Reset Control */
+        Cpu0Ctrl = 0x0044, /**< CPU#0 Control */
+        Cpu0Status = 0x0048, /**< CPU#0 Status */
+        Cpu1RstCtrl = 0x0080, /**< CPU#1 Reset Control */
+        Cpu1Ctrl = 0x0084, /**< CPU#1 Control */
+        Cpu1Status = 0x0088, /**< CPU#1 Status */
+        Cpu2RstCtrl = 0x00C0, /**< CPU#2 Reset Control */
+        Cpu2Ctrl = 0x00C4, /**< CPU#2 Control */
+        Cpu2Status = 0x00C8, /**< CPU#2 Status */
+        Cpu3RstCtrl = 0x0100, /**< CPU#3 Reset Control */
+        Cpu3Ctrl = 0x0104, /**< CPU#3 Control */
+        Cpu3Status = 0x0108, /**< CPU#3 Status */
         Cpu0PwrClamp = 0x0120, /**< CPU#0 Power Clamp */
         Cpu1PwrClamp = 0x0124, /**< CPU#0 Power Clamp */
         Cpu2PwrClamp = 0x0128, /**< CPU#0 Power Clamp */
         Cpu3PwrClamp = 0x012C, /**< CPU#0 Power Clamp */
-        CpuSysRst    = 0x0140, /**< CPU System Reset */
-        ClkGating    = 0x0144, /**< CPU Clock Gating */
-        GenCtrl      = 0x0184, /**< General Control */
+        CpuSysRst = 0x0140, /**< CPU System Reset */
+        ClkGating = 0x0144, /**< CPU Clock Gating */
+        GenCtrl = 0x0184, /**< General Control */
         SuperStandby = 0x01A0, /**< Super Standby Flag */
-        EntryAddr    = 0x01A4, /**< Reset Entry Address */
-        DbgExtern    = 0x01E4, /**< Debug External */
-        Cnt64Ctrl    = 0x0280, /**< 64-bit Counter Control */
-        Cnt64Low     = 0x0284, /**< 64-bit Counter Low */
-        Cnt64High    = 0x0288, /**< 64-bit Counter High */
+        EntryAddr = 0x01A4, /**< Reset Entry Address */
+        DbgExtern = 0x01E4, /**< Debug External */
+        Cnt64Ctrl = 0x0280, /**< 64-bit Counter Control */
+        Cnt64Low = 0x0284, /**< 64-bit Counter Low */
+        Cnt64High = 0x0288, /**< 64-bit Counter High */
     };
 
     /**
      * CPU#X Reset Control flags
      */
-    enum CpuRstCtrlFlags
-    {
+    enum CpuRstCtrlFlags {
         CpuCoreReset = (1 << 1)
     };
 
-  public:
+public:
 
     /**
      * Perform initialization.
@@ -112,7 +109,7 @@ class SunxiCpuConfig : public CoreManager
      */
     virtual Result boot(CoreInfo *info);
 
-  private:
+private:
 
     /** Memory I/O object */
     Arch::IO m_io;

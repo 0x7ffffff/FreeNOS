@@ -29,17 +29,16 @@
 /**
  * Factory design pattern providing a standard creation function.
  */
-template <class T> class Factory
-{
-  public:
+template<class T>
+class Factory {
+public:
 
     /**
      * Create an instance of T.
      *
      * @return Pointer to T.
      */
-    static T * create()
-    {
+    static T *create() {
         return new T();
     }
 };
@@ -47,16 +46,16 @@ template <class T> class Factory
 /**
  * Abstract Factory pattern providing a creation function declaration.
  */
-template <class T> class AbstractFactory
-{
-  public:
+template<class T>
+class AbstractFactory {
+public:
 
     /**
      * Abstract function to create an instance of T.
      *
      * @return Pointer to T.
      */
-    static T * create();
+    static T *create();
 };
 
 /**

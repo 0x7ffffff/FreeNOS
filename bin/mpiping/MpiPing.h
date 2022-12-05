@@ -28,9 +28,8 @@
 /**
  * Send a ping message via MPI to all available nodes.
  */
-class MpiPing : public POSIXApplication
-{
-  private:
+class MpiPing : public POSIXApplication {
+private:
 
     /** Magic number to send as ping message */
     static const int PingMagicNumber = 0xaabbccdd;
@@ -38,7 +37,7 @@ class MpiPing : public POSIXApplication
     /** Magic number send for the pong message */
     static const int PongMagicNumber = 0x12345678;
 
-  public:
+public:
 
     /**
      * Constructor
@@ -67,7 +66,7 @@ class MpiPing : public POSIXApplication
      */
     virtual Result exec();
 
-  private:
+private:
 
     /**
      * Send a message containing a number
@@ -91,7 +90,7 @@ class MpiPing : public POSIXApplication
     Result receiveNumber(const Size coreId,
                          const int expectedNumber) const;
 
-  private:
+private:
 
     /** Result of MPI initialization */
     int m_mpiInitResult;

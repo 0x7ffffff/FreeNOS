@@ -21,16 +21,14 @@
 #include <sys/socket.h>
 #include <errno.h>
 
-extern C int sendmsg(int sockfd, const struct msghdr *msg, int flags)
-{
+extern C int sendmsg(int sockfd, const struct msghdr *msg, int flags) {
     static u8 buf[1024];
     NetworkClient::SocketInfo *info = (NetworkClient::SocketInfo *) buf;
-    NetworkClient::PacketInfo *pkt = (NetworkClient::PacketInfo *) (info + 1);
+    NetworkClient::PacketInfo *pkt = (NetworkClient::PacketInfo * )(info + 1);
     const struct sockaddr *addr = (const struct sockaddr *) msg->msg_name;
     Size bytes = sizeof(*info);
 
-    if (msg->msg_namelen != sizeof(struct sockaddr))
-    {
+    if (msg->msg_namelen != sizeof(struct sockaddr)) {
         return ERANGE;
     }
 
@@ -39,8 +37,7 @@ extern C int sendmsg(int sockfd, const struct msghdr *msg, int flags)
     info->action = NetworkClient::SendMultiple;
 
     // Prepare the array of NetworkClient::PacketInfo structs
-    for (Size i = 0; i < msg->msg_iovlen && bytes < sizeof(buf); i++)
-    {
+    for (Size i = 0; i < msg->msg_iovlen && bytes < sizeof(buf); i++) {
         pkt->address = (Address) msg->msg_iov[i].iov_base;
         pkt->size = msg->msg_iov[i].iov_len;
 

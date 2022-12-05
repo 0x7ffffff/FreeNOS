@@ -33,9 +33,8 @@
 /**
  * Temporary filesystem (TmpFS). Maps files into virtual memory.
  */
-class TmpFileSystem : public FileSystemServer
-{
-  public:
+class TmpFileSystem : public FileSystemServer {
+public:
 
     /**
      * Class constructor function.
@@ -53,7 +52,7 @@ class TmpFileSystem : public FileSystemServer
      *
      * @see File
      */
-    virtual File * createFile(const FileSystem::FileType type);
+    virtual File *createFile(const FileSystem::FileType type);
 };
 
 /**

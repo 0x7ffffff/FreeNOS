@@ -18,8 +18,7 @@
 #include <FreeNOS/User.h>
 #include "Init.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     SystemInformation info;
 
     // Only run on core0

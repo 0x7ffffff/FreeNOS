@@ -32,9 +32,8 @@
 /**
  * Provides a storage device to build filesystems on top.
  */
-class Storage
-{
-  public:
+class Storage {
+public:
 
     /**
      * Constructor function.

@@ -43,9 +43,8 @@
 /**
  * @brief PS2 Keyboard device driver.
  */
-class Keyboard : public Device
-{
-  public:
+class Keyboard : public Device {
+public:
 
     /**
      * Constructor
@@ -80,11 +79,11 @@ class Keyboard : public Device
      *
      * @return Result code
      */
-    virtual FileSystem::Result read(IOBuffer & buffer,
-                                    Size & size,
+    virtual FileSystem::Result read(IOBuffer &buffer,
+                                    Size &size,
                                     const Size offset);
 
-  private:
+private:
 
     /**
      * @brief Keyboard map table.

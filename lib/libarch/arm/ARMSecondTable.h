@@ -36,9 +36,8 @@
 /**
  * ARM second level page table implementation.
  */
-class ARMSecondTable
-{
-  public:
+class ARMSecondTable {
+public:
 
     /**
      * Map a virtual address to a physical address.
@@ -82,7 +81,7 @@ class ARMSecondTable
      */
     MemoryContext::Result access(Address virt, Memory::Access *access) const;
 
-  private:
+private:
 
     /**
      * Convert MemoryAccess to page table flags.
@@ -93,7 +92,7 @@ class ARMSecondTable
      */
     u32 flags(Memory::Access access) const;
 
-  private:
+private:
 
     /** Array of second level page table entries */
     u32 m_pages[256];

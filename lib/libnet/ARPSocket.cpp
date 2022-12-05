@@ -23,37 +23,31 @@
 
 ARPSocket::ARPSocket(const u32 inode,
                      ARP *arp)
-    : NetworkSocket(inode, arp->getMaximumPacketSize(), ANY)
-{
+        : NetworkSocket(inode, arp->getMaximumPacketSize(), ANY) {
     m_arp = arp;
     m_ipAddr = 0;
     MemoryBlock::set(&m_ethAddr, 0, sizeof(Ethernet::Address));
 }
 
-ARPSocket::~ARPSocket()
-{
+ARPSocket::~ARPSocket() {
 }
 
-FileSystem::Result ARPSocket::read(IOBuffer & buffer,
-                                   Size & size,
-                                   const Size offset)
-{
+FileSystem::Result ARPSocket::read(IOBuffer &buffer,
+                                   Size &size,
+                                   const Size offset) {
     DEBUG("");
 
-    if (size != sizeof(Ethernet::Address))
-    {
+    if (size != sizeof(Ethernet::Address)) {
         return FileSystem::InvalidArgument;
     }
 
-    if (offset >= sizeof(Ethernet::Address))
-    {
+    if (offset >= sizeof(Ethernet::Address)) {
         size = 0;
         return FileSystem::Success;
     }
 
     const FileSystem::Result result = m_arp->lookupAddress(&m_ipAddr, &m_ethAddr);
-    if (result != FileSystem::Success)
-    {
+    if (result != FileSystem::Success) {
         return result;
     }
 
@@ -62,10 +56,9 @@ FileSystem::Result ARPSocket::read(IOBuffer & buffer,
     return FileSystem::Success;
 }
 
-FileSystem::Result ARPSocket::write(IOBuffer & buffer,
-                                    Size & size,
-                                    const Size offset)
-{
+FileSystem::Result ARPSocket::write(IOBuffer &buffer,
+                                    Size &size,
+                                    const Size offset) {
     DEBUG("");
 
     // Save the request address
@@ -73,8 +66,7 @@ FileSystem::Result ARPSocket::write(IOBuffer & buffer,
 
     // Send request
     const FileSystem::Result result = m_arp->lookupAddress(&m_ipAddr, &m_ethAddr);
-    if (result != FileSystem::Success)
-    {
+    if (result != FileSystem::Success) {
         return result;
     }
 
@@ -82,8 +74,7 @@ FileSystem::Result ARPSocket::write(IOBuffer & buffer,
     return FileSystem::Success;
 }
 
-FileSystem::Result ARPSocket::process(const NetworkQueue::Packet *pkt)
-{
+FileSystem::Result ARPSocket::process(const NetworkQueue::Packet *pkt) {
     DEBUG("");
 
     return FileSystem::Success;

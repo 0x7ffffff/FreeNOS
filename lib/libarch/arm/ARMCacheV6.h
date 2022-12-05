@@ -39,9 +39,8 @@
  *
  * @see ARM Architecture Reference Manual, page xxx
  */
-class ARMCacheV6 : public Cache
-{
-  public:
+class ARMCacheV6 : public Cache {
+public:
 
     /**
      * Invalidate the entire cache.
@@ -94,14 +93,13 @@ class ARMCacheV6 : public Cache
      */
     virtual Result invalidateAddress(Type type, Address addr);
 
-  private:
+private:
 
     /** ARM system control processor object */
     ARMControl m_control;
 };
 
-namespace Arch
-{
+namespace Arch {
     typedef ARMCacheV6 Cache;
 };
 

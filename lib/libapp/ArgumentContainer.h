@@ -37,21 +37,19 @@
 /**
  * Generic command-line argument parser.
  */
-class ArgumentContainer
-{
-  public:
+class ArgumentContainer {
+public:
 
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         InvalidArgument,
         NotFound
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -70,21 +68,21 @@ class ArgumentContainer
      *
      * @return String object pointer if found or ZERO if not found
      */
-    const char * get(const char *name) const;
+    const char *get(const char *name) const;
 
     /**
      * Get positional arguments.
      *
      * @return Vector object reference
      */
-    const Vector<Argument *> & getPositionals() const;
+    const Vector<Argument *> &getPositionals() const;
 
     /**
      * Get flag arguments.
      *
      * @return HashTable object reference
      */
-    const HashTable<String, Argument *> & getFlags() const;
+    const HashTable<String, Argument *> &getFlags() const;
 
     /**
      * Add positional argument.
@@ -104,7 +102,7 @@ class ArgumentContainer
      */
     Result addFlag(Argument *arg);
 
-  private:
+private:
 
     /** Contains all flag arguments. */
     HashTable<String, Argument *> m_flags;

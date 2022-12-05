@@ -44,15 +44,13 @@
  *
  * @see ARM Architecture Reference Manual, page xxx
  */
-class ARMControl
-{
-  public:
+class ARMControl {
+public:
 
     /**
      * System Control Registers
      */
-    enum Register
-    {
+    enum Register {
         MainID = 0,
         CoreID,
         SystemControl,
@@ -79,38 +77,35 @@ class ARMControl
     /**
      * System Control flags.
      */
-    enum SystemControlFlags
-    {
-        MMUEnabled        = (1 << 0),
-        InstructionCache  = (1 << 12),
-        DataCache         = (1 << 2),
-        ExtendedPaging    = (1 << 23),
+    enum SystemControlFlags {
+        MMUEnabled = (1 << 0),
+        InstructionCache = (1 << 12),
+        DataCache = (1 << 2),
+        ExtendedPaging = (1 << 23),
         AccessPermissions = (1 << 29),
-        BranchPrediction  = (1 << 11),
-        AlignmentCorrect  = (1 << 22),
-        AlignmentFaults   = (1 << 1),
+        BranchPrediction = (1 << 11),
+        AlignmentCorrect = (1 << 22),
+        AlignmentFaults = (1 << 1),
 #ifdef ARMV6
         BigEndian         = (1 << 7)
 #else
-        BigEndian         = (1 << 25)
+        BigEndian = (1 << 25)
 #endif
     };
 
     /**
      * Aux Control flags.
      */
-    enum AuxControlFlags
-    {
+    enum AuxControlFlags {
         DisablePageColoring = (1 << 6),
-        SMPBit              = (1 << 6)
+        SMPBit = (1 << 6)
     };
 
     /**
      * Domain Control flags.
      */
-    enum DomainControlFlags
-    {
-        DomainClient  = 1,
+    enum DomainControlFlags {
+        DomainClient = 1,
         DomainManager = 3
     };
 
@@ -169,7 +164,7 @@ class ARMControl
      */
     void set(DomainControlFlags flags);
 
-  private:
+private:
 
     /**
      * Set flag(s) in a CP15 register.

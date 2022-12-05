@@ -24,14 +24,12 @@
 #include "ExitCommand.h"
 
 ExitCommand::ExitCommand()
-    : ShellCommand("exit", 0)
-{
+        : ShellCommand("exit", 0) {
     m_help = "Exit from the shell";
 }
 
 
-int ExitCommand::execute(const Size nparams, const char **params)
-{
+int ExitCommand::execute(const Size nparams, const char **params) {
     exit(EXIT_SUCCESS);
     return EXIT_SUCCESS;
 }

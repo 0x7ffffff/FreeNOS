@@ -33,17 +33,15 @@
 /**
  * Generic Core Manager.
  */
-class CoreManager
-{
-  private:
+class CoreManager {
+private:
 
-  public:
+public:
 
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         IOError,
         NotFound,
@@ -60,7 +58,7 @@ class CoreManager
      *
      * @return List of core identities.
      */
-    List<uint> & getCores();
+    List <uint> &getCores();
 
     /**
      * Initialize the CoreManager.
@@ -85,10 +83,10 @@ class CoreManager
      */
     virtual Result boot(CoreInfo *info) = 0;
 
-  protected:
+protected:
 
     /** List of core ids found. */
-    List<uint> m_cores;
+    List <uint> m_cores;
 };
 
 /**

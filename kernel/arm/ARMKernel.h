@@ -37,9 +37,8 @@ class IntController;
 /**
  * Represents the ARM kernel implementation
  */
-class ARMKernel : public Kernel
-{
-  public:
+class ARMKernel : public Kernel {
+public:
 
     /**
      * Constructor function.
@@ -48,7 +47,7 @@ class ARMKernel : public Kernel
      */
     ARMKernel(CoreInfo *info);
 
-  private:
+private:
 
     /**
      * Interrupt handler routine
@@ -92,7 +91,7 @@ class ARMKernel : public Kernel
      */
     static void reserved(CPUState state);
 
-  protected:
+protected:
 
     /** ARM exception handling subsystem. */
     ARMException m_exception;

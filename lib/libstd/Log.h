@@ -93,18 +93,16 @@
  *
  * @note This class is a singleton
  */
-class Log : public WeakSingleton<Log>
-{
-  private:
+class Log : public WeakSingleton<Log> {
+private:
 
     /** Size of the log buffer in bytes */
     static const Size LogBufferSize = 512;
 
-  public:
+public:
 
     /** Logging level values */
-    enum Level
-    {
+    enum Level {
         Emergency,
         Alert,
         Critical,
@@ -115,7 +113,7 @@ class Log : public WeakSingleton<Log>
         Debug
     };
 
-  public:
+public:
 
     /**
      * Constructor.
@@ -158,21 +156,21 @@ class Log : public WeakSingleton<Log>
      *
      * @return Log identity
      */
-    const char * getIdent() const;
+    const char *getIdent() const;
 
     /**
      * Terminate the program immediately.
      */
     virtual void terminate() const;
 
-  protected:
+protected:
 
     /**
      * Write to the actual output device.
      */
     virtual void write(const char *str) = 0;
 
-  private:
+private:
 
     /**
      * Flush internal buffer.
@@ -188,7 +186,7 @@ class Log : public WeakSingleton<Log>
      */
     void flush(const bool force = false);
 
-  private:
+private:
 
     /** Minimum log level required to log. */
     Level m_minimumLogLevel;
@@ -208,17 +206,17 @@ class Log : public WeakSingleton<Log>
  * @{
  */
 
-Log & operator << (Log &log, const char *str);
+Log &operator<<(Log &log, const char *str);
 
-Log & operator << (Log &log, int number);
+Log &operator<<(Log &log, int number);
 
-Log & operator << (Log &log, const char character);
+Log &operator<<(Log &log, const char character);
 
-Log & operator << (Log &log, unsigned number);
+Log &operator<<(Log &log, unsigned number);
 
-Log & operator << (Log &log, unsigned long number);
+Log &operator<<(Log &log, unsigned long number);
 
-Log & operator << (Log &log, void *ptr);
+Log &operator<<(Log &log, void *ptr);
 
 /**
  * @}

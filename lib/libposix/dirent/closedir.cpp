@@ -19,8 +19,7 @@
 #include "fcntl.h"
 #include "unistd.h"
 
-int closedir(DIR *dirp)
-{
+int closedir(DIR *dirp) {
     // Close file handle
     close(dirp->fd);
 

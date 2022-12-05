@@ -18,31 +18,24 @@
 #include "Channel.h"
 
 Channel::Channel(const Channel::Mode mode, const Size messageSize)
-    : m_mode(mode)
-    , m_messageSize(messageSize)
-{
+        : m_mode(mode), m_messageSize(messageSize) {
 }
 
-Channel::~Channel()
-{
+Channel::~Channel() {
 }
 
-const Size Channel::getMessageSize() const
-{
+const Size Channel::getMessageSize() const {
     return m_messageSize;
 }
 
-Channel::Result Channel::read(void *buffer)
-{
+Channel::Result Channel::read(void *buffer) {
     return NotSupported;
 }
 
-Channel::Result Channel::write(const void *buffer)
-{
+Channel::Result Channel::write(const void *buffer) {
     return NotSupported;
 }
 
-Channel::Result Channel::flush()
-{
+Channel::Result Channel::flush() {
     return NotSupported;
 }

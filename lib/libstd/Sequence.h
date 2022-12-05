@@ -34,9 +34,9 @@
 /**
  * Sequences are containers that provide indexed based storage of items.
  */
-template <class T> class Sequence : public Container, public Comparable<Sequence<T> >
-{
-  public:
+template<class T>
+class Sequence : public Container, public Comparable<Sequence<T> > {
+public:
 
     /**
      * Adds the given item to the Sequence, if possible.
@@ -45,8 +45,7 @@ template <class T> class Sequence : public Container, public Comparable<Sequence
      *
      * @return Position of the item in the Sequence or -1 on failure.
      */
-    virtual int insert(const T & item)
-    {
+    virtual int insert(const T &item) {
         return -1;
     }
 
@@ -60,8 +59,7 @@ template <class T> class Sequence : public Container, public Comparable<Sequence
      *
      * @return bool Whether inserting the item at the given position succeeded.
      */
-    virtual bool insert(Size position, const T & item)
-    {
+    virtual bool insert(Size position, const T &item) {
         return false;
     }
 
@@ -70,8 +68,7 @@ template <class T> class Sequence : public Container, public Comparable<Sequence
      *
      * @param value New value to fill the Sequence.
      */
-    virtual void fill(T value)
-    {
+    virtual void fill(T value) {
         Size s = this->size();
 
         for (Size i = 0; i < s; i++)
@@ -85,8 +82,7 @@ template <class T> class Sequence : public Container, public Comparable<Sequence
      *
      * @return Number of items removed.
      */
-    virtual int remove(T value)
-    {
+    virtual int remove(T value) {
         return 0;
     }
 
@@ -97,16 +93,14 @@ template <class T> class Sequence : public Container, public Comparable<Sequence
      *
      * @return bool Whether removing the item succeeded.
      */
-    virtual bool removeAt(Size position)
-    {
+    virtual bool removeAt(Size position) {
         return false;
     }
 
     /**
      * Removes all items from the Sequence.
      */
-    virtual void clear()
-    {
+    virtual void clear() {
         Size s = this->size();
 
         for (Size i = 0; i < s; i++)
@@ -120,7 +114,7 @@ template <class T> class Sequence : public Container, public Comparable<Sequence
      *
      * @return Pointer to the item at the given position or ZERO if no item available.
      */
-    virtual const T * get(Size position) const = 0;
+    virtual const T *get(Size position) const = 0;
 
     /**
      * Returns a reference to the item at the given position.
@@ -131,13 +125,12 @@ template <class T> class Sequence : public Container, public Comparable<Sequence
      *
      * @note Position must be a valid index.
      */
-    virtual const T & at(Size position) const = 0;
+    virtual const T &at(Size position) const = 0;
 
     /**
      * Check if the given item is stored in this Sequence.
      */
-    virtual bool contains(const T value) const
-    {
+    virtual bool contains(const T value) const {
         Size sz = this->size();
 
         for (Size i = 0; i < sz; i++)
@@ -150,9 +143,8 @@ template <class T> class Sequence : public Container, public Comparable<Sequence
     /**
      * Compare this Sequence to another Sequence.
      */
-    virtual int compareTo(const Sequence<T> &s) const
-    {
-        Size sz  = this->size();
+    virtual int compareTo(const Sequence<T> &s) const {
+        Size sz = this->size();
         Size cnt = this->count();
 
         // Size must be equal
@@ -164,10 +156,8 @@ template <class T> class Sequence : public Container, public Comparable<Sequence
             return s.count() - cnt;
 
         // All elements must be equal
-        for (Size i = 0; i < cnt; i++)
-        {
-            if (at(i) != s.at(i))
-            {
+        for (Size i = 0; i < cnt; i++) {
+            if (at(i) != s.at(i)) {
                 return i + 1;
             }
         }
@@ -181,8 +171,7 @@ template <class T> class Sequence : public Container, public Comparable<Sequence
      *
      * @return True if equal, false otherwise.
      */
-    virtual bool equals(const Sequence<T> &s) const
-    {
+    virtual bool equals(const Sequence<T> &s) const {
         return compareTo(s) == 0;
     }
 
@@ -193,8 +182,7 @@ template <class T> class Sequence : public Container, public Comparable<Sequence
      *
      * @return the Item at position i.
      */
-    const T & operator [] (int i) const
-    {
+    const T &operator[](int i) const {
         return at(i);
     }
 
@@ -205,8 +193,7 @@ template <class T> class Sequence : public Container, public Comparable<Sequence
      *
      * @return the Item at position i.
      */
-    const T & operator [] (Size i) const
-    {
+    const T &operator[](Size i) const {
         return at(i);
     }
 
@@ -217,8 +204,7 @@ template <class T> class Sequence : public Container, public Comparable<Sequence
      *
      * @return the Item at position i.
      */
-    T & operator [] (int i)
-    {
+    T &operator[](int i) {
         return (T &) at(i);
     }
 
@@ -229,8 +215,7 @@ template <class T> class Sequence : public Container, public Comparable<Sequence
      *
      * @return the Item at position i.
      */
-    T & operator [] (Size i)
-    {
+    T &operator[](Size i) {
         return (T &) at(i);
     }
 };

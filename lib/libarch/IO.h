@@ -32,15 +32,13 @@
 /**
  * Generic I/O functions.
  */
-class IO
-{
-  public:
+class IO {
+public:
 
     /**
      * Result codes
      */
-    enum Result
-    {
+    enum Result {
         Success,
         MapFailure,
         OutOfMemory
@@ -84,7 +82,7 @@ class IO
      */
     Result unmap();
 
-  protected:
+protected:
 
     /** memory I/O base offset is added to each I/O address. */
     Address m_base;

@@ -17,12 +17,10 @@
 
 #include "SunxiPowerManagement.h"
 
-SunxiPowerManagement::Result SunxiPowerManagement::initialize()
-{
+SunxiPowerManagement::Result SunxiPowerManagement::initialize() {
     if (m_io.map(IOBase & ~0xfff, PAGESIZE,
                  Memory::User | Memory::Readable |
-                 Memory::Writable | Memory::Device) != IO::Success)
-    {
+                 Memory::Writable | Memory::Device) != IO::Success) {
         ERROR("failed to map I/O memory");
         return IOError;
     }
@@ -31,17 +29,14 @@ SunxiPowerManagement::Result SunxiPowerManagement::initialize()
     return Success;
 }
 
-SunxiPowerManagement::Result SunxiPowerManagement::powerOnCore(const Size coreId)
-{
-    if (coreId > NumberOfCores)
-    {
+SunxiPowerManagement::Result SunxiPowerManagement::powerOnCore(const Size coreId) {
+    if (coreId > NumberOfCores) {
         ERROR("invalid coreId " << coreId);
         return InvalidArgument;
     }
 
     // Open up the power clamp for this core
-    for (u32 val = 0x1ff; val != 0; val >>= 1)
-    {
+    for (u32 val = 0x1ff; val != 0; val >>= 1) {
         m_io.write(CpuPowerClamp + (coreId * sizeof(u32)), val);
     }
 

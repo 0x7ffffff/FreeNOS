@@ -44,9 +44,8 @@
  * @see https://github.com/raspberrypi/firmware/wiki/Accessing-mailboxes
  * @see https://github.com/torvalds/linux/blob/master/drivers/mailbox/bcm2835-mailbox.c
  */
-class BroadcomMailbox
-{
-  private:
+class BroadcomMailbox {
+private:
 
     /** Register base offset for the Mailbox. */
     static const Address Base = 0xb000;
@@ -57,30 +56,27 @@ class BroadcomMailbox
     /**
      * Hardware registers.
      */
-    enum Register
-    {
-        Read   = 0x0880,
+    enum Register {
+        Read = 0x0880,
         Status = 0x0898,
         Config = 0x089c,
-        Write  = 0x08a0
+        Write = 0x08a0
     };
 
     /**
      * Status register flags.
      */
-    enum StatusFlags
-    {
-        Full   = 0x80000000,
-        Empty  = 0x40000000
+    enum StatusFlags {
+        Full = 0x80000000,
+        Empty = 0x40000000
     };
 
-  public:
+public:
 
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         IOError
     };
@@ -88,20 +84,19 @@ class BroadcomMailbox
     /**
      * Mailbox channels.
      */
-    enum Channel
-    {
+    enum Channel {
         PowerManagement = 0,
-        FrameBuffer     = 1,
-        VirtualUART     = 2,
-        VCHIQ           = 3,
-        LED             = 4,
-        Button          = 5,
-        TouchScreen     = 6,
-        VCProperty      = 8,
-        ARMProperty     = 9
+        FrameBuffer = 1,
+        VirtualUART = 2,
+        VCHIQ = 3,
+        LED = 4,
+        Button = 5,
+        TouchScreen = 6,
+        VCProperty = 8,
+        ARMProperty = 9
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -135,7 +130,7 @@ class BroadcomMailbox
      */
     Result write(Channel channel, u32 message);
 
-  private:
+private:
 
     /** I/O object */
     ARMIO m_io;

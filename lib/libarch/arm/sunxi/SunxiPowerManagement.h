@@ -35,9 +35,8 @@
 /**
  * Allwinner Power, Reset and Clock Management (PRCM) module.
  */
-class SunxiPowerManagement
-{
-  private:
+class SunxiPowerManagement {
+private:
 
     /** Physical base memory address of the PRCM module */
     static const Address IOBase = 0x01F01400;
@@ -45,24 +44,22 @@ class SunxiPowerManagement
     /** Total number of cores supported */
     static const Size NumberOfCores = 4;
 
-  private:
+private:
 
     /**
      * Hardware registers.
      */
-    enum Registers
-    {
-        CpuPowerOff   = 0x100,
+    enum Registers {
+        CpuPowerOff = 0x100,
         CpuPowerClamp = 0x140
     };
 
-  public:
+public:
 
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         IOError,
         InvalidArgument
@@ -84,7 +81,7 @@ class SunxiPowerManagement
      */
     Result powerOnCore(const Size coreId);
 
-  private:
+private:
 
     /** Memory I/O object */
     Arch::IO m_io;

@@ -25,54 +25,46 @@
 #include "TestSuite.h"
 #include "DirectoryScanner.h"
 
-DirectoryScanner::DirectoryScanner(int argc, char **argv)
-{
+DirectoryScanner::DirectoryScanner(int argc, char **argv) {
     m_argc = argc;
     m_argv = argv;
 }
 
-DirectoryScanner::~DirectoryScanner()
-{
+DirectoryScanner::~DirectoryScanner() {
     m_externalTests.deleteAll();
 }
 
-int DirectoryScanner::scan(const char *path)
-{
+int DirectoryScanner::scan(const char *path) {
     DIR *d;
     struct dirent *dent;
     char subPath[255];
 
     // Attempt to open the target directory.
-    if (!(d = opendir(path)))
-    {
+    if (!(d = opendir(path))) {
         printf("%s: failed to open '%s': %s\r\n",
-            m_argv[0], path, strerror(errno));
+               m_argv[0], path, strerror(errno));
         return EXIT_FAILURE;
     }
     // Read directory.
-    while ((dent = readdir(d)))
-    {
+    while ((dent = readdir(d))) {
         snprintf(subPath, sizeof(subPath), "%s/%s", path, dent->d_name);
         String str = subPath;
 
         // Check filetype
-        switch (dent->d_type)
-        {
+        switch (dent->d_type) {
             // Directory
             case DT_DIR:
                 if (dent->d_name[0] != '.')
                     scan(subPath);
                 break;
 
-            // Regular file
+                // Regular file
             case DT_REG:
-                if (str.endsWith((const char *)"Test"))
-                {
+                if (str.endsWith((const char *) "Test")) {
                     ExternalTest *test = new ExternalTest(subPath, m_argc, m_argv);
-                    if (!m_externalTests.insert(test))
-                    {
+                    if (!m_externalTests.insert(test)) {
                         printf("%s: failed to add test '%s' to internal Index\n",
-                                m_argv[0], path);
+                               m_argv[0], path);
                         return EXIT_FAILURE;
                     }
                 }

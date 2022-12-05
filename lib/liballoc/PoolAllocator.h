@@ -42,9 +42,8 @@
  *       is unfortunate, the whole array needs to be scanned, adding overhead. The Linux kernel
  *       uses a buddy allocator, that basically combines a bit array and a linked list for optimal performance.
  */
-class PoolAllocator : public Allocator
-{
-  private:
+class PoolAllocator : public Allocator {
+private:
 
     /** Minimum power of two for a pool size. */
     static const Size MinimumPoolSize = 2;
@@ -58,18 +57,12 @@ class PoolAllocator : public Allocator
     /**
      * Allocates same-sized objects from a contiguous block of memory.
      */
-    typedef struct Pool : public BitAllocator
-    {
-        Pool(const Range & range,
+    typedef struct Pool : public BitAllocator {
+        Pool(const Range &range,
              const Size objectSize,
              const Size bitmapSize,
              u8 *bitmap)
-        : BitAllocator(range, objectSize, bitmap)
-        , prev(ZERO)
-        , next(ZERO)
-        , index(0)
-        , bitmapSize(bitmapSize)
-        {
+                : BitAllocator(range, objectSize, bitmap), prev(ZERO), next(ZERO), index(0), bitmapSize(bitmapSize) {
         }
 
         Pool *prev;            /**< Points to the previous pool of this size (if any). */
@@ -81,8 +74,7 @@ class PoolAllocator : public Allocator
     /**
      * This data structure is prepended in memory before each object
      */
-    typedef struct ObjectPrefix
-    {
+    typedef struct ObjectPrefix {
         u32 signature;  /**< Filled with a fixed value to detect corruption/overflows */
         Pool *pool;     /**< Points to the Pool instance where this object belongs to */
     } ObjectPrefix;
@@ -90,12 +82,11 @@ class PoolAllocator : public Allocator
     /**
      * Appended in memory after each object
      */
-    typedef struct ObjectPostfix
-    {
+    typedef struct ObjectPostfix {
         u32 signature;  /**< Filled with a fixed value to detect corruption/overflows */
     } ObjectPostfix;
 
-  public:
+public:
 
     /**
      * Constructor
@@ -126,7 +117,7 @@ class PoolAllocator : public Allocator
      *
      * @return Result value.
      */
-    virtual Result allocate(Range & args);
+    virtual Result allocate(Range &args);
 
     /**
      * Release memory.
@@ -139,7 +130,7 @@ class PoolAllocator : public Allocator
      */
     virtual Result release(const Address addr);
 
-  private:
+private:
 
     /**
      * Calculate object size given the Pool index number.
@@ -165,7 +156,7 @@ class PoolAllocator : public Allocator
      * @param totalSize Total memory in bytes owned by the PoolAllocator.
      * @param totalUsed Total memory in bytes actually used.
      */
-    void calculateUsage(Size & totalSize, Size & totalUsed) const;
+    void calculateUsage(Size &totalSize, Size &totalUsed) const;
 
     /**
      * Find a Pool of sufficient size.
@@ -174,7 +165,7 @@ class PoolAllocator : public Allocator
      *
      * @return Pool object pointer on success or NULL on failure.
      */
-    Pool * retrievePool(const Size inputSize);
+    Pool *retrievePool(const Size inputSize);
 
     /**
      * Creates a new Pool instance.
@@ -184,7 +175,7 @@ class PoolAllocator : public Allocator
      *
      * @return Pointer to a Pool object on success, ZERO on failure.
      */
-    Pool * allocatePool(const uint index, const Size objectCount);
+    Pool *allocatePool(const uint index, const Size objectCount);
 
     /**
      * Release Pool instance memory.
@@ -195,7 +186,7 @@ class PoolAllocator : public Allocator
      */
     Result releasePool(Pool *pool);
 
-  private:
+private:
 
     /** Array of memory pools. Index represents the power of two. */
     Pool *m_pools[MaximumPoolSize + 1];

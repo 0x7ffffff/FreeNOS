@@ -26,66 +26,53 @@
 #include "BufferedFile.h"
 
 BufferedFile::BufferedFile(const char *path)
-    : m_path(path)
-    , m_buffer(ZERO)
-    , m_size(0)
-{
+        : m_path(path), m_buffer(ZERO), m_size(0) {
 }
 
-BufferedFile::~BufferedFile()
-{
-    if (m_buffer != ZERO)
-    {
+BufferedFile::~BufferedFile() {
+    if (m_buffer != ZERO) {
         delete[] m_buffer;
     }
 }
 
-const char * BufferedFile::path() const
-{
+const char *BufferedFile::path() const {
     return m_path;
 }
 
-const void * BufferedFile::buffer() const
-{
+const void *BufferedFile::buffer() const {
     return m_buffer;
 }
 
-const Size BufferedFile::size() const
-{
+const Size BufferedFile::size() const {
     return m_size;
 }
 
-BufferedFile::Result BufferedFile::read()
-{
+BufferedFile::Result BufferedFile::read() {
     struct stat st;
     int fp;
 
     // Retrieve file information
-    if (::stat(m_path, &st) != 0)
-    {
+    if (::stat(m_path, &st) != 0) {
         ERROR("failed to stat input file " << m_path << ": " << strerror(errno));
         return NotFound;
     }
     m_size = st.st_size;
 
     // Open the file
-    if ((fp = ::open(m_path, O_RDONLY)) == -1)
-    {
+    if ((fp = ::open(m_path, O_RDONLY)) == -1) {
         ERROR("failed to open input file " << m_path << ": " << strerror(errno));
         return IOError;
     }
 
     // (Re)allocate the internal buffer
-    if (m_buffer != ZERO)
-    {
+    if (m_buffer != ZERO) {
         delete[] m_buffer;
     }
     m_buffer = new u8[m_size];
     assert(m_buffer != ZERO);
 
     // Read input file
-    if (::read(fp, m_buffer, st.st_size) <= 0)
-    {
+    if (::read(fp, m_buffer, st.st_size) <= 0) {
         ERROR("failed to read input file " << m_path << ": " << strerror(errno));
         ::close(fp);
         return IOError;
@@ -96,20 +83,17 @@ BufferedFile::Result BufferedFile::read()
     return Success;
 }
 
-BufferedFile::Result BufferedFile::write(const void *data, const Size size) const
-{
+BufferedFile::Result BufferedFile::write(const void *data, const Size size) const {
     int fp;
 
     // Open the file
-    if ((fp = ::open(m_path, O_RDWR)) == -1)
-    {
+    if ((fp = ::open(m_path, O_RDWR)) == -1) {
         ERROR("failed to open output file " << m_path << ": " << strerror(errno));
         return IOError;
     }
 
     // Write to the file
-    if (::write(fp, data, size) <= 0)
-    {
+    if (::write(fp, data, size) <= 0) {
         ERROR("failed to write output file " << m_path << ": " << strerror(errno));
         ::close(fp);
         return IOError;

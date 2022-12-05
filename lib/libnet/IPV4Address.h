@@ -33,9 +33,8 @@
 /**
  * IPV4 address file.
  */
-class IPV4Address : public File
-{
-  public:
+class IPV4Address : public File {
+public:
 
     /**
      * Constructor
@@ -61,8 +60,8 @@ class IPV4Address : public File
      *
      * @return Result code
      */
-    virtual FileSystem::Result read(IOBuffer & buffer,
-                                    Size & size,
+    virtual FileSystem::Result read(IOBuffer &buffer,
+                                    Size &size,
                                     const Size offset);
 
     /**
@@ -75,11 +74,11 @@ class IPV4Address : public File
      *
      * @return Result code
      */
-    virtual FileSystem::Result write(IOBuffer & buffer,
-                                     Size & size,
+    virtual FileSystem::Result write(IOBuffer &buffer,
+                                     Size &size,
                                      const Size offset);
 
-  private:
+private:
 
     /** IPV4 object pointer */
     IPV4 *m_ipv4;

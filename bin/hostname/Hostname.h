@@ -28,9 +28,8 @@
 /**
  * Print the system hostname.
  */
-class Hostname : public POSIXApplication
-{
-  public:
+class Hostname : public POSIXApplication {
+public:
 
     /**
      * Constructor

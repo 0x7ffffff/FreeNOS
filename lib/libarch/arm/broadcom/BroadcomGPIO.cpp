@@ -18,22 +18,19 @@
 #include <Log.h>
 #include "BroadcomGPIO.h"
 
-BroadcomGPIO::BroadcomGPIO()
-{
+BroadcomGPIO::BroadcomGPIO() {
 }
 
-BroadcomGPIO::Result BroadcomGPIO::initialize()
-{
+BroadcomGPIO::Result BroadcomGPIO::initialize() {
     if (m_io.map(IO_BASE + GPIOBase, PAGESIZE,
-                 Memory::User|Memory::Readable|Memory::Writable|Memory::Device)
+                 Memory::User | Memory::Readable | Memory::Writable | Memory::Device)
         != IO::Success)
         return IOError;
 
     return Success;
 }
 
-BroadcomGPIO::Result BroadcomGPIO::setAltFunction(Size pin, uint function)
-{
+BroadcomGPIO::Result BroadcomGPIO::setAltFunction(Size pin, uint function) {
     // pin is a BCM2835 GPIO pin number NOT RPi pin number
     //
     // There are 6 control registers, each control the functions of a block

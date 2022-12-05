@@ -24,17 +24,14 @@
 #include "BenchMark.h"
 
 BenchMark::BenchMark(int argc, char **argv)
-    : POSIXApplication(argc, argv)
-{
+        : POSIXApplication(argc, argv) {
     parser().setDescription("Perform system benchmark tests");
 }
 
-BenchMark::~BenchMark()
-{
+BenchMark::~BenchMark() {
 }
 
-BenchMark::Result BenchMark::exec()
-{
+BenchMark::Result BenchMark::exec() {
     u64 t1 = 0, t2 = 0;
     ProcessInfo info;
     Memory::Range range;
@@ -49,7 +46,7 @@ BenchMark::Result BenchMark::exec()
 
     // Retrieve current process information
     t1 = timestamp();
-    ProcessCtl(SELF, InfoPID, (Address) &info);
+    ProcessCtl(SELF, InfoPID, (Address) & info);
     t2 = timestamp();
     printf("SystemCall (InfoPID) Ticks: %u\r\n", t2 - t1);
 
@@ -61,7 +58,7 @@ BenchMark::Result BenchMark::exec()
 
     // Translate virtual memory address to physical memory address
     range.virt = 0x80000000;
-    range.size = PAGESIZE;    
+    range.size = PAGESIZE;
     t1 = timestamp();
     VMCtl(SELF, LookupVirtual, &range);
     t2 = timestamp();
@@ -79,7 +76,7 @@ BenchMark::Result BenchMark::exec()
         foo[i] = new char[16];
     t2 = timestamp();
     printf("allocate() Ticks: %u (%u AVG)\r\n",
-            (u32)(t2 - t1), (u32)(t2 - t1) / 128);
+           (u32)(t2 - t1), (u32)(t2 - t1) / 128);
 
     // Release heap memory
     t1 = timestamp();
@@ -87,7 +84,7 @@ BenchMark::Result BenchMark::exec()
         delete foo[i];
     t2 = timestamp();
     printf("release() Ticks: %u (%u AVG)\r\n",
-            (u32)(t2 - t1), (u32)(t2 - t1) / 128);
+           (u32)(t2 - t1), (u32)(t2 - t1) / 128);
 
     // Done
     return Success;

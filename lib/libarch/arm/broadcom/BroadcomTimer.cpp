@@ -18,8 +18,7 @@
 #include "BroadcomInterrupt.h"
 #include "BroadcomTimer.h"
 
-BroadcomTimer::Result BroadcomTimer::setFrequency(Size hertz)
-{
+BroadcomTimer::Result BroadcomTimer::setFrequency(Size hertz) {
     m_cycles = BCM_SYSTIMER_FREQ / hertz;
     m_frequency = hertz;
     m_int = BCM_IRQ_SYSTIMERM1;
@@ -32,8 +31,7 @@ BroadcomTimer::Result BroadcomTimer::setFrequency(Size hertz)
     return Success;
 }
 
-BroadcomTimer::Result BroadcomTimer::tick()
-{
+BroadcomTimer::Result BroadcomTimer::tick() {
     // Clear+acknowledge the timer interrupt
     m_io.write(SYSTIMER_CS, m_io.read(SYSTIMER_CS) | (1 << M1));
     m_io.write(SYSTIMER_C1, m_io.read(SYSTIMER_CLO) + m_cycles);

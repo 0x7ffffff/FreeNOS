@@ -31,42 +31,39 @@
 #include "ProcessManager.h"
 
 Kernel::Kernel(CoreInfo *info)
-    : WeakSingleton<Kernel>(this)
-    , m_interrupts(256)
-{
+        : WeakSingleton<Kernel>(this), m_interrupts(256) {
     // Output log banners on the boot core
-    if (info->coreId == 0)
-    {
+    if (info->coreId == 0) {
         Log::instance()->append(BANNER);
-        Log::instance()->append(COPYRIGHT "\r\n");
+        Log::instance()->append(COPYRIGHT
+        "\r\n");
     }
 
     // Setup physical memory allocator
     const Arch::MemoryMap map;
     const Memory::Range kernelData = map.range(MemoryMap::KernelData);
-    const Allocator::Range physRange = { info->memory.phys, info->memory.size, PAGESIZE };
-    const Allocator::Range virtRange = { kernelData.virt, kernelData.size, PAGESIZE };
-    m_alloc  = new SplitAllocator(physRange, virtRange, PAGESIZE);
+    const Allocator::Range physRange = {info->memory.phys, info->memory.size, PAGESIZE};
+    const Allocator::Range virtRange = {kernelData.virt, kernelData.size, PAGESIZE};
+    m_alloc = new SplitAllocator(physRange, virtRange, PAGESIZE);
 
     // Initialize other class members
-    m_procs  = new ProcessManager();
-    m_api    = new API();
-    m_coreInfo   = info;
+    m_procs = new ProcessManager();
+    m_api = new API();
+    m_coreInfo = info;
     m_intControl = ZERO;
-    m_timer      = ZERO;
+    m_timer = ZERO;
 
     // Print memory map
     NOTICE("kernel @ " << (void *) info->kernel.phys << ".." <<
-                          (void *) (info->kernel.phys + info->kernel.size));
+                       (void *) (info->kernel.phys + info->kernel.size));
     NOTICE("bootImage @ " << (void *) info->bootImageAddress << ".." <<
-                             (void *) (info->bootImageAddress + info->bootImageSize));
+                          (void *) (info->bootImageAddress + info->bootImageSize));
     NOTICE("heap @ " << (void *) (m_alloc->toPhysical(info->heapAddress)) << ".." <<
-                        (void *) (m_alloc->toPhysical(info->heapAddress + info->heapSize)));
+                     (void *) (m_alloc->toPhysical(info->heapAddress + info->heapSize)));
 
-    if (info->coreChannelSize)
-    {
+    if (info->coreChannelSize) {
         NOTICE("coreChannel @ " << (void *) info->coreChannelAddress << ".." <<
-                                   (void *) (info->coreChannelAddress + info->coreChannelSize - 1));
+                                (void *) (info->coreChannelAddress + info->coreChannelSize - 1));
     }
 
     // Verify coreInfo memory ranges
@@ -75,13 +72,10 @@ Kernel::Kernel(CoreInfo *info)
     assert(m_alloc->toPhysical(info->heapAddress) >= info->bootImageAddress + info->bootImageSize);
 
     // Only secondary cores need to allocate coreChannels
-    if (info->coreId == 0)
-    {
+    if (info->coreId == 0) {
         assert(info->coreChannelAddress == ZERO);
         assert(info->coreChannelSize == ZERO);
-    }
-    else
-    {
+    } else {
         assert(info->coreChannelAddress >= m_alloc->toPhysical(info->heapAddress + info->heapSize));
     }
 
@@ -105,8 +99,7 @@ Kernel::Kernel(CoreInfo *info)
     m_interrupts.fill(ZERO);
 }
 
-Error Kernel::initializeHeap()
-{
+Error Kernel::initializeHeap() {
     // Calculate proper heap address: heap starts after the boot image.
     Size heapPhysical = coreInfo.bootImageAddress + coreInfo.bootImageSize;
     heapPhysical += PAGESIZE - (coreInfo.bootImageSize % PAGESIZE);
@@ -115,60 +108,52 @@ Error Kernel::initializeHeap()
     const Arch::MemoryMap map;
     const Memory::Range kernelData = map.range(MemoryMap::KernelData);
     coreInfo.heapAddress = heapPhysical - (coreInfo.memory.phys - kernelData.virt);
-    coreInfo.heapSize    = MegaByte(1);
+    coreInfo.heapSize = MegaByte(1);
 
     // Prepare allocators
     Size metaData = sizeof(BubbleAllocator) + sizeof(PoolAllocator);
     Allocator *bubble, *pool;
-    const Allocator::Range bubbleRange = { coreInfo.heapAddress + metaData,
-                                           coreInfo.heapSize - metaData, sizeof(u32) };
+    const Allocator::Range bubbleRange = {coreInfo.heapAddress + metaData,
+                                          coreInfo.heapSize - metaData, sizeof(u32)};
 
     // Clear the heap first
     MemoryBlock::set((void *) coreInfo.heapAddress, 0, coreInfo.heapSize);
 
     // Setup the dynamic memory heap
-    bubble = new (coreInfo.heapAddress) BubbleAllocator(bubbleRange);
-    pool   = new (coreInfo.heapAddress + sizeof(BubbleAllocator)) PoolAllocator(bubble);
+    bubble = new(coreInfo.heapAddress) BubbleAllocator(bubbleRange);
+    pool = new(coreInfo.heapAddress + sizeof(BubbleAllocator)) PoolAllocator(bubble);
 
     // Set default allocator
     Allocator::setDefault(pool);
     return 0;
 }
 
-SplitAllocator * Kernel::getAllocator()
-{
+SplitAllocator *Kernel::getAllocator() {
     return m_alloc;
 }
 
-ProcessManager * Kernel::getProcessManager()
-{
+ProcessManager *Kernel::getProcessManager() {
     return m_procs;
 }
 
-API * Kernel::getAPI()
-{
+API *Kernel::getAPI() {
     return m_api;
 }
 
-MemoryContext * Kernel::getMemoryContext()
-{
+MemoryContext *Kernel::getMemoryContext() {
     return m_procs->current()->getMemoryContext();
 }
 
-CoreInfo * Kernel::getCoreInfo()
-{
+CoreInfo *Kernel::getCoreInfo() {
     return m_coreInfo;
 }
 
-Timer * Kernel::getTimer()
-{
+Timer *Kernel::getTimer() {
     return m_timer;
 }
 
-void Kernel::enableIRQ(u32 irq, bool enabled)
-{
-    if (m_intControl)
-    {
+void Kernel::enableIRQ(u32 irq, bool enabled) {
+    if (m_intControl) {
         if (enabled)
             m_intControl->enable(irq);
         else
@@ -176,13 +161,10 @@ void Kernel::enableIRQ(u32 irq, bool enabled)
     }
 }
 
-Kernel::Result Kernel::sendIRQ(const uint coreId, const uint irq)
-{
-    if (m_intControl)
-    {
+Kernel::Result Kernel::sendIRQ(const uint coreId, const uint irq) {
+    if (m_intControl) {
         IntController::Result r = m_intControl->send(coreId, irq);
-        if (r != IntController::Success)
-        {
+        if (r != IntController::Success) {
             ERROR("failed to send IPI to core" << coreId << ": " << (uint) r);
             return IOError;
         }
@@ -191,36 +173,30 @@ Kernel::Result Kernel::sendIRQ(const uint coreId, const uint irq)
     return Success;
 }
 
-void Kernel::hookIntVector(u32 vec, InterruptHandler h, ulong p)
-{
+void Kernel::hookIntVector(u32 vec, InterruptHandler h, ulong p) {
     InterruptHook hook(h, p);
 
     // Insert into interrupts; create List if neccesary
-    if (!m_interrupts[vec])
-    {
+    if (!m_interrupts[vec]) {
         m_interrupts.insert(vec, new List<InterruptHook *>());
     }
     // Just append it. */
-    if (!m_interrupts[vec]->contains(&hook))
-    {
+    if (!m_interrupts[vec]->contains(&hook)) {
         m_interrupts[vec]->append(new InterruptHook(h, p));
     }
 }
 
-void Kernel::executeIntVector(u32 vec, CPUState *state)
-{
+void Kernel::executeIntVector(u32 vec, CPUState *state) {
     // Auto-Mask the IRQ. Any interrupt handler or user program
     // needs to re-enable the IRQ to receive it again. This prevents
     // interrupt loops in case the kernel cannot clear the IRQ immediately.
     enableIRQ(vec, false);
 
     // Fetch the list of interrupt hooks (for this vector)
-    List<InterruptHook *> *lst = m_interrupts[vec];
-    if (lst)
-    {
+    List < InterruptHook * > *lst = m_interrupts[vec];
+    if (lst) {
         // Execute them all
-        for (ListIterator<InterruptHook *> i(lst); i.hasCurrent(); i++)
-        {
+        for (ListIterator < InterruptHook * > i(lst); i.hasCurrent(); i++) {
             i.current()->handler(state, i.current()->param, vec);
         }
     }
@@ -228,55 +204,48 @@ void Kernel::executeIntVector(u32 vec, CPUState *state)
     // Raise any interrupt notifications for processes. Note that the IRQ
     // base should be subtracted, since userspace doesn't know about re-mapped
     // IRQ's, such as is done for the PIC on intel
-    if (m_procs->interruptNotify(vec - m_intControl->getBase()) != ProcessManager::Success)
-    {
+    if (m_procs->interruptNotify(vec - m_intControl->getBase()) != ProcessManager::Success) {
         FATAL("failed to raise interrupt notification for IRQ #" << vec);
     }
 }
 
-Kernel::Result Kernel::loadBootImage()
-{
+Kernel::Result Kernel::loadBootImage() {
     BootImageStorage bootImage((const BootImage *) (m_alloc->toVirtual(m_coreInfo->bootImageAddress)));
 
     // Initialize the BootImageStorage object
     const FileSystem::Result result = bootImage.initialize();
-    if (result != FileSystem::Success)
-    {
+    if (result != FileSystem::Success) {
         FATAL("failed to initialize BootImageStorage: result = " << (int) result);
     }
 
     NOTICE("bootimage: " << (void *) m_coreInfo->bootImageAddress <<
-           " (" << m_coreInfo->bootImageSize << " bytes)");
+                         " (" << m_coreInfo->bootImageSize << " bytes)");
 
     // Read header
     const BootImage image = bootImage.bootImage();
 
     // Loop BootPrograms
-    for (Size i = 0; i < image.symbolTableCount; i++)
-    {
+    for (Size i = 0; i < image.symbolTableCount; i++) {
         BootSymbol program;
 
         const FileSystem::Result readResult = bootImage.read(
-            image.symbolTableOffset + (sizeof(BootSymbol) * i),
-            &program,
-            sizeof(BootSymbol)
+                image.symbolTableOffset + (sizeof(BootSymbol) * i),
+                &program,
+                sizeof(BootSymbol)
         );
 
-        if (readResult != FileSystem::Success)
-        {
+        if (readResult != FileSystem::Success) {
             FATAL("failed to read BootSymbol: result = " << (int) readResult);
         }
 
         // Ignore non-BootProgram entries
-        if (program.type != BootProgram && program.type != BootPrivProgram)
-        {
+        if (program.type != BootProgram && program.type != BootPrivProgram) {
             continue;
         }
 
         // Load the program
         const Result loadResult = loadBootProgram(bootImage, program);
-        if (loadResult != Success)
-        {
+        if (loadResult != Success) {
             FATAL("failed to load BootSymbol " << program.name << ": result = " << (int) loadResult);
             return IOError;
         }
@@ -286,8 +255,7 @@ Kernel::Result Kernel::loadBootImage()
 }
 
 Kernel::Result Kernel::loadBootProgram(const BootImageStorage &bootImage,
-                                       const BootSymbol &program)
-{
+                                       const BootSymbol &program) {
     const BootImage image = bootImage.bootImage();
     const Arch::MemoryMap map;
 
@@ -296,8 +264,7 @@ Kernel::Result Kernel::loadBootProgram(const BootImageStorage &bootImage,
 
     // Create process
     Process *proc = m_procs->create(program.entry, map, true, program.type == BootPrivProgram);
-    if (!proc)
-    {
+    if (!proc) {
         FATAL("failed to create boot program: " << program.name);
         return ProcessError;
     }
@@ -306,21 +273,19 @@ Kernel::Result Kernel::loadBootProgram(const BootImageStorage &bootImage,
     MemoryContext *mem = proc->getMemoryContext();
 
     // Map program segment into it's virtual memory
-    for (Size i = 0; i < program.segmentsCount; i++)
-    {
+    for (Size i = 0; i < program.segmentsCount; i++) {
         BootSegment segment;
 
         // Read the next BootSegment
         const FileSystem::Result result = bootImage.read(
-            image.segmentsTableOffset + ((program.segmentsOffset + i) * sizeof(BootSegment)),
-            &segment,
-            sizeof(BootSegment)
+                image.segmentsTableOffset + ((program.segmentsOffset + i) * sizeof(BootSegment)),
+                &segment,
+                sizeof(BootSegment)
         );
 
-        if (result != FileSystem::Success)
-        {
+        if (result != FileSystem::Success) {
             FATAL("failed to read BootSegment for BootProgram " <<
-                   program.name << ": result = " << (int) result);
+                                                                program.name << ": result = " << (int) result);
             return ProcessError;
         }
 
@@ -332,25 +297,25 @@ Kernel::Result Kernel::loadBootProgram(const BootImageStorage &bootImage,
         range.access = Memory::User | Memory::Readable | Memory::Writable | Memory::Executable;
 
         const MemoryContext::Result mapResult = mem->mapRangeContiguous(&range);
-        if (mapResult != MemoryContext::Success)
-        {
+        if (mapResult != MemoryContext::Success) {
             FATAL("failed to map BootSegment at " << (void *) segment.virtualAddress <<
-                  " for BootProgram " << program.name << ": result = " << (int) mapResult);
+                                                  " for BootProgram " << program.name << ": result = "
+                                                  << (int) mapResult);
             return ProcessError;
         }
 
         // Read from BootImage to physical memory of the program
         // This assumes direct access to that physical memory.
         const FileSystem::Result readResult = bootImage.read(
-            segment.offset,
-            (void *) m_alloc->toVirtual(range.phys),
-            segment.size
+                segment.offset,
+                (void *) m_alloc->toVirtual(range.phys),
+                segment.size
         );
 
-        if (readResult != FileSystem::Success)
-        {
+        if (readResult != FileSystem::Success) {
             FATAL("failed to read BootSegment data at " << (void *) segment.virtualAddress <<
-                  " for BootProgram " << program.name << ": result = " << (int) readResult);
+                                                        " for BootProgram " << program.name << ": result = "
+                                                        << (int) readResult);
             return ProcessError;
 
         }
@@ -365,16 +330,14 @@ Kernel::Result Kernel::loadBootProgram(const BootImageStorage &bootImage,
     alloc_args.size = argRange.size;
     alloc_args.alignment = PAGESIZE;
 
-    if (m_alloc->allocate(alloc_args) != Allocator::Success)
-    {
+    if (m_alloc->allocate(alloc_args) != Allocator::Success) {
         FATAL("failed to allocate program arguments page");
         return ProcessError;
     }
     argRange.phys = alloc_args.address;
 
     // Map program arguments in the process
-    if (mem->mapRangeContiguous(&argRange) != MemoryContext::Success)
-    {
+    if (mem->mapRangeContiguous(&argRange) != MemoryContext::Success) {
         FATAL("failed to map program arguments page");
         return ProcessError;
     }
@@ -389,8 +352,7 @@ Kernel::Result Kernel::loadBootProgram(const BootImageStorage &bootImage,
     return Success;
 }
 
-int Kernel::run()
-{
+int Kernel::run() {
     NOTICE("");
 
     // Load boot image programs

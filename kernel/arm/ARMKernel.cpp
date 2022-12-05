@@ -26,9 +26,7 @@
 #include "ARMKernel.h"
 
 ARMKernel::ARMKernel(CoreInfo *info)
-    : Kernel(info)
-    , m_exception(RAM_ADDR)
-{
+        : Kernel(info), m_exception(RAM_ADDR) {
     ARMControl ctrl;
 
     NOTICE("");
@@ -63,7 +61,7 @@ ARMKernel::ARMKernel(CoreInfo *info)
     // If this area is re-used after the kernel started, the SplitAllocator::toVirtual()
     // function will not translate properly, resulting in memory corruption.
     if (m_coreInfo->coreId == 0) {
-        for (Size i = 0; i < (PAGESIZE*4); i += PAGESIZE)
+        for (Size i = 0; i < (PAGESIZE * 4); i += PAGESIZE)
             m_alloc->allocate(TMPSTACKADDR + i);
     } else {
         for (Size i = 0; i < MegaByte(1); i += PAGESIZE)
@@ -71,54 +69,48 @@ ARMKernel::ARMKernel(CoreInfo *info)
     }
 }
 
-void ARMKernel::interrupt(CPUState state)
-{
+void ARMKernel::interrupt(CPUState state) {
     ARMCore core;
     core.logException(&state);
 
     FATAL("core" << coreInfo.coreId << ": unhandled IRQ in procId = " <<
-           Kernel::instance()->getProcessManager()->current()->getID());
+                 Kernel::instance()->getProcessManager()->current()->getID());
 }
 
-void ARMKernel::undefinedInstruction(CPUState state)
-{
+void ARMKernel::undefinedInstruction(CPUState state) {
     ARMCore core;
     core.logException(&state);
 
     FATAL("core" << coreInfo.coreId << ": procId = " <<
-           Kernel::instance()->getProcessManager()->current()->getID());
+                 Kernel::instance()->getProcessManager()->current()->getID());
 }
 
-void ARMKernel::prefetchAbort(CPUState state)
-{
+void ARMKernel::prefetchAbort(CPUState state) {
     ARMCore core;
     core.logException(&state);
 
     FATAL("core" << coreInfo.coreId << ": procId = " <<
-           Kernel::instance()->getProcessManager()->current()->getID());
+                 Kernel::instance()->getProcessManager()->current()->getID());
 }
 
-void ARMKernel::dataAbort(CPUState state)
-{
+void ARMKernel::dataAbort(CPUState state) {
     ARMCore core;
     core.logException(&state);
 
     FATAL("core" << coreInfo.coreId << ": procId = " <<
-           Kernel::instance()->getProcessManager()->current()->getID());
+                 Kernel::instance()->getProcessManager()->current()->getID());
 }
 
 
-void ARMKernel::reserved(CPUState state)
-{
+void ARMKernel::reserved(CPUState state) {
     ARMCore core;
     core.logException(&state);
 
     FATAL("core" << coreInfo.coreId << ": procId = " <<
-           Kernel::instance()->getProcessManager()->current()->getID());
+                 Kernel::instance()->getProcessManager()->current()->getID());
 }
 
-void ARMKernel::trap(volatile CPUState state)
-{
+void ARMKernel::trap(volatile CPUState state) {
     ProcessManager *mgr = Kernel::instance()->getProcessManager();
     ARMProcess *proc = (ARMProcess *) mgr->current(), *proc2;
     ProcessID procId = proc->getID();
@@ -127,28 +119,25 @@ void ARMKernel::trap(volatile CPUState state)
 
     // Execute the kernel call
     u32 r = Kernel::instance()->getAPI()->invoke(
-        (API::Number) state.r0,
-                      state.r1,
-                      state.r2,
-                      state.r3,
-                      state.r4,
-                      state.r5
+            (API::Number) state.r0,
+            state.r1,
+            state.r2,
+            state.r3,
+            state.r4,
+            state.r5
     );
 
     // Did we change process?
     proc2 = (ARMProcess *) mgr->current();
-    DEBUG("result = " << r << " scheduled = " << (bool)(proc != proc2));
+    DEBUG("result = " << r << " scheduled = " << (bool) (proc != proc2));
 
-    if (proc != proc2)
-    {
+    if (proc != proc2) {
         // Only if the previous process still exists (not killed in API)
-        if (mgr->get(procId) != NULL)
-        {
+        if (mgr->get(procId) != NULL) {
             state.r0 = r;
-            proc->setCpuState((const CPUState *)&state);
+            proc->setCpuState((const CPUState *) &state);
         }
-        MemoryBlock::copy((void*)&state, proc2->cpuState(), sizeof(state));
-    }
-    else
+        MemoryBlock::copy((void *) &state, proc2->cpuState(), sizeof(state));
+    } else
         state.r0 = r;
 }

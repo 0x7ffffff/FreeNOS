@@ -17,28 +17,24 @@
 
 #include "MemoryMap.h"
 
-MemoryMap::MemoryMap()
-{
+MemoryMap::MemoryMap() {
 }
 
-MemoryMap::MemoryMap(const MemoryMap &map)
-{
-    setRange(KernelData,    map.m_regions[KernelData]);
+MemoryMap::MemoryMap(const MemoryMap &map) {
+    setRange(KernelData, map.m_regions[KernelData]);
     setRange(KernelPrivate, map.m_regions[KernelPrivate]);
-    setRange(UserData,      map.m_regions[UserData]);
-    setRange(UserHeap,      map.m_regions[UserHeap]);
-    setRange(UserStack,     map.m_regions[UserStack]);
-    setRange(UserPrivate,   map.m_regions[UserPrivate]);
-    setRange(UserShare,     map.m_regions[UserShare]);
-    setRange(UserArgs,      map.m_regions[UserArgs]);
+    setRange(UserData, map.m_regions[UserData]);
+    setRange(UserHeap, map.m_regions[UserHeap]);
+    setRange(UserStack, map.m_regions[UserStack]);
+    setRange(UserPrivate, map.m_regions[UserPrivate]);
+    setRange(UserShare, map.m_regions[UserShare]);
+    setRange(UserArgs, map.m_regions[UserArgs]);
 }
 
-Memory::Range MemoryMap::range(MemoryMap::Region region) const
-{
+Memory::Range MemoryMap::range(MemoryMap::Region region) const {
     return m_regions[region];
 }
 
-void MemoryMap::setRange(Region region, Memory::Range range)
-{
+void MemoryMap::setRange(Region region, Memory::Range range) {
     m_regions[region] = range;
 }

@@ -28,13 +28,11 @@
  * @{
  */
 
-namespace Core
-{
+namespace Core {
     /**
      * Actions which may be performed on the CoreServer
      */
-    enum Action
-    {
+    enum Action {
         GetCoreCount = 0,
         CreateProcess,
         PingRequest,
@@ -44,8 +42,7 @@ namespace Core
     /**
      * Result code for Actions.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         InvalidArgument,
         NotFound,

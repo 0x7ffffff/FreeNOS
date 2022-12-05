@@ -17,8 +17,7 @@
 
 #include "string.h"
 
-int strncpy(char *dest, const char *src, size_t sz)
-{
+int strncpy(char *dest, const char *src, size_t sz) {
     char *d;
     const char *s;
     int val = 0;
@@ -26,8 +25,7 @@ int strncpy(char *dest, const char *src, size_t sz)
     d = dest;
     s = src;
 
-    while ( *s != '\0' && sz != 0 )
-    {
+    while (*s != '\0' && sz != 0) {
         *d++ = *s++;
         sz--;
         val++;

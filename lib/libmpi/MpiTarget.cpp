@@ -29,48 +29,39 @@
 #include "MPIMessage.h"
 #include "MpiTarget.h"
 
-template<> MpiBackend* AbstractFactory<MpiBackend>::create()
-{
+template<>
+MpiBackend *AbstractFactory<MpiBackend>::create() {
     return new MpiTarget();
 }
 
 MpiTarget::MpiTarget()
-    : m_coreId(0)
-    , m_coreCount(0)
-{
+        : m_coreId(0), m_coreCount(0) {
     MemoryBlock::set(&m_memChannelBase, 0, sizeof(m_memChannelBase));
 }
 
 MpiTarget::Result MpiTarget::initialize(int *argc,
-                                        char ***argv)
-{
-    if ((*argc) >= 5 && MemoryBlock::compare((*argv)[1], "--slave"))
-    {
+                                        char ***argv) {
+    if ((*argc) >= 5 && MemoryBlock::compare((*argv)[1], "--slave")) {
         return initializeSlave(argc, argv);
-    }
-    else
-    {
+    } else {
         return initializeMaster(argc, argv);
     }
 
     return MPI_SUCCESS;
 }
 
-MpiTarget::Result MpiTarget::terminate()
-{
+MpiTarget::Result MpiTarget::terminate() {
     return MPI_SUCCESS;
 }
 
 MpiTarget::Result MpiTarget::getCommRank(MPI_Comm comm,
-                                         int *rank)
-{
+                                         int *rank) {
     *rank = m_coreId;
     return MPI_SUCCESS;
 }
 
 MpiTarget::Result MpiTarget::getCommSize(MPI_Comm comm,
-                                         int *size)
-{
+                                         int *size) {
     *size = m_coreCount;
     return MPI_SUCCESS;
 }
@@ -80,20 +71,16 @@ MpiTarget::Result MpiTarget::send(const void *buf,
                                   MPI_Datatype datatype,
                                   int dest,
                                   int tag,
-                                  MPI_Comm comm)
-{
+                                  MPI_Comm comm) {
     MPIMessage msg;
     MemoryChannel *ch;
 
-    if (!(ch = m_writeChannels.get(dest)))
-    {
+    if (!(ch = m_writeChannels.get(dest))) {
         return MPI_ERR_RANK;
     }
 
-    for (int i = 0; i < count; i++)
-    {
-        switch (datatype)
-        {
+    for (int i = 0; i < count; i++) {
+        switch (datatype) {
             case MPI_INT:
                 msg.integer = *(((int *) buf) + i);
                 break;
@@ -106,8 +93,7 @@ MpiTarget::Result MpiTarget::send(const void *buf,
                 return MPI_ERR_UNSUPPORTED_DATAREP;
         }
 
-        while (ch->write(&msg) != Channel::Success)
-        {
+        while (ch->write(&msg) != Channel::Success) {
             ProcessCtl(SELF, Schedule, 0);
         }
     }
@@ -121,25 +107,20 @@ MpiTarget::Result MpiTarget::receive(void *buf,
                                      int source,
                                      int tag,
                                      MPI_Comm comm,
-                                     MPI_Status *status)
-{
+                                     MPI_Status *status) {
     MPIMessage msg;
     MemoryChannel *ch;
 
-    if (!(ch = m_readChannels.get(source)))
-    {
+    if (!(ch = m_readChannels.get(source))) {
         return MPI_ERR_RANK;
     }
 
-    for (int i = 0; i < count; i++)
-    {
-        while (ch->read(&msg) != Channel::Success)
-        {
+    for (int i = 0; i < count; i++) {
+        while (ch->read(&msg) != Channel::Success) {
             ProcessCtl(SELF, Schedule, 0);
         }
 
-        switch (datatype)
-        {
+        switch (datatype) {
             case MPI_INT:
                 *(((int *) buf) + i) = msg.integer;
                 break;
@@ -157,8 +138,7 @@ MpiTarget::Result MpiTarget::receive(void *buf,
 }
 
 MpiTarget::Result MpiTarget::initializeMaster(int *argc,
-                                              char ***argv)
-{
+                                              char ***argv) {
     const CoreClient coreClient;
     char *programName = (*argv)[0];
     String programPath;
@@ -169,28 +149,23 @@ MpiTarget::Result MpiTarget::initializeMaster(int *argc,
 
     // Retrieve number of cores on the system
     const Core::Result result = coreClient.getCoreCount(m_coreCount);
-    if (result != Core::Success)
-    {
+    if (result != Core::Success) {
         ERROR("failed to retrieve core count from CoreServer: result = " << (int) result);
         return MPI_ERR_BAD_FILE;
     }
 
     // Read our own ELF program to a buffer and pass it to CoreServer
     // for creating new programs on the remote core.
-    if (!MemoryBlock::compare(programName, "/bin/", 5))
-    {
+    if (!MemoryBlock::compare(programName, "/bin/", 5)) {
         programPath << "/bin/" << programName;
-    }
-    else
-    {
+    } else {
         programPath << programName;
     }
 
     // Try to read the raw ELF program data (compressed)
     BufferedFile programFile(*programPath);
     const BufferedFile::Result readResult = programFile.read();
-    if (readResult != BufferedFile::Success)
-    {
+    if (readResult != BufferedFile::Success) {
         ERROR("failed to read program at path '" << *programPath << "': result = " << (int) readResult);
         return MPI_ERR_BAD_FILE;
     }
@@ -198,8 +173,7 @@ MpiTarget::Result MpiTarget::initializeMaster(int *argc,
     // Initialize decompressor
     Lz4Decompressor lz4(programFile.buffer(), programFile.size());
     Lz4Decompressor::Result lz4Result = lz4.initialize();
-    if (lz4Result != Lz4Decompressor::Success)
-    {
+    if (lz4Result != Lz4Decompressor::Success) {
         ERROR("failed to initialize LZ4 decompressor: result = " << (int) lz4Result);
         return MPI_ERR_BAD_FILE;
     }
@@ -211,8 +185,7 @@ MpiTarget::Result MpiTarget::initializeMaster(int *argc,
     uncompProgRange.size = lz4.getUncompressedSize();
     uncompProgRange.access = Memory::User | Memory::Readable | Memory::Writable;
     API::Result vmResult = VMCtl(SELF, MapContiguous, &uncompProgRange);
-    if (vmResult != API::Success)
-    {
+    if (vmResult != API::Success) {
         ERROR("failed to allocate program buffer: result = " << (int) vmResult);
         return MPI_ERR_NO_MEM;
     }
@@ -222,8 +195,7 @@ MpiTarget::Result MpiTarget::initializeMaster(int *argc,
 
     // Decompress entire file
     const Lz4Decompressor::Result decompResult = lz4.read(programBuffer, lz4.getUncompressedSize());
-    if (decompResult != Lz4Decompressor::Success)
-    {
+    if (decompResult != Lz4Decompressor::Success) {
         ERROR("failed to decompress program buffer: result = " << (int) decompResult);
         return MPI_ERR_NO_MEM;
     }
@@ -235,8 +207,7 @@ MpiTarget::Result MpiTarget::initializeMaster(int *argc,
     m_memChannelBase.virt = 0;
     m_memChannelBase.access = Memory::Readable | Memory::Writable | Memory::User;
     vmResult = VMCtl(SELF, MapContiguous, &m_memChannelBase);
-    if (vmResult != API::Success)
-    {
+    if (vmResult != API::Success) {
         ERROR("failed to allocate MemoryChannel: result = " << (int) vmResult);
         return MPI_ERR_NO_MEM;
     }
@@ -247,47 +218,40 @@ MpiTarget::Result MpiTarget::initializeMaster(int *argc,
     MemoryBlock::set((void *) m_memChannelBase.virt, 0, m_memChannelBase.size);
 
     // now create the slaves using coreservers.
-    for (Size i = 1; i < m_coreCount; i++)
-    {
+    for (Size i = 1; i < m_coreCount; i++) {
         String programCmd;
 
         // Format program command with MPI specific arguments for the slaves
         programCmd << programPath << " --slave " <<
-            Number::Hex << (void *)(m_memChannelBase.phys) << " " <<
-            Number::Dec << i << " " << m_coreCount;
+                   Number::Hex << (void *) (m_memChannelBase.phys) << " " <<
+                   Number::Dec << i << " " << m_coreCount;
 
         // Append additional user arguments
-        for (int j = 1; j < *argc; j++)
-        {
+        for (int j = 1; j < *argc; j++) {
             programCmd << " " << (*argv)[j];
         }
 
         const Core::Result result = coreClient.createProcess(i, (const Address) programBuffer,
                                                              lz4.getUncompressedSize(), *programCmd);
-        if (result != Core::Success)
-        {
+        if (result != Core::Success) {
             ERROR("failed to create process on core" << i << ": result = " << (int) result);
             return MPI_ERR_SPAWN;
         }
     }
 
     // Fill read channels
-    for (Size i = 1; i < m_coreCount; i++)
-    {
+    for (Size i = 1; i < m_coreCount; i++) {
         const Result readResult = createReadChannel(i, getMemoryBaseRead(i));
-        if (readResult != MPI_SUCCESS)
-        {
+        if (readResult != MPI_SUCCESS) {
             ERROR("failed to create read MemoryChannel for core" << i << ": result = " << (int) readResult);
             return readResult;
         }
     }
 
     // Fill write channels
-    for (Size i = 1; i < m_coreCount; i++)
-    {
+    for (Size i = 1; i < m_coreCount; i++) {
         const Result writeResult = createWriteChannel(i, getMemoryBaseWrite(i));
-        if (writeResult != MPI_SUCCESS)
-        {
+        if (writeResult != MPI_SUCCESS) {
             ERROR("failed to create write MemoryChannel for core" << i << ": result = " << (int) writeResult);
             return writeResult;
         }
@@ -297,11 +261,9 @@ MpiTarget::Result MpiTarget::initializeMaster(int *argc,
 }
 
 MpiTarget::Result MpiTarget::initializeSlave(int *argc,
-                                             char ***argv)
-{
+                                             char ***argv) {
     // If we are slave (node N): read arguments: --slave [memoryChannelBase] [rankId] [coreCount]
-    if ((*argc) < 5)
-    {
+    if ((*argc) < 5) {
         ERROR("invalid number of arguments given");
         return MPI_ERR_ARG;
     }
@@ -326,15 +288,13 @@ MpiTarget::Result MpiTarget::initializeSlave(int *argc,
 
     // Create MemoryChannels for communication with the master
     const Result readResult = createReadChannel(0, getMemoryBaseRead(m_coreId));
-    if (readResult != MPI_SUCCESS)
-    {
+    if (readResult != MPI_SUCCESS) {
         ERROR("failed to create read MemoryChannel for master: result = " << (int) readResult);
         return readResult;
     }
 
     const Result writeResult = createWriteChannel(0, getMemoryBaseWrite(m_coreId));
-    if (writeResult != MPI_SUCCESS)
-    {
+    if (writeResult != MPI_SUCCESS) {
         ERROR("failed to create write MemoryChannel for master: result = " << (int) writeResult);
         return writeResult;
     }
@@ -343,11 +303,9 @@ MpiTarget::Result MpiTarget::initializeSlave(int *argc,
 }
 
 MpiTarget::Result MpiTarget::createReadChannel(const Size coreId,
-                                               const Address memoryBase)
-{
+                                               const Address memoryBase) {
     MemoryChannel *ch = new MemoryChannel(Channel::Consumer, sizeof(MPIMessage));
-    if (!ch)
-    {
+    if (!ch) {
         ERROR("failed to allocate consumer MemoryChannel for coreId = " << coreId);
         return MPI_ERR_NO_MEM;
     }
@@ -355,21 +313,18 @@ MpiTarget::Result MpiTarget::createReadChannel(const Size coreId,
     ch->setPhysical(memoryBase, memoryBase + PAGESIZE);
     m_readChannels.insertAt(coreId, ch);
 
-    if (m_coreId == 0)
-    {
+    if (m_coreId == 0) {
         DEBUG(m_coreId << ": readChannel: core" << coreId << ": data = " << (void *) memoryBase <<
-              " feedback = " << (void *) (memoryBase + PAGESIZE));
+                       " feedback = " << (void *) (memoryBase + PAGESIZE));
     }
 
     return MPI_SUCCESS;
 }
 
 MpiTarget::Result MpiTarget::createWriteChannel(const Size coreId,
-                                                const Address memoryBase)
-{
+                                                const Address memoryBase) {
     MemoryChannel *ch = new MemoryChannel(Channel::Producer, sizeof(MPIMessage));
-    if (!ch)
-    {
+    if (!ch) {
         ERROR("failed to allocate producer MemoryChannel for coreId = " << coreId);
         return MPI_ERR_NO_MEM;
     }
@@ -377,43 +332,34 @@ MpiTarget::Result MpiTarget::createWriteChannel(const Size coreId,
     ch->setPhysical(memoryBase, memoryBase + PAGESIZE);
     m_writeChannels.insertAt(coreId, ch);
 
-    if (m_coreId == 0)
-    {
+    if (m_coreId == 0) {
         DEBUG(m_coreId << ": writeChannel: core" << coreId << ": data = " << (void *) memoryBase <<
-              " feedback = " << (void *) (memoryBase + PAGESIZE));
+                       " feedback = " << (void *) (memoryBase + PAGESIZE));
     }
 
     return MPI_SUCCESS;
 }
 
-Address MpiTarget::getMemoryBaseRead(const Size coreId) const
-{
+Address MpiTarget::getMemoryBaseRead(const Size coreId) const {
     assert(coreId < m_coreCount);
 
     const Address base = m_memChannelBase.phys + (PAGESIZE * 2 * (coreId));
 
-    if (m_coreId == 0)
-    {
+    if (m_coreId == 0) {
         return base;
-    }
-    else
-    {
+    } else {
         return base + (PAGESIZE * 2 * m_coreCount);
     }
 }
 
-Address MpiTarget::getMemoryBaseWrite(const Size coreId) const
-{
+Address MpiTarget::getMemoryBaseWrite(const Size coreId) const {
     assert(coreId < m_coreCount);
 
     const Address base = m_memChannelBase.phys + (PAGESIZE * 2 * (coreId));
 
-    if (m_coreId == 0)
-    {
+    if (m_coreId == 0) {
         return base + (PAGESIZE * 2 * m_coreCount);
-    }
-    else
-    {
+    } else {
         return base;
     }
 }

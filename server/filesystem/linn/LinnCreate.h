@@ -59,7 +59,7 @@
  *
  * @return A pointer of the given type.
  */
-#define BLOCKPTR(type,nr) (type *)(blocks + (super->blockSize * (nr)))
+#define BLOCKPTR(type, nr) (type *)(blocks + (super->blockSize * (nr)))
 
 /**
  * Retrieve a given number of free contiguous blocks.
@@ -69,7 +69,7 @@
  *
  * @return Block number of the first block in the contiguous array of blocks.
  */
-#define BLOCKS(sb,count) \
+#define BLOCKS(sb, count) \
     ({ \
         if ((sb)->freeBlocksCount < (count)) \
         { \
@@ -129,9 +129,8 @@
 /**
  * Class for creating new Linnenbank FileSystems.
  */
-class LinnCreate
-{
-  public:
+class LinnCreate {
+public:
 
     /**
      * Class constructor.
@@ -184,7 +183,7 @@ class LinnCreate
      */
     void setVerbose(bool newVerbose);
 
-  private:
+private:
 
     /**
      * Creates an empty LinnInode.
@@ -197,8 +196,8 @@ class LinnCreate
      *
      * @return LinnInode pointer.
      */
-    LinnInode * createInode(le32 inodeNum, FileSystem::FileType type, FileSystem::FileModes mode,
-                            UserID uid = ZERO, GroupID gid = ZERO);
+    LinnInode *createInode(le32 inodeNum, FileSystem::FileType type, FileSystem::FileModes mode,
+                           UserID uid = ZERO, GroupID gid = ZERO);
 
     /**
      * Copies a local file contents into an LinnInode.
@@ -261,7 +260,7 @@ class LinnCreate
      */
     int writeImage();
 
-  private:
+private:
 
     /** Program name we are invoked with. */
     char *prog;

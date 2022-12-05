@@ -36,9 +36,8 @@
  *
  * @see FileSystem
  */
-class File
-{
-  public:
+class File {
+public:
 
     /**
      * Constructor function.
@@ -82,8 +81,8 @@ class File
      *
      * @return Result code
      */
-    virtual FileSystem::Result read(IOBuffer & buffer,
-                                    Size & size,
+    virtual FileSystem::Result read(IOBuffer &buffer,
+                                    Size &size,
                                     const Size offset);
 
     /**
@@ -96,8 +95,8 @@ class File
      *
      * @return Result code
      */
-    virtual FileSystem::Result write(IOBuffer & buffer,
-                                     Size & size,
+    virtual FileSystem::Result write(IOBuffer &buffer,
+                                     Size &size,
                                      const Size offset);
 
     /**
@@ -127,7 +126,7 @@ class File
      */
     virtual bool canWrite() const;
 
-  protected:
+protected:
 
     /** Inode number */
     const u32 m_inode;

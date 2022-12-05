@@ -21,8 +21,7 @@
 #include <errno.h>
 #include "unistd.h"
 
-char *getcwd(char *buf, size_t size)
-{
+char *getcwd(char *buf, size_t size) {
     const FileSystemClient filesystem;
     const String *currentDirectory = filesystem.getCurrentDirectory();
 

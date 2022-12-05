@@ -28,9 +28,8 @@
 /**
  * Print the operating system name.
  */
-class UnixName : public POSIXApplication
-{
-  public:
+class UnixName : public POSIXApplication {
+public:
 
     /**
      * Constructor

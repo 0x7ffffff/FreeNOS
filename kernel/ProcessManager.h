@@ -41,15 +41,13 @@ class Scheduler;
 /**
  * Represents a process which may run on the host.
  */
-class ProcessManager
-{
-  public:
+class ProcessManager {
+public:
 
     /**
      * Result code
      */
-    enum Result
-    {
+    enum Result {
         Success,
         InvalidArgument,
         IOError,
@@ -57,7 +55,7 @@ class ProcessManager
         AlreadyExists
     };
 
-  public:
+public:
 
     /**
      * Constructor function.
@@ -79,10 +77,10 @@ class ProcessManager
      *
      * @return Process pointer on success or ZERO on failure
      */
-    Process * create(const Address entry,
-                     const MemoryMap &map,
-                     const bool readyToRun = false,
-                     const bool privileged = false);
+    Process *create(const Address entry,
+                    const MemoryMap &map,
+                    const bool readyToRun = false,
+                    const bool privileged = false);
 
     /**
      * Retrieve a Process by it's ID.
@@ -91,7 +89,7 @@ class ProcessManager
      *
      * @return Pointer to the appropriate process or ZERO if not found.
      */
-    Process * get(const ProcessID id);
+    Process *get(const ProcessID id);
 
     /**
      * Remove a Process.
@@ -207,9 +205,9 @@ class ProcessManager
      *
      * @return Process pointer
      */
-    Process * current();
+    Process *current();
 
-  private:
+private:
 
     /**
      * Place the given process on the Schedule queue
@@ -231,7 +229,7 @@ class ProcessManager
      */
     Result dequeueProcess(Process *proc, const bool ignoreState = false) const;
 
-  private:
+private:
 
     /** All known Processes. */
     Index<Process, MAX_PROCS> m_procs;
@@ -249,7 +247,8 @@ class ProcessManager
     Queue<Process *, MAX_PROCS> m_sleepTimerQueue;
 
     /** Interrupt notification list */
-    Vector<List<Process *> *> m_interruptNotifyList;
+    Vector<List < Process * > *>
+    m_interruptNotifyList;
 };
 
 /**

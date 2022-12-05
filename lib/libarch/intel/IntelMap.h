@@ -34,9 +34,8 @@
 /**
  * Defines memory map for Intel systems
  */
-class IntelMap : public MemoryMap
-{
-  public:
+class IntelMap : public MemoryMap {
+public:
 
     /**
      * Constructor.
@@ -44,8 +43,7 @@ class IntelMap : public MemoryMap
     IntelMap();
 };
 
-namespace Arch
-{
+namespace Arch {
     typedef IntelMap MemoryMap;
 };
 

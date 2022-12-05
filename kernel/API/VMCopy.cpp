@@ -25,8 +25,7 @@ API::Result VMCopyHandler(const ProcessID procID,
                           const API::Operation how,
                           const Address ours,
                           const Address theirs,
-                          const Size sz)
-{
+                          const Size sz) {
     ProcessManager *procs = Kernel::instance()->getProcessManager();
     MemoryContext::Result memResult = MemoryContext::Success;
     Size bytes = 0, pageOff, total = 0;
@@ -42,12 +41,11 @@ API::Result VMCopyHandler(const ProcessID procID,
     else if (!(proc = procs->get(procID)))
         return API::NotFound;
 
-    MemoryContext *local  = procs->current()->getMemoryContext();
+    MemoryContext *local = procs->current()->getMemoryContext();
     MemoryContext *remote = proc->getMemoryContext();
 
     // Keep on going until all memory is processed
-    while (total < sz)
-    {
+    while (total < sz) {
         // Update variables
         if (how == API::ReadPhys)
             paddr = theirAddr & PAGEMASK;
@@ -56,8 +54,8 @@ API::Result VMCopyHandler(const ProcessID procID,
 
         assert(!(paddr & ~PAGEMASK));
         pageOff = theirAddr & ~PAGEMASK;
-        bytes   = (PAGESIZE - pageOff) < (sz - total) ?
-                  (PAGESIZE - pageOff) : (sz - total);
+        bytes = (PAGESIZE - pageOff) < (sz - total) ?
+                (PAGESIZE - pageOff) : (sz - total);
 
         // Valid address?
         if (!paddr) break;
@@ -67,26 +65,23 @@ API::Result VMCopyHandler(const ProcessID procID,
             return API::RangeError;
 
         if ((memResult = local->map(vaddr, paddr,
-                                    Memory::Readable | Memory::Writable)) != MemoryContext::Success)
-        {
-            ERROR("failed to map physical address " << (void *)paddr << ": " << (int)memResult);
+                                    Memory::Readable | Memory::Writable)) != MemoryContext::Success) {
+            ERROR("failed to map physical address " << (void *) paddr << ": " << (int) memResult);
             return API::IOError;
         }
 
         // Process the action appropriately
-        switch (how)
-        {
+        switch (how) {
             case API::Read:
             case API::ReadPhys:
-                MemoryBlock::copy((void *)ourAddr, (void *)(vaddr + pageOff), bytes);
+                MemoryBlock::copy((void *) ourAddr, (void *) (vaddr + pageOff), bytes);
                 break;
 
             case API::Write:
-                MemoryBlock::copy((void *)(vaddr + pageOff), (void *)ourAddr, bytes);
+                MemoryBlock::copy((void *) (vaddr + pageOff), (void *) ourAddr, bytes);
                 break;
 
-            default:
-                ;
+            default:;
         }
 
         // Unmap, which must always succeed
@@ -94,9 +89,9 @@ API::Result VMCopyHandler(const ProcessID procID,
         assert(memResult == MemoryContext::Success);
 
         // Update counters
-        ourAddr   += bytes;
+        ourAddr += bytes;
         theirAddr += bytes;
-        total     += bytes;
+        total += bytes;
     }
 
     return API::Success;

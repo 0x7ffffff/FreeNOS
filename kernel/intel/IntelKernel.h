@@ -40,9 +40,8 @@
  * @todo Debugging the kernel under GDB 9.2 on Ubuntu 20.04 seems to give a malformed/corrupted stacktrace
  *       It only happens with intel/pc on compilers g++-8 and g++-9 and g++-10.
  */
-class IntelKernel : public Kernel
-{
-  public:
+class IntelKernel : public Kernel {
+public:
 
     /**
      * Constructor function.
@@ -57,7 +56,7 @@ class IntelKernel : public Kernel
      */
     virtual void enableIRQ(u32 irq, bool enabled);
 
-  private:
+private:
 
     /**
      * Called when the CPU detects a fault.
@@ -95,7 +94,7 @@ class IntelKernel : public Kernel
      */
     static void clocktick(CPUState *state, ulong param, ulong vector);
 
-  private:
+private:
 
     /** PIT timer instance */
     IntelPIT m_pit;

@@ -25,18 +25,15 @@
 #include "Mount.h"
 
 Mount::Mount(int argc, char **argv)
-    : POSIXApplication(argc, argv)
-{
+        : POSIXApplication(argc, argv) {
     parser().setDescription("Mount filesystems on the system");
     parser().registerFlag('w', "wait", "Blocking wait until given filesystem path is mounted");
 }
 
-Mount::~Mount()
-{
+Mount::~Mount() {
 }
 
-void Mount::listMounts() const
-{
+void Mount::listMounts() const {
     const FileSystemClient filesystem;
     const FileSystemMount *mounts;
     const Arch::MemoryMap map;
@@ -52,14 +49,11 @@ void Mount::listMounts() const
     printf("PATH                 FILESYSTEM\r\n");
 
     // Print out
-    for (Size i = 0; i < numberOfMounts; i++)
-    {
-        if (mounts[i].path[0])
-        {
+    for (Size i = 0; i < numberOfMounts; i++) {
+        if (mounts[i].path[0]) {
             // Get the command
             const API::Result result = VMCopy(mounts[i].procID, API::Read, (Address) cmd, range.virt, PAGESIZE);
-            if (result != API::Success)
-            {
+            if (result != API::Success) {
                 ERROR("VMCopy failed for PID " << mounts[i].procID << ": result = " << (int) result);
                 MemoryBlock::copy(cmd, "???", sizeof(cmd));
             }
@@ -69,13 +63,11 @@ void Mount::listMounts() const
     }
 }
 
-void Mount::waitForMount(const char *path) const
-{
+void Mount::waitForMount(const char *path) const {
     const FileSystemClient filesystem;
     const FileSystem::Result result = filesystem.waitFileSystem(path);
 
-    if (result != FileSystem::Success)
-    {
+    if (result != FileSystem::Success) {
         ERROR("failed to wait for filesystem at " << path << ": result = " << (int) result);
         exit(1);
     }
@@ -83,8 +75,7 @@ void Mount::waitForMount(const char *path) const
     assert(result == FileSystem::Success);
 }
 
-Mount::Result Mount::exec()
-{
+Mount::Result Mount::exec() {
     const char *waitPath = arguments().get("wait") ?
                            arguments().get("wait") : ZERO;
 

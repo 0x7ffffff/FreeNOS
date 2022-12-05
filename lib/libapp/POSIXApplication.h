@@ -32,9 +32,8 @@
 /**
  * POSIX-compatible application
  */
-class POSIXApplication : public Application
-{
-  public:
+class POSIXApplication : public Application {
+public:
 
     /**
      * Class constructor.
@@ -49,7 +48,7 @@ class POSIXApplication : public Application
      */
     virtual ~POSIXApplication();
 
-  protected:
+protected:
 
     /**
      * Print text to output.
@@ -70,7 +69,7 @@ class POSIXApplication : public Application
      */
     int runProgram(const char *path, const char **argv);
 
-  private:
+private:
 
     /** Logs to standard output */
     StdioLog m_log;

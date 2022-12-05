@@ -24,6 +24,7 @@
 
 /** Forward declaration */
 class SplitAllocator;
+
 class ARMFirstTable;
 
 /**
@@ -40,9 +41,8 @@ class ARMFirstTable;
 /**
  * ARM virtual memory implementation.
  */
-class ARMPaging : public MemoryContext
-{
-  public:
+class ARMPaging : public MemoryContext {
+public:
 
     /**
      * Constructor.
@@ -139,7 +139,7 @@ class ARMPaging : public MemoryContext
      *
      * @return Result code
      */
-    virtual Result releaseSection(const Memory::Range & range,
+    virtual Result releaseSection(const Memory::Range &range,
                                   const bool tablesOnly = false);
 
     /**
@@ -151,7 +151,7 @@ class ARMPaging : public MemoryContext
      */
     virtual Result releaseRange(Memory::Range *range);
 
-  private:
+private:
 
     /**
      * Installs default mappings on 1st level page table
@@ -169,7 +169,7 @@ class ARMPaging : public MemoryContext
      */
     Result enableMMU();
 
-  private:
+private:
 
     /** Pointer to the first level page table. */
     ARMFirstTable *m_firstTable;
@@ -184,8 +184,7 @@ class ARMPaging : public MemoryContext
     Arch::Cache m_cache;
 };
 
-namespace Arch
-{
+namespace Arch {
     typedef ARMPaging Memory;
 };
 

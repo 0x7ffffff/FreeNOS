@@ -20,8 +20,7 @@
 #include "stdlib.h"
 #include "errno.h"
 
-int fclose(FILE *stream)
-{
+int fclose(FILE *stream) {
     // Close and free
     close(stream->fd);
     free(stream);

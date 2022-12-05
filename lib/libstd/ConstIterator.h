@@ -31,9 +31,9 @@
 /**
  * Abstracts an iteration process for a constant.
  */
-template <class T> class ConstIterator
-{
-  public:
+template<class T>
+class ConstIterator {
+public:
 
     /**
      * Destructor.
@@ -64,7 +64,7 @@ template <class T> class ConstIterator
      *
      * @return Reference to the next item.
      */
-    virtual const T & current() const = 0;
+    virtual const T &current() const = 0;
 
     /**
      * Fetch the next item.
@@ -74,7 +74,7 @@ template <class T> class ConstIterator
      *
      * @return Reference to the next item.
      */
-    virtual const T & next() = 0;
+    virtual const T &next() = 0;
 
     /**
      * Increment operator.
@@ -84,7 +84,7 @@ template <class T> class ConstIterator
      *
      * @param num Ignored
      */
-    virtual void operator ++(int num) = 0;
+    virtual void operator++(int num) = 0;
 };
 
 /**

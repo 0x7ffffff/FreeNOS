@@ -31,9 +31,8 @@
 /**
  * Output TestResults to standard output in XML format.
  */
-class XMLReporter : public TestReporter
-{
-  public:
+class XMLReporter : public TestReporter {
+public:
 
     /**
      * Constructor.
@@ -46,22 +45,22 @@ class XMLReporter : public TestReporter
     /**
      * Report start of testing.
      */
-    virtual void reportBegin(List<TestInstance *> & tests);
+    virtual void reportBegin(List<TestInstance *> &tests);
 
     /**
      * Report start of a test.
      */
-    virtual void reportBefore(TestInstance & test);
+    virtual void reportBefore(TestInstance &test);
 
     /**
      * Report finish of a test.
      */
-    virtual void reportAfter(TestInstance & test, TestResult & result);
+    virtual void reportAfter(TestInstance &test, TestResult &result);
 
     /**
      * Report completion of all tests.
      */
-    virtual void reportFinish(List<TestInstance *> & tests);
+    virtual void reportFinish(List<TestInstance *> &tests);
 };
 
 /**

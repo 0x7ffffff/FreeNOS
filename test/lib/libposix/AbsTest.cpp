@@ -21,24 +21,24 @@
 #include <math.h>
 
 TestCase(AbsPositive)
-{
-    for (int i = 0; i < 100; i++)
-        testAssert(abs(i) == i);
+        {
+                for (int i = 0; i < 100; i++)
+                testAssert(abs(i) == i);
 
-    return OK;
-}
+                return OK;
+        }
 
 TestCase(AbsNegative)
-{
-    testAssert(abs(-1) == 1);
-    testAssert(abs(-1000) == 1000);
-    testAssert(abs(-99999) == 99999);
-    return OK;
-}
+        {
+                testAssert(abs(-1) == 1);
+        testAssert(abs(-1000) == 1000);
+        testAssert(abs(-99999) == 99999);
+        return OK;
+        }
 
 TestCase(AbsZero)
-{
-    testAssert(abs(0) == 0);
-    testAssert(abs(-0) == 0);
-    return OK;
-}
+        {
+                testAssert(abs(0) == 0);
+        testAssert(abs(-0) == 0);
+        return OK;
+        }

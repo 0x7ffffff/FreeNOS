@@ -19,13 +19,8 @@
 
 NetworkDevice::NetworkDevice(const u32 inode,
                              NetworkServer &server)
-    : Device(inode, FileSystem::CharacterDeviceFile)
-    , m_maximumPacketSize(1500)
-    , m_receive(m_maximumPacketSize)
-    , m_transmit(m_maximumPacketSize)
-    , m_server(server)
-
-{
+        : Device(inode, FileSystem::CharacterDeviceFile), m_maximumPacketSize(1500), m_receive(m_maximumPacketSize),
+          m_transmit(m_maximumPacketSize), m_server(server) {
     // Allocate protocols. Note that the FileSystemServer will take
     // ownership of these objects via the FileCache hierarchy
     m_eth = new Ethernet(m_server, *this);
@@ -35,15 +30,12 @@ NetworkDevice::NetworkDevice(const u32 inode,
     m_udp = new UDP(m_server, *this, *m_ipv4);
 }
 
-NetworkDevice::~NetworkDevice()
-{
+NetworkDevice::~NetworkDevice() {
 }
 
-FileSystem::Result NetworkDevice::initialize()
-{
+FileSystem::Result NetworkDevice::initialize() {
     const FileSystem::Result result = Device::initialize();
-    if (result != FileSystem::Success)
-    {
+    if (result != FileSystem::Success) {
         ERROR("failed to initialize Device: result = " << (int) result);
         return result;
     }
@@ -66,23 +58,19 @@ FileSystem::Result NetworkDevice::initialize()
     return FileSystem::Success;
 }
 
-const Size NetworkDevice::getMaximumPacketSize() const
-{
+const Size NetworkDevice::getMaximumPacketSize() const {
     return m_maximumPacketSize;
 }
 
-NetworkQueue * NetworkDevice::getReceiveQueue()
-{
+NetworkQueue *NetworkDevice::getReceiveQueue() {
     return &m_receive;
 }
 
-NetworkQueue * NetworkDevice::getTransmitQueue()
-{
+NetworkQueue *NetworkDevice::getTransmitQueue() {
     return &m_transmit;
 }
 
-void NetworkDevice::unregisterSockets(const ProcessID pid)
-{
+void NetworkDevice::unregisterSockets(const ProcessID pid) {
     DEBUG("pid = " << pid);
 
     m_udp->unregisterSockets(pid);
@@ -90,16 +78,14 @@ void NetworkDevice::unregisterSockets(const ProcessID pid)
 }
 
 FileSystem::Result NetworkDevice::process(const NetworkQueue::Packet *pkt,
-                                          const Size offset)
-{
+                                          const Size offset) {
     DEBUG("");
 
     // Let the protocols process the packet
     return m_eth->process(pkt, offset);
 }
 
-FileSystem::Result NetworkDevice::startDMA()
-{
+FileSystem::Result NetworkDevice::startDMA() {
     DEBUG("");
 
     return FileSystem::Success;

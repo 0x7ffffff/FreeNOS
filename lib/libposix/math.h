@@ -48,7 +48,9 @@ extern C int abs(int number);
  *
  * @return Square root of the given number.
  */
-extern C u32 sqrt(u32 number);
+extern C u32
+sqrt(u32
+number);
 
 /**
  * @}

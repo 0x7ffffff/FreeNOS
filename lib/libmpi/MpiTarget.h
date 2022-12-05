@@ -37,14 +37,13 @@
  * @todo Currently only supports communication between the master and slaves.
  *       Direct communication between slave cores is not implemented.
  */
-class MpiTarget : public MpiBackend
-{
-  private:
+class MpiTarget : public MpiBackend {
+private:
 
     /** Maximum number of communication channels */
     static const Size MaximumChannels = 128u;
 
-  public:
+public:
 
     /**
      * Constructor
@@ -131,7 +130,7 @@ class MpiTarget : public MpiBackend
                            MPI_Comm comm,
                            MPI_Status *status);
 
-  private:
+private:
 
     /**
      * Initialize the master
@@ -195,7 +194,7 @@ class MpiTarget : public MpiBackend
      */
     Address getMemoryBaseWrite(const Size coreId) const;
 
-  private:
+private:
 
     /** Core identifier is a unique number on each core */
     Size m_coreId;
@@ -207,10 +206,10 @@ class MpiTarget : public MpiBackend
     Memory::Range m_memChannelBase;
 
     /** Stores all channels for receiving data from other cores */
-    Index<MemoryChannel, MaximumChannels> m_readChannels;
+    Index <MemoryChannel, MaximumChannels> m_readChannels;
 
     /** Stores all channels for sending data to other cores */
-    Index<MemoryChannel, MaximumChannels> m_writeChannels;
+    Index <MemoryChannel, MaximumChannels> m_writeChannels;
 };
 
 /**

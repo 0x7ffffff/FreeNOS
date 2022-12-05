@@ -40,9 +40,8 @@ class SplitAllocator;
 /**
  * Intel virtual memory implementation.
  */
-class IntelPaging : public MemoryContext
-{
-  public:
+class IntelPaging : public MemoryContext {
+public:
 
     /**
      * Constructor.
@@ -144,7 +143,7 @@ class IntelPaging : public MemoryContext
      *
      * @return Result code
      */
-    virtual Result releaseSection(const Memory::Range & range,
+    virtual Result releaseSection(const Memory::Range &range,
                                   const bool tablesOnly = false);
 
     /**
@@ -156,7 +155,7 @@ class IntelPaging : public MemoryContext
      */
     virtual Result releaseRange(Memory::Range *range);
 
-  private:
+private:
 
     /** Pointer to page directory in kernel's virtual memory. */
     IntelPageDirectory *m_pageDirectory;
@@ -168,8 +167,7 @@ class IntelPaging : public MemoryContext
     bool m_pageDirectoryAllocated;
 };
 
-namespace Arch
-{
+namespace Arch {
     typedef IntelPaging Memory;
 };
 

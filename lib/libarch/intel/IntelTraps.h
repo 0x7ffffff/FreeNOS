@@ -49,8 +49,7 @@
  *
  * @return An integer.
  */
-inline ulong trapKernel1(ulong num, ulong arg1)
-{
+inline ulong trapKernel1(ulong num, ulong arg1) {
     ulong ret;
     asm volatile ("int $0x90" : "=a"(ret) : "a"(num), "c"(arg1) : "memory");
     return ret;
@@ -65,8 +64,7 @@ inline ulong trapKernel1(ulong num, ulong arg1)
  *
  * @return An integer.
  */
-inline ulong trapKernel2(ulong num, ulong arg1, ulong arg2)
-{
+inline ulong trapKernel2(ulong num, ulong arg1, ulong arg2) {
     ulong ret;
     asm volatile ("int $0x90" : "=a"(ret) : "a"(num), "c"(arg1), "b"(arg2) : "memory");
     return ret;
@@ -82,11 +80,10 @@ inline ulong trapKernel2(ulong num, ulong arg1, ulong arg2)
  *
  * @return An integer.
  */
-inline ulong trapKernel3(ulong num, ulong arg1, ulong arg2, ulong arg3)
-{
+inline ulong trapKernel3(ulong num, ulong arg1, ulong arg2, ulong arg3) {
     ulong ret;
     asm volatile ("int $0x90" : "=a"(ret) : "a"(num), "c"(arg1), "b"(arg2),
-                        "d"(arg3) : "memory");
+    "d"(arg3) : "memory");
     return ret;
 }
 
@@ -102,11 +99,10 @@ inline ulong trapKernel3(ulong num, ulong arg1, ulong arg2, ulong arg3)
  * @return An integer.
  */
 inline ulong trapKernel4(ulong num, ulong arg1, ulong arg2, ulong arg3,
-             ulong arg4)
-{
+                         ulong arg4) {
     ulong ret;
     asm volatile ("int $0x90" : "=a"(ret) : "a"(num), "c"(arg1), "b"(arg2),
-                        "d"(arg3), "S"(arg4) : "memory");
+    "d"(arg3), "S"(arg4) : "memory");
     return ret;
 }
 
@@ -123,11 +119,10 @@ inline ulong trapKernel4(ulong num, ulong arg1, ulong arg2, ulong arg3,
  * @return An integer.
  */
 inline ulong trapKernel5(ulong num, ulong arg1, ulong arg2, ulong arg3,
-             ulong arg4, ulong arg5)
-{
+                         ulong arg4, ulong arg5) {
     ulong ret;
     asm volatile ("int $0x90" : "=a"(ret) : "a"(num), "c"(arg1), "b"(arg2),
-                 "d"(arg3), "S"(arg4), "D"(arg5) : "memory");
+    "d"(arg3), "S"(arg4), "D"(arg5) : "memory");
     return ret;
 }
 

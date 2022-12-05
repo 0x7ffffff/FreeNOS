@@ -37,9 +37,8 @@ struct CoreMessage;
  *
  * @see CoreServer
  */
-class CoreClient
-{
-  public:
+class CoreClient {
+public:
 
     /**
      * Class constructor function.
@@ -72,7 +71,7 @@ class CoreClient
                                const Size programSize,
                                const char *programCmd) const;
 
-  private:
+private:
 
     /**
      * Send an IPC request to the CoreServer
@@ -83,7 +82,7 @@ class CoreClient
      */
     Core::Result request(CoreMessage &msg) const;
 
-  private:
+private:
 
     /** ProcessID of the CoreServer */
     const ProcessID m_pid;

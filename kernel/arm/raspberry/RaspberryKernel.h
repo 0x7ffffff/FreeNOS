@@ -37,9 +37,8 @@
 /**
  * Represents the Raspberry Pi kernel implementation
  */
-class RaspberryKernel : public ARMKernel
-{
-  public:
+class RaspberryKernel : public ARMKernel {
+public:
 
     /**
      * Constructor function.
@@ -48,7 +47,7 @@ class RaspberryKernel : public ARMKernel
      */
     RaspberryKernel(CoreInfo *info);
 
-  private:
+private:
 
     /**
      * Interrupt handler routine
@@ -57,7 +56,7 @@ class RaspberryKernel : public ARMKernel
      */
     static void interrupt(CPUState state);
 
-  private:
+private:
 
     /** Broadcom specific interrupt controller */
     BroadcomInterrupt m_bcmIntr;

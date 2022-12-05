@@ -22,61 +22,47 @@ File::File(const u32 inode,
            const FileSystem::FileType type,
            const UserID uid,
            const GroupID gid)
-    : m_inode(inode)
-    , m_type(type)
-    , m_uid(uid)
-    , m_gid(gid)
-    , m_access(FileSystem::OwnerRWX)
-    , m_size(0)
-{
+        : m_inode(inode), m_type(type), m_uid(uid), m_gid(gid), m_access(FileSystem::OwnerRWX), m_size(0) {
 }
 
-File::~File()
-{
+File::~File() {
 }
 
-u32 File::getInode() const
-{
+u32 File::getInode() const {
     return m_inode;
 }
 
-FileSystem::FileType File::getType() const
-{
+FileSystem::FileType File::getType() const {
     return m_type;
 }
 
-FileSystem::Result File::read(IOBuffer & buffer,
-                              Size & size,
-                              const Size offset)
-{
+FileSystem::Result File::read(IOBuffer &buffer,
+                              Size &size,
+                              const Size offset) {
     return FileSystem::NotSupported;
 }
 
-FileSystem::Result File::write(IOBuffer & buffer,
-                               Size & size,
-                               const Size offset)
-{
+FileSystem::Result File::write(IOBuffer &buffer,
+                               Size &size,
+                               const Size offset) {
     return FileSystem::NotSupported;
 }
 
-FileSystem::Result File::status(FileSystem::FileStat &st)
-{
-    st.type     = m_type;
-    st.inode    = m_inode;
-    st.access   = m_access;
-    st.size     = m_size;
-    st.userID   = m_uid;
-    st.groupID  = m_gid;
+FileSystem::Result File::status(FileSystem::FileStat &st) {
+    st.type = m_type;
+    st.inode = m_inode;
+    st.access = m_access;
+    st.size = m_size;
+    st.userID = m_uid;
+    st.groupID = m_gid;
 
     return FileSystem::Success;
 }
 
-bool File::canRead() const
-{
+bool File::canRead() const {
     return true;
 }
 
-bool File::canWrite() const
-{
+bool File::canWrite() const {
     return true;
 }

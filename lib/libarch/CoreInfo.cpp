@@ -17,4 +17,5 @@
 
 #include "CoreInfo.h"
 
-SECTION(".data") CoreInfo coreInfo;
+SECTION(".data")
+CoreInfo coreInfo;

@@ -34,26 +34,22 @@
 #define APIC_DEST_DM_STARTUP    0x00600
 
 IntelAPIC::IntelAPIC()
-    : IntController()
-{
+        : IntController() {
     m_frequency = 0;
     m_int = TimerVector;
     m_initialCounter = 0;
     m_io.setBase(IOBase);
 }
 
-IntelIO & IntelAPIC::getIO()
-{
+IntelIO &IntelAPIC::getIO() {
     return m_io;
 }
 
-uint IntelAPIC::getCounter() const
-{
+uint IntelAPIC::getCounter() const {
     return m_io.read(InitialCount);
 }
 
-Timer::Result IntelAPIC::start(IntelPIT *pit)
-{
+Timer::Result IntelAPIC::start(IntelPIT *pit) {
     u32 t1, t2, loops = 20;
 
     // Start the APIC timer
@@ -90,14 +86,12 @@ Timer::Result IntelAPIC::start(IntelPIT *pit)
     return Timer::Success;
 }
 
-Timer::Result IntelAPIC::wait(u32 microseconds) const
-{
-    if (!isKernel)
-    {
+Timer::Result IntelAPIC::wait(u32 microseconds) const {
+    if (!isKernel) {
         Timer::Info info;
 
         // Get current kernel timer ticks
-        if (ProcessCtl(SELF, InfoTimer, (Address) &info) != API::Success)
+        if (ProcessCtl(SELF, InfoTimer, (Address) & info) != API::Success)
             return Timer::IOError;
 
         // Frequency must be set
@@ -110,21 +104,17 @@ Timer::Result IntelAPIC::wait(u32 microseconds) const
         info.ticks += (msecToWait / msecPerTick) + 1;
 
         // Wait until the timer expires
-        if (ProcessCtl(SELF, WaitTimer, (Address) &info) != API::Success)
+        if (ProcessCtl(SELF, WaitTimer, (Address) & info) != API::Success)
             return Timer::IOError;
-    }
-    else
-    {
+    } else {
         Size usecPerInt = 1000000 / m_frequency;
         Size usecPerTick = usecPerInt / m_io.read(InitialCount);
         u32 t1 = m_io.read(CurrentCount), t2;
         u32 waited = 0;
 
-        while (waited < microseconds)
-        {
+        while (waited < microseconds) {
             t2 = m_io.read(CurrentCount);
-            if (t2 < t1)
-            {
+            if (t2 < t1) {
                 waited += (t1 - t2) * usecPerTick;
                 t1 = t2;
             }
@@ -134,8 +124,7 @@ Timer::Result IntelAPIC::wait(u32 microseconds) const
     return Timer::Success;
 }
 
-Timer::Result IntelAPIC::start(u32 initialCounter, uint hertz)
-{
+Timer::Result IntelAPIC::start(u32 initialCounter, uint hertz) {
     // Set members
     m_frequency = hertz;
     m_initialCounter = initialCounter;
@@ -146,21 +135,18 @@ Timer::Result IntelAPIC::start(u32 initialCounter, uint hertz)
     return start();
 }
 
-Timer::Result IntelAPIC::start()
-{
+Timer::Result IntelAPIC::start() {
     // Start the APIC timer
     m_io.write(Timer, TimerVector | PeriodicMode);
     return Timer::Success;
 }
 
-Timer::Result IntelAPIC::stop()
-{
+Timer::Result IntelAPIC::stop() {
     m_io.write(Timer, TimerVector | TimerMasked);
     return Timer::Success;
 }
 
-Timer::Result IntelAPIC::initialize()
-{
+Timer::Result IntelAPIC::initialize() {
     // Map the registers into the address space
     if (m_io.map(IOBase) != IntelIO::Success)
         return Timer::IOError;
@@ -176,33 +162,29 @@ Timer::Result IntelAPIC::initialize()
     return Timer::Success;
 }
 
-IntController::Result IntelAPIC::enable(uint irq)
-{
+IntController::Result IntelAPIC::enable(uint irq) {
     return IntController::NotFound;
 }
 
-IntController::Result IntelAPIC::disable(uint irq)
-{
+IntController::Result IntelAPIC::disable(uint irq) {
     return IntController::NotFound;
 }
 
-IntController::Result IntelAPIC::clear(uint irq)
-{
+IntController::Result IntelAPIC::clear(uint irq) {
     m_io.write(EndOfInterrupt, 0);
     return IntController::Success;
 }
 
-IntController::Result IntelAPIC::sendStartupIPI(uint cpuId, Address addr)
-{
+IntController::Result IntelAPIC::sendStartupIPI(uint cpuId, Address addr) {
     ulong cfg;
 
     // Write APIC Destination
-    cfg  = m_io.read(IntCommand2);
+    cfg = m_io.read(IntCommand2);
     cfg &= 0x00ffffff;
     m_io.write(IntCommand2, cfg | APIC_DEST(cpuId));
 
     // Assert INIT
-    cfg  = m_io.read(IntCommand1);
+    cfg = m_io.read(IntCommand1);
     cfg &= ~0xcdfff;
     cfg |= (APIC_DEST_FIELD | APIC_DEST_LEVELTRIG |
             APIC_DEST_ASSERT | APIC_DEST_DM_INIT);
@@ -212,18 +194,17 @@ IntController::Result IntelAPIC::sendStartupIPI(uint cpuId, Address addr)
     wait(10000);
 
     // Send two SIPI's
-    for (Size i = 0; i < 2; i++)
-    {
+    for (Size i = 0; i < 2; i++) {
         // Write APIC Destination
-        cfg  = m_io.read(IntCommand2);
+        cfg = m_io.read(IntCommand2);
         cfg &= 0x00ffffff;
         m_io.write(IntCommand2, cfg | APIC_DEST(cpuId));
 
         // Assert STARTUP
-        cfg  = m_io.read(IntCommand1);
+        cfg = m_io.read(IntCommand1);
         cfg &= ~0xcdfff;
         cfg |= (APIC_DEST_FIELD | APIC_DEST_DM_STARTUP |
-               (addr >> 12));
+                (addr >> 12));
         m_io.write(IntCommand1, cfg);
 
         // Wait 1 milisecond
@@ -234,18 +215,17 @@ IntController::Result IntelAPIC::sendStartupIPI(uint cpuId, Address addr)
     return IntController::Success;
 }
 
-IntController::Result IntelAPIC::sendIPI(uint cpuId, uint vector)
-{
+IntController::Result IntelAPIC::sendIPI(uint cpuId, uint vector) {
     ulong cfg;
 
     // Write APIC Destination
-    cfg  = m_io.read(IntCommand2);
+    cfg = m_io.read(IntCommand2);
     cfg &= 0x00ffffff;
     m_io.write(IntCommand2, cfg | APIC_DEST(cpuId));
 
     // Write to lower 32-bits of Interrupt Command, which triggers the IPI.
     cfg = (APIC_DEST_FIELD | APIC_DEST_LEVELTRIG |
-            APIC_DEST_ASSERT);
+           APIC_DEST_ASSERT);
     cfg |= vector;
     m_io.write(IntCommand1, cfg);
 

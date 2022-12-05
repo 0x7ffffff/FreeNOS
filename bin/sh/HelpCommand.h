@@ -34,9 +34,8 @@ class Shell;
 /**
  * Prints the help info for all known ShellCommands.
  */
-class HelpCommand : public ShellCommand
-{
-  public:
+class HelpCommand : public ShellCommand {
+public:
 
     /**
      * Constructor.
@@ -52,7 +51,7 @@ class HelpCommand : public ShellCommand
      */
     virtual int execute(const Size nparams, const char **params);
 
-  private:
+private:
 
     /** Shell object */
     Shell *m_shell;

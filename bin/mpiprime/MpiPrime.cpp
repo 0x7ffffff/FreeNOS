@@ -28,36 +28,28 @@
 #include "MpiPrime.h"
 
 MpiPrime::MpiPrime(int argc, char **argv)
-    : SievePrime(argc, argv)
-    , m_mpiInitResult(MPI_Init(&m_argc, &m_argv))
-    , m_id(0)
-{
+        : SievePrime(argc, argv), m_mpiInitResult(MPI_Init(&m_argc, &m_argv)), m_id(0) {
     parser().setDescription("Calculate prime numbers in parallel");
 }
 
-MpiPrime::~MpiPrime()
-{
+MpiPrime::~MpiPrime() {
     DEBUG("");
 }
 
-MpiPrime::Result MpiPrime::initialize()
-{
-    if (m_mpiInitResult != MPI_SUCCESS)
-    {
+MpiPrime::Result MpiPrime::initialize() {
+    if (m_mpiInitResult != MPI_SUCCESS) {
         ERROR("failed to initialize MPI: result = " << m_mpiInitResult);
         return IOError;
     }
 
     int result = MPI_Comm_rank(MPI_COMM_WORLD, &m_id);
-    if (result != MPI_SUCCESS)
-    {
+    if (result != MPI_SUCCESS) {
         ERROR("failed to lookup MPI rank: result = " << result);
         return IOError;
     }
 
     result = MPI_Comm_size(MPI_COMM_WORLD, (int *) &m_cores);
-    if (result != MPI_SUCCESS)
-    {
+    if (result != MPI_SUCCESS) {
         ERROR("failed to lookup total number of cores: result = " << result);
         return IOError;
     }
@@ -65,8 +57,7 @@ MpiPrime::Result MpiPrime::initialize()
     return Success;
 }
 
-MpiPrime::Result MpiPrime::exec()
-{
+MpiPrime::Result MpiPrime::exec() {
     int n, k;
     u8 *root_map, *map;
     String output;
@@ -77,8 +68,7 @@ MpiPrime::Result MpiPrime::exec()
     n = atoi(arguments().get("NUMBER"));
 
     // Make sure n is divisible by the number of workers
-    if ((n % m_cores) != 0)
-    {
+    if ((n % m_cores) != 0) {
         n += m_cores;
         n -= (n % m_cores);
     }
@@ -89,8 +79,7 @@ MpiPrime::Result MpiPrime::exec()
     m_numberEnd = m_numberStart + m_numbersPerCore;
 
     // Allocate memory for root map
-    if ((root_map = (u8 *) malloc(n_root * sizeof(u8))) == NULL)
-    {
+    if ((root_map = (u8 *) malloc(n_root * sizeof(u8))) == NULL) {
         ERROR("malloc failed: " << strerror(errno));
         return IOError;
     }
@@ -100,8 +89,7 @@ MpiPrime::Result MpiPrime::exec()
         root_map[i] = 1;
 
     // Try to allocate memory for results
-    if ((map = (u8 *) malloc(m_numbersPerCore * sizeof(u8))) == NULL)
-    {
+    if ((map = (u8 *) malloc(m_numbersPerCore * sizeof(u8))) == NULL) {
         ERROR("malloc failed: " << strerror(errno));
         return IOError;
     }
@@ -114,8 +102,7 @@ MpiPrime::Result MpiPrime::exec()
     k = 2;
     t2.now();
 
-    if (m_id == 0)
-    {
+    if (m_id == 0) {
         printf("Setup: ");
         t1.printDiff(t2);
     }
@@ -133,8 +120,7 @@ MpiPrime::Result MpiPrime::exec()
     MPI_Finalize();
     free(map);
 
-    if (m_id == 0)
-    {
+    if (m_id == 0) {
         t2.now();
         printf("Finalize: ");
         t1.printDiff(t2);
@@ -143,8 +129,7 @@ MpiPrime::Result MpiPrime::exec()
     return Success;
 }
 
-MpiPrime::Result MpiPrime::searchParallel(int k, int n, u8 *rootMap, u8 *map)
-{
+MpiPrime::Result MpiPrime::searchParallel(int k, int n, u8 *rootMap, u8 *map) {
     SystemClock t1, t2;
     int sqrt_of_n = sqrt(n);
 
@@ -152,8 +137,7 @@ MpiPrime::Result MpiPrime::searchParallel(int k, int n, u8 *rootMap, u8 *map)
     t1.now();
     searchSequential(sqrt_of_n, rootMap);
 
-    if (m_id == 0)
-    {
+    if (m_id == 0) {
         t2.now();
         printf("sequential: ");
         t1.printDiff(t2);
@@ -164,21 +148,17 @@ MpiPrime::Result MpiPrime::searchParallel(int k, int n, u8 *rootMap, u8 *map)
     // Every worker calculates all primes k .. sqrt(n) sequentially
     // and uses the result to mark it's part of the map, concurrently
     // Note that no communication is needed
-    while (k < sqrt_of_n)
-    {
+    while (k < sqrt_of_n) {
         // Prime number?
-        if (!rootMap[k])
-        {
+        if (!rootMap[k]) {
             k++;
             continue;
         }
 
         // Mark multiples of k in my range
-        for (Size i = m_numberStart; i < m_numberEnd; i++)
-        {
+        for (Size i = m_numberStart; i < m_numberEnd; i++) {
             // Do we need to unmark this number? (no prime)
-            if (!(i % k))
-            {
+            if (!(i % k)) {
                 map[i - m_numberStart] = 0;
             }
         }
@@ -187,8 +167,7 @@ MpiPrime::Result MpiPrime::searchParallel(int k, int n, u8 *rootMap, u8 *map)
         k++;
     }
 
-    if (m_id == 0)
-    {
+    if (m_id == 0) {
         t2.now();
         printf("parallel: ");
         t1.printDiff(t2);
@@ -198,8 +177,7 @@ MpiPrime::Result MpiPrime::searchParallel(int k, int n, u8 *rootMap, u8 *map)
     t1.now();
     collect(n, rootMap, map);
 
-    if (m_id == 0)
-    {
+    if (m_id == 0) {
         t2.now();
         printf("collect: ");
         t1.printDiff(t2);
@@ -210,26 +188,22 @@ MpiPrime::Result MpiPrime::searchParallel(int k, int n, u8 *rootMap, u8 *map)
     return Success;
 }
 
-MpiPrime::Result MpiPrime::collect(int n, u8 *rootMap, u8 *map)
-{
+MpiPrime::Result MpiPrime::collect(int n, u8 *rootMap, u8 *map) {
     MPI_Status status;
     const int sqrt_of_n = sqrt(n);
 
     // Every worker sends it's results to the master
-    if (m_id != 0)
-    {
+    if (m_id != 0) {
         // Send mybuf to the master
         MPI_Send(map, m_numbersPerCore, MPI_UNSIGNED_CHAR, 0, 0, MPI_COMM_WORLD);
     }
-    // The master gathers the parts of the list from every worker
-    else
-    {
+        // The master gathers the parts of the list from every worker
+    else {
         Size resultsWritten = 0;
         reportResult(sqrt_of_n, rootMap, resultsWritten);
         reportResult(m_numbersPerCore, map, resultsWritten, sqrt_of_n);
 
-        for (Size i = 1; i < m_cores; i++)
-        {
+        for (Size i = 1; i < m_cores; i++) {
             // Receive from worker
             MPI_Recv(map, m_numbersPerCore, MPI_UNSIGNED_CHAR, i, 0, MPI_COMM_WORLD, &status);
 

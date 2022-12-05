@@ -28,9 +28,8 @@
 /**
  * Turn off or restart the system.
  */
-class Shutdown : public POSIXApplication
-{
-  public:
+class Shutdown : public POSIXApplication {
+public:
 
     /**
      * Constructor

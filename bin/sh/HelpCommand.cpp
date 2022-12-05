@@ -22,18 +22,15 @@
 #include "Shell.h"
 
 HelpCommand::HelpCommand(Shell *shell)
-    : ShellCommand("help", 0)
-{
+        : ShellCommand("help", 0) {
     m_shell = shell;
-    m_help  = "Print the help message";
+    m_help = "Print the help message";
 }
 
-int HelpCommand::execute(const Size nparams, const char **params)
-{
+int HelpCommand::execute(const Size nparams, const char **params) {
     printf("List of builtin Shell commands:\r\n\r\n");
 
-    for (HashIterator<String, ShellCommand *> i(m_shell->getCommands()); i.hasCurrent(); i++)
-    {
+    for (HashIterator < String, ShellCommand * > i(m_shell->getCommands()); i.hasCurrent(); i++) {
         printf("%s -- %s\r\n", i.current()->getName(), i.current()->getHelp());
     }
     printf("\r\n");

@@ -23,7 +23,9 @@
 #include "NetworkProtocol.h"
 
 class ICMP;
+
 class ARP;
+
 class UDP;
 
 /**
@@ -37,9 +39,8 @@ class UDP;
 /**
  * Internet Protocol Version 4
  */
-class IPV4 : public NetworkProtocol
-{
-  public:
+class IPV4 : public NetworkProtocol {
+public:
 
     /**
      * IP-address
@@ -49,12 +50,11 @@ class IPV4 : public NetworkProtocol
     /**
      * Protocol types
      */
-    enum Protocol
-    {
+    enum Protocol {
         ICMP = 1,
         IGMP = 2,
-        UDP  = 17,
-        TCP  = 6
+        UDP = 17,
+        TCP = 6
     };
 
     /**
@@ -63,20 +63,20 @@ class IPV4 : public NetworkProtocol
      * This header is prepended to every
      * IP packet send on the actual physical link.
      */
-    typedef struct Header
-    {
-        u8  versionIHL; /**< Version and header length (IHL) */
-        u8  typeOfService;
+    typedef struct Header {
+        u8 versionIHL; /**< Version and header length (IHL) */
+        u8 typeOfService;
         u16 length;
         u16 identification;
         u16 fragmentOffset;
-        u8  timeToLive;
-        u8  protocol;
+        u8 timeToLive;
+        u8 protocol;
         u16 checksum;
         Address source;
         Address destination;
     }
-    PACKED Header;
+            PACKED
+    Header;
 
     /**
      * Pseudo Header.
@@ -84,17 +84,16 @@ class IPV4 : public NetworkProtocol
      * This header can be used by sub-protocols for
      * checksum calculation (e.g. TCP and UDP).
      */
-    typedef struct PseudoHeader
-    {
+    typedef struct PseudoHeader {
         Address source;
         Address destination;
-        u8      reserved;
-        u8      protocol;
-        u16     length;
+        u8 reserved;
+        u8 protocol;
+        u16 length;
     }
-    PseudoHeader;
+            PseudoHeader;
 
-  public:
+public:
 
     /**
      * Constructor
@@ -214,7 +213,7 @@ class IPV4 : public NetworkProtocol
     static const u16 checksum(const void *buffer,
                               const Size length);
 
-  private:
+private:
 
     /**
      * Convert protocol identifier
@@ -225,7 +224,7 @@ class IPV4 : public NetworkProtocol
      */
     Protocol getProtocolByIdentifier(const NetworkProtocol::Identifier id) const;
 
-  private:
+private:
 
     /** Current IP address */
     Address m_address;

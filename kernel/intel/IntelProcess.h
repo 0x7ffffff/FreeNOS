@@ -35,14 +35,13 @@
  * @todo IntelProcess currently has a per-process kernel stack, while the ARMProcess does not.
  *       The kernel stack should not be needed anymore, and can be removed to reduce overhead.
  */
-class IntelProcess : public Process
-{
-  private:
+class IntelProcess : public Process {
+private:
 
     /** Size of the kernel stack */
     static const Size KernelStackSize = PAGESIZE;
 
-  public:
+public:
 
     /**
      * Constructor function.
@@ -83,7 +82,7 @@ class IntelProcess : public Process
      */
     virtual void execute(Process *previous);
 
-  private:
+private:
 
     /** Current kernel stack address (changes during execution). */
     Address m_kernelStack;
@@ -93,8 +92,7 @@ class IntelProcess : public Process
 
 };
 
-namespace Arch
-{
+namespace Arch {
     typedef IntelProcess Process;
 };
 

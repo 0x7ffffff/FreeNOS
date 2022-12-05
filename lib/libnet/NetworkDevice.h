@@ -38,9 +38,8 @@
 /**
  * Network Device abstract class.
  */
-class NetworkDevice : public Device
-{
-  public:
+class NetworkDevice : public Device {
+public:
 
     /**
      * Constructor
@@ -91,12 +90,12 @@ class NetworkDevice : public Device
     /**
      * Get receive queue
      */
-    NetworkQueue * getReceiveQueue();
+    NetworkQueue *getReceiveQueue();
 
     /**
      * Get transmit queue
      */
-    NetworkQueue * getTransmitQueue();
+    NetworkQueue *getTransmitQueue();
 
     /**
      * Remove sockets for a process
@@ -132,7 +131,7 @@ class NetworkDevice : public Device
      */
     virtual FileSystem::Result startDMA();
 
-  protected:
+protected:
 
     /** Maximum size of each packet */
     Size m_maximumPacketSize;

@@ -18,18 +18,15 @@
 #include "ArgumentParser.h"
 #include "ConstHashIterator.h"
 
-ArgumentParser::ArgumentParser()
-{
+ArgumentParser::ArgumentParser() {
     m_name = "PROGNAME";
     m_description = "program description";
 }
 
-ArgumentParser::~ArgumentParser()
-{
+ArgumentParser::~ArgumentParser() {
     // cleanup flags
-    for (HashIterator<String, Argument *> it(m_flags);
-         it.hasCurrent();)
-    {
+    for (HashIterator < String, Argument * > it(m_flags);
+         it.hasCurrent();) {
         delete it.current();
         it.remove();
     }
@@ -39,16 +36,14 @@ ArgumentParser::~ArgumentParser()
         delete m_positionals[i];
 }
 
-String ArgumentParser::getUsage() const
-{
+String ArgumentParser::getUsage() const {
     String usage;
 
     // Build the syntax line
     usage << "usage: " << *m_name << " [OPTIONS] ";
 
     // Append positional arguments to syntax line
-    for (Size i = 0; i < m_positionals.count(); i++)
-    {
+    for (Size i = 0; i < m_positionals.count(); i++) {
         if (m_positionals[i]->getCount() == 0)
             usage << "[" << m_positionals[i]->getName() << "..] ";
         else
@@ -61,46 +56,41 @@ String ArgumentParser::getUsage() const
         usage << "\r\n  Positional Arguments:\r\n\r\n";
 
     // Make list of positional arguments
-    for (Size i = 0; i < m_positionals.count(); i++)
-    {
+    for (Size i = 0; i < m_positionals.count(); i++) {
         (usage << "   " << m_positionals[i]->getName()).pad(16) <<
-                  "   " << m_positionals[i]->getDescription()   << "\r\n";
+                                                                "   " << m_positionals[i]->getDescription() << "\r\n";
     }
 
     // Make list of flag arguments
     if (m_flags.count() > 0)
         usage << "\r\n  Optional Arguments:\r\n\r\n";
 
-    for (ConstHashIterator<String, Argument *> it(m_flags);
-         it.hasCurrent(); it++)
-    {
-        char tmp[2] = { it.current()->getIdentifier(), 0 };
+    for (ConstHashIterator < String, Argument * > it(m_flags);
+         it.hasCurrent(); it++) {
+        char tmp[2] = {it.current()->getIdentifier(), 0};
 
-        (usage << "   -" << tmp << ", --"  << it.current()->getName()).pad(16) <<
-                    "   " << it.current()->getDescription()   << "\r\n";
+        (usage << "   -" << tmp << ", --" << it.current()->getName()).pad(16) <<
+                                                                              "   " << it.current()->getDescription()
+                                                                              << "\r\n";
     }
     return usage;
 }
 
-const String & ArgumentParser::name() const
-{
+const String &ArgumentParser::name() const {
     return m_name;
 }
 
-void ArgumentParser::setName(const char *name)
-{
+void ArgumentParser::setName(const char *name) {
     m_name = name;
 }
 
-void ArgumentParser::setDescription(const String & desc)
-{
+void ArgumentParser::setDescription(const String &desc) {
     m_description = desc;
 }
 
 ArgumentParser::Result ArgumentParser::registerFlag(char id,
                                                     const char *name,
-                                                    const char *description)
-{
+                                                    const char *description) {
     // Insert the flag by its full name
     Argument *arg = new Argument(name);
     arg->setDescription(description);
@@ -118,12 +108,10 @@ ArgumentParser::Result ArgumentParser::registerFlag(char id,
 
 ArgumentParser::Result ArgumentParser::registerPositional(const char *name,
                                                           const char *description,
-                                                          Size count)
-{
+                                                          Size count) {
     // Check that only the last positional can have count zero.
     if (m_positionals.count() &&
-        m_positionals.at(m_positionals.count() - 1)->getCount() == 0)
-    {
+        m_positionals.at(m_positionals.count() - 1)->getCount() == 0) {
         return AlreadyExists;
     }
     Argument *arg = new Argument(name);
@@ -135,32 +123,28 @@ ArgumentParser::Result ArgumentParser::registerPositional(const char *name,
 
 ArgumentParser::Result ArgumentParser::parse(int argc,
                                              char **argv,
-                                             ArgumentContainer & output)
-{
+                                             ArgumentContainer &output) {
     Size pos = 0;
     Size i = 0;
 
     if (argc <= 0)
         return InvalidArgument;
 
-    for (int i = 1; i < argc; i++)
-    {
+    for (int i = 1; i < argc; i++) {
         String str = argv[i];
-        List<String> parts = str.split('=');
-        String & part1 = parts[0];
+        List <String> parts = str.split('=');
+        String &part1 = parts[0];
         String argname;
-        Argument * const *arg;
+        Argument *const *arg;
         Argument *outarg;
 
         // Is this a flag based argument in full form? (e.g.: --arg)
-        if (part1.length() > 1 && part1[0] == '-' && part1[1] == '-')
-        {
+        if (part1.length() > 1 && part1[0] == '-' && part1[1] == '-') {
             argname = part1.substring(2);
 
             // Flag must exist
             arg = m_flags.get(*argname);
-            if (!arg)
-            {
+            if (!arg) {
                 arg = m_flagsId.get(*argname);
                 if (!arg)
                     return InvalidArgument;
@@ -170,20 +154,17 @@ ArgumentParser::Result ArgumentParser::parse(int argc,
             outarg->setValue(*parts.last());
             output.addFlag(outarg);
         }
-        // Flag based argument in short form? (e.g.: -a or a list: -abc)
-        else if (part1.length() > 1 && part1[0] == '-' && part1[1] != '-')
-        {
+            // Flag based argument in short form? (e.g.: -a or a list: -abc)
+        else if (part1.length() > 1 && part1[0] == '-' && part1[1] != '-') {
             // Loop all supplied short form arguments
-            for (Size i = 1; i < part1.length(); i++)
-            {
+            for (Size i = 1; i < part1.length(); i++) {
                 char tmp[2];
                 tmp[0] = part1[i];
                 tmp[1] = 0;
 
                 // Flag must exist
                 arg = m_flags.get(tmp);
-                if (!arg)
-                {
+                if (!arg) {
                     arg = m_flagsId.get(tmp);
                     if (!arg)
                         return InvalidArgument;
@@ -194,9 +175,8 @@ ArgumentParser::Result ArgumentParser::parse(int argc,
                 output.addFlag(outarg);
             }
         }
-        // Positional argument
-        else if (m_positionals.count() > 0)
-        {
+            // Positional argument
+        else if (m_positionals.count() > 0) {
             if (pos > m_positionals.count() - 1)
                 return InvalidArgument;
 
@@ -207,12 +187,10 @@ ArgumentParser::Result ArgumentParser::parse(int argc,
 
             outarg->setValue(*parts.last());
             output.addPositional(outarg);
-        }
-        else return InvalidArgument;
+        } else return InvalidArgument;
     }
     // Check that all required arguments are set
-    for (i = 0; i < m_positionals.count(); i++)
-    {
+    for (i = 0; i < m_positionals.count(); i++) {
         if (m_positionals[i]->getCount() == 0)
             break;
     }

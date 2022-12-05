@@ -36,9 +36,8 @@
  *
  * @see ProcessManager
  */
-class ProcessClient
-{
-  public:
+class ProcessClient {
+public:
 
     /** Maximum number of processes */
     static const Size MaximumProcesses = MAX_PROCS;
@@ -46,8 +45,7 @@ class ProcessClient
     /**
      * Result codes
      */
-    enum Result
-    {
+    enum Result {
         Success,
         NotFound,
         IOError
@@ -56,8 +54,7 @@ class ProcessClient
     /**
      * Process information
      */
-    typedef struct Info
-    {
+    typedef struct Info {
         /** Process state retrieved from the kernel */
         ProcessInfo kernelState;
 
@@ -67,9 +64,9 @@ class ProcessClient
         /** Textual state of the process */
         String textState;
     }
-    Info;
+            Info;
 
-  public:
+public:
 
     /**
      * Get current process identifier
@@ -121,7 +118,7 @@ class ProcessClient
      */
     ProcessID findProcess(const String program) const;
 
-  private:
+private:
 
     /** Our own process identifier */
     static const ProcessID m_pid;

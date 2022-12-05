@@ -31,9 +31,8 @@
 /**
  * ARM specific process implementation.
  */
-class ARMProcess : public Process
-{
-  public:
+class ARMProcess : public Process {
+public:
 
     /**
      * Constructor function.
@@ -62,13 +61,13 @@ class ARMProcess : public Process
      *
      * @return Saved CPUState for this task.
      */
-    const CPUState * cpuState() const;
+    const CPUState *cpuState() const;
 
-   /**
-     * Complete waiting for another Process.
-     *
-     * @param result Exit code of the other process
-     */
+    /**
+      * Complete waiting for another Process.
+      *
+      * @param result Exit code of the other process
+      */
     virtual Result join(const uint result);
 
     /**
@@ -93,15 +92,14 @@ class ARMProcess : public Process
      */
     virtual void execute(Process *previous);
 
-  private:
+private:
 
     /** Contains all the CPU registers for this task */
     CPUState m_cpuState;
 };
 
 
-namespace Arch
-{
+namespace Arch {
     typedef ARMProcess Process;
 };
 

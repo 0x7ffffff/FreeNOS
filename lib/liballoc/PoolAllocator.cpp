@@ -20,23 +20,20 @@
 #include <MemoryBlock.h>
 #include "PoolAllocator.h"
 
-PoolAllocator::PoolAllocator(Allocator *parent)
-{
+PoolAllocator::PoolAllocator(Allocator *parent) {
     assert(parent != NULL);
     setParent(parent);
     MemoryBlock::set(m_pools, 0, sizeof(m_pools));
 }
 
-Size PoolAllocator::size() const
-{
+Size PoolAllocator::size() const {
     Size totalSize, totalUsed;
     calculateUsage(totalSize, totalUsed);
 
     return totalSize;
 }
 
-Size PoolAllocator::available() const
-{
+Size PoolAllocator::available() const {
     Size totalSize, totalUsed;
     calculateUsage(totalSize, totalUsed);
 
@@ -45,16 +42,14 @@ Size PoolAllocator::available() const
     return totalSize - totalUsed;
 }
 
-Size PoolAllocator::calculateObjectSize(const Size index) const
-{
+Size PoolAllocator::calculateObjectSize(const Size index) const {
     assert(index >= MinimumPoolSize);
     assert(index <= MaximumPoolSize);
 
     return 1U << index;
 }
 
-Size PoolAllocator::calculateObjectCount(const Size objectSize) const
-{
+Size PoolAllocator::calculateObjectCount(const Size objectSize) const {
     assert(objectSize > 0);
     assert(isPowerOfTwo(objectSize));
 
@@ -64,15 +59,12 @@ Size PoolAllocator::calculateObjectCount(const Size objectSize) const
         return KiloByte(16) / objectSize;
 }
 
-void PoolAllocator::calculateUsage(Size & totalSize, Size & totalUsed) const
-{
+void PoolAllocator::calculateUsage(Size &totalSize, Size &totalUsed) const {
     totalSize = 0;
     totalUsed = 0;
 
-    for (Size index = MinimumPoolSize; index <= MaximumPoolSize; index++)
-    {
-        for (Pool *pool = m_pools[index]; pool != NULL; pool = pool->next)
-        {
+    for (Size index = MinimumPoolSize; index <= MaximumPoolSize; index++) {
+        for (Pool *pool = m_pools[index]; pool != NULL; pool = pool->next) {
             totalSize += sizeof(Pool);
             totalSize += pool->bitmapSize;
             totalSize += pool->size();
@@ -84,18 +76,14 @@ void PoolAllocator::calculateUsage(Size & totalSize, Size & totalUsed) const
     }
 }
 
-Allocator::Result PoolAllocator::allocate(Allocator::Range & args)
-{
+Allocator::Result PoolAllocator::allocate(Allocator::Range &args) {
     const Size inputSize = aligned(args.size, sizeof(u32));
     Pool *pool = ZERO;
 
     // Verify input arguments
-    if (args.alignment != 0)
-    {
+    if (args.alignment != 0) {
         return InvalidAlignment;
-    }
-    else if (inputSize == 0)
-    {
+    } else if (inputSize == 0) {
         return InvalidSize;
     }
 
@@ -103,11 +91,9 @@ Allocator::Result PoolAllocator::allocate(Allocator::Range & args)
     pool = retrievePool(inputSize);
 
     // Attempt to allocate
-    if (pool)
-    {
+    if (pool) {
         Result result = static_cast<Allocator *>(pool)->allocate(args);
-        if (result == Success)
-        {
+        if (result == Success) {
             ObjectPrefix *prefix = (ObjectPrefix *) args.address;
             prefix->signature = ObjectSignature;
             prefix->pool = pool;
@@ -119,16 +105,13 @@ Allocator::Result PoolAllocator::allocate(Allocator::Range & args)
         }
 
         return result;
-    }
-    else
-    {
+    } else {
         args.address = 0;
         return OutOfMemory;
     }
 }
 
-Allocator::Result PoolAllocator::release(const Address addr)
-{
+Allocator::Result PoolAllocator::release(const Address addr) {
     const Address actualAddr = addr - sizeof(ObjectPrefix);
     const ObjectPrefix *prefix = (const ObjectPrefix *) (actualAddr);
     ObjectPostfix *postfix = ZERO;
@@ -138,9 +121,8 @@ Allocator::Result PoolAllocator::release(const Address addr)
     assert(prefix->pool != NULL);
 
     // Do a reverse memory scan to find the object postfix.
-    for (Size i = prefix->pool->chunkSize() - sizeof(u32); i > sizeof(ObjectPrefix); i -= sizeof(u32))
-    {
-        postfix = (ObjectPostfix *)(actualAddr + i);
+    for (Size i = prefix->pool->chunkSize() - sizeof(u32); i > sizeof(ObjectPrefix); i -= sizeof(u32)) {
+        postfix = (ObjectPostfix *) (actualAddr + i);
         if (postfix->signature == ObjectSignature)
             break;
     }
@@ -154,23 +136,20 @@ Allocator::Result PoolAllocator::release(const Address addr)
     assert(result == Success);
 
     // Also try to release the pool itself, if no longer used
-    if (prefix->pool->available() == prefix->pool->size())
-    {
+    if (prefix->pool->available() == prefix->pool->size()) {
         releasePool(prefix->pool);
     }
 
     return result;
 }
 
-PoolAllocator::Pool * PoolAllocator::retrievePool(const Size inputSize)
-{
+PoolAllocator::Pool *PoolAllocator::retrievePool(const Size inputSize) {
     const Size requestedSize = inputSize + sizeof(ObjectPrefix) + sizeof(ObjectPostfix);
     Size index, nPools = 1, objectSize = 0;
     Pool *pool = ZERO;
 
     // Find the correct pool index
-    for (index = MinimumPoolSize; index <= MaximumPoolSize; index++)
-    {
+    for (index = MinimumPoolSize; index <= MaximumPoolSize; index++) {
         objectSize = calculateObjectSize(index);
 
         if (requestedSize <= objectSize)
@@ -178,28 +157,21 @@ PoolAllocator::Pool * PoolAllocator::retrievePool(const Size inputSize)
     }
 
     // Handle too large object requests
-    if (requestedSize > objectSize)
-    {
+    if (requestedSize > objectSize) {
         return ZERO;
     }
 
     // Do we need to allocate an initial pool?
-    if (!m_pools[index])
-    {
+    if (!m_pools[index]) {
         pool = m_pools[index] = allocatePool(index, calculateObjectCount(objectSize));
     }
-    // Search for existing pool with enough memory
-    else
-    {
-        for (pool = m_pools[index]; pool; pool = pool->next, nPools++)
-        {
+        // Search for existing pool with enough memory
+    else {
+        for (pool = m_pools[index]; pool; pool = pool->next, nPools++) {
             // Use current pool or if out of space allocate another
-            if (pool->available())
-            {
+            if (pool->available()) {
                 break;
-            }
-            else if (!pool->next)
-            {
+            } else if (!pool->next) {
                 pool = allocatePool(index, calculateObjectCount(objectSize) * nPools);
                 break;
             }
@@ -209,8 +181,7 @@ PoolAllocator::Pool * PoolAllocator::retrievePool(const Size inputSize)
     return pool;
 }
 
-PoolAllocator::Pool * PoolAllocator::allocatePool(const Size index, const Size objectCount)
-{
+PoolAllocator::Pool *PoolAllocator::allocatePool(const Size index, const Size objectCount) {
     const Size objectSize = calculateObjectSize(index);
     const Size requestBitmapSize = objectCount;
     const Size requestPayloadSize = objectCount * objectSize;
@@ -223,8 +194,7 @@ PoolAllocator::Pool * PoolAllocator::allocatePool(const Size index, const Size o
     alloc_args.alignment = sizeof(u32);
     alloc_args.size = requestTotalSize;
 
-    if (parent()->allocate(alloc_args) != Allocator::Success)
-    {
+    if (parent()->allocate(alloc_args) != Allocator::Success) {
         return ZERO;
     }
 
@@ -240,8 +210,7 @@ PoolAllocator::Pool * PoolAllocator::allocatePool(const Size index, const Size o
 
     assert(actualObjectCount >= objectCount);
 
-    while (actualObjectCount >= objectCount)
-    {
+    while (actualObjectCount >= objectCount) {
         actualPayloadSize = actualObjectCount * objectSize;
         actualBitmapSize = aligned(actualObjectCount, sizeof(u32));
         actualTotalSize = sizeof(Pool) + actualBitmapSize + actualPayloadSize;
@@ -254,10 +223,10 @@ PoolAllocator::Pool * PoolAllocator::allocatePool(const Size index, const Size o
 
     // Calculate inputs for Pool object
     const Address bitmapAddr = alloc_args.address + sizeof(Pool);
-    const Allocator::Range range = { bitmapAddr + actualBitmapSize, actualPayloadSize, sizeof(u32) };
+    const Allocator::Range range = {bitmapAddr + actualBitmapSize, actualPayloadSize, sizeof(u32)};
 
     // Instantiate the Pool object
-    pool = new (alloc_args.address) Pool(range, objectSize, actualBitmapSize, (u8 *) bitmapAddr);
+    pool = new(alloc_args.address) Pool(range, objectSize, actualBitmapSize, (u8 *) bitmapAddr);
     pool->index = index;
     pool->prev = ZERO;
     pool->next = m_pools[index];
@@ -269,28 +238,23 @@ PoolAllocator::Pool * PoolAllocator::allocatePool(const Size index, const Size o
     return pool;
 }
 
-Allocator::Result PoolAllocator::releasePool(Pool *pool)
-{
+Allocator::Result PoolAllocator::releasePool(Pool *pool) {
     Pool *prevPool = pool->prev;
     Pool *nextPool = pool->next;
     const Size index = pool->index;
     const Result parentResult = parent()->release((Address) pool);
 
     // Only update Pool administration if memory was released at parent
-    if (parentResult == Success)
-    {
-        if (prevPool != NULL)
-        {
+    if (parentResult == Success) {
+        if (prevPool != NULL) {
             prevPool->next = nextPool;
         }
 
-        if (nextPool != NULL)
-        {
+        if (nextPool != NULL) {
             nextPool->prev = prevPool;
         }
 
-        if (m_pools[index] == pool)
-        {
+        if (m_pools[index] == pool) {
             m_pools[index] = nextPool;
         }
     }

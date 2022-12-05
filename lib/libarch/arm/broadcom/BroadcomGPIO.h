@@ -35,29 +35,26 @@
 /**
  * Broadcom (2835) GPIO controller implementation.
  */
-class BroadcomGPIO
-{
-  private:
+class BroadcomGPIO {
+private:
 
     static const Address GPIOBase = 0x200000;
 
     /**
      * Hardware registers.
      */
-    enum Registers
-    {
+    enum Registers {
         FunctionSelect0 = 0
     };
 
-  public:
+public:
 
     /**
      * Pin modes.
      */
-    enum Mode
-    {
-        Input     = 0,
-        Output    = 1,
+    enum Mode {
+        Input = 0,
+        Output = 1,
         Function0 = 4,
         Function1 = 5,
         Function2 = 6,
@@ -69,14 +66,13 @@ class BroadcomGPIO
     /**
      * Result code.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         NotFound,
         IOError
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -100,7 +96,7 @@ class BroadcomGPIO
      */
     virtual Result setAltFunction(Size pin, uint function);
 
-  private:
+private:
 
     /** I/O instance */
     Arch::IO m_io;

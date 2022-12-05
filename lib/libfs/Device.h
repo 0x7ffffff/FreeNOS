@@ -32,9 +32,8 @@
 /**
  * Abstract device class interface.
  */
-class Device : public File
-{
-  public:
+class Device : public File {
+public:
 
     /**
      * Constructor.
@@ -55,7 +54,7 @@ class Device : public File
      *
      * @return String object
      */
-    virtual const String & getIdentifier() const;
+    virtual const String &getIdentifier() const;
 
     /**
      * Initialize the device
@@ -73,7 +72,7 @@ class Device : public File
      */
     virtual FileSystem::Result interrupt(const Size vector);
 
-  protected:
+protected:
 
     /** Unique identifier for this Device. */
     String m_identifier;

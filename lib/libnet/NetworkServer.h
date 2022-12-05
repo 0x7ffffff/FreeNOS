@@ -37,9 +37,8 @@ class NetworkDevice;
 /**
  * Networking server.
  */
-class NetworkServer : public DeviceServer
-{
-  public:
+class NetworkServer : public DeviceServer {
+public:
 
     /**
      * Constructor
@@ -79,7 +78,7 @@ class NetworkServer : public DeviceServer
      */
     virtual bool retryRequests();
 
-  private:
+private:
 
     /** Network device instance */
     NetworkDevice *m_device;

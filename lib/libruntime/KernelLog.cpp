@@ -19,17 +19,14 @@
 #include "KernelLog.h"
 
 KernelLog::KernelLog()
-    : Log()
-{
+        : Log() {
 }
 
-void KernelLog::write(const char *str)
-{
+void KernelLog::write(const char *str) {
     PrivExec(WriteConsole, (Address) str);
 }
 
-void KernelLog::terminate() const
-{
+void KernelLog::terminate() const {
     PrivExec(Panic);
     ProcessCtl(SELF, KillPID, 1);
 }

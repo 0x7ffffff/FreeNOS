@@ -32,9 +32,8 @@
 /**
  * Represents a test instance
  */
-class TestInstance
-{
-  public:
+class TestInstance {
+public:
 
     /**
      * Class constructor
@@ -53,7 +52,7 @@ class TestInstance
      *
      * @return Test instance name
      */
-    const String & getName() const;
+    const String &getName() const;
 
     /**
      * Run the test instance
@@ -62,7 +61,7 @@ class TestInstance
      */
     virtual TestResult run() = 0;
 
-  protected:
+protected:
 
     /** Name of the test instance */
     String m_name;

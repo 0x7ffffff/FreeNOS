@@ -34,9 +34,8 @@
 /**
  * Allocator which separates kernel mapped memory at virtual and physical addresses.
  */
-class SplitAllocator : public Allocator
-{
-  public:
+class SplitAllocator : public Allocator {
+public:
 
     /**
      * Class constructor.
@@ -65,7 +64,7 @@ class SplitAllocator : public Allocator
      *
      * @return Result value.
      */
-    virtual Result allocate(Range & args);
+    virtual Result allocate(Range &args);
 
     /**
      * Allocate sparse (non-contiguous) physical memory.
@@ -76,7 +75,7 @@ class SplitAllocator : public Allocator
      *
      * @return Result value.
      */
-    Result allocateSparse(const Range & range, CallbackFunction *function);
+    Result allocateSparse(const Range &range, CallbackFunction *function);
 
     /**
      * Allocate physical/virtual memory.
@@ -88,7 +87,7 @@ class SplitAllocator : public Allocator
      *
      * @return Result code
      */
-    Result allocate(Range & phys, Range & virt);
+    Result allocate(Range &phys, Range &virt);
 
     /**
      * Allocate one physical memory page.
@@ -135,7 +134,7 @@ class SplitAllocator : public Allocator
      */
     bool isAllocated(const Address page) const;
 
-  private:
+private:
 
     /** Physical memory allocator. */
     BitAllocator m_alloc;

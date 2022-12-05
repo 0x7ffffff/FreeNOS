@@ -38,12 +38,11 @@
 /**
  * Abstraction of strings.
  */
-class String : public Sequence<char>
-{
-  using Sequence<char>::compareTo;
-  using Sequence<char>::equals;
+class String : public Sequence<char> {
+    using Sequence<char>::compareTo;
+    using Sequence<char>::equals;
 
-  public:
+public:
 
     /**
      * Default constructor.
@@ -57,7 +56,7 @@ class String : public Sequence<char>
      *
      * @param str String reference.
      */
-    String(const String & str);
+    String(const String &str);
 
     /**
      * Constructor.
@@ -154,7 +153,7 @@ class String : public Sequence<char>
      *
      * @return Pointer to the item at the given position or ZERO if no item available.
      */
-    virtual const char * get(const Size position) const;
+    virtual const char *get(const Size position) const;
 
     /**
      * Returns a reference to the item at the given position.
@@ -165,7 +164,7 @@ class String : public Sequence<char>
      *
      * @note Position must be a valid index.
      */
-    virtual const char & at(const Size position) const;
+    virtual const char &at(const Size position) const;
 
     /**
      * Return value at the given position.
@@ -195,7 +194,7 @@ class String : public Sequence<char>
      *
      * @return True if matched, false otherwise.
      */
-    bool startsWith(const String & prefix) const;
+    bool startsWith(const String &prefix) const;
 
     /**
      * Tests if this String starts with the specified prefix.
@@ -204,7 +203,7 @@ class String : public Sequence<char>
      *
      * @return True if matched, false otherwise.
      */
-    bool startsWith(const char * prefix) const;
+    bool startsWith(const char *prefix) const;
 
     /**
      * Tests if this String ends with the specified suffix.
@@ -213,7 +212,7 @@ class String : public Sequence<char>
      *
      * @return True if matched, false otherwise.
      */
-    bool endsWith(const String & suffix) const;
+    bool endsWith(const String &suffix) const;
 
     /**
      * Tests if this String ends with the specified suffix.
@@ -222,7 +221,7 @@ class String : public Sequence<char>
      *
      * @return True if matched, false otherwise.
      */
-    bool endsWith(const char * suffix) const;
+    bool endsWith(const char *suffix) const;
 
     /**
      * Compares this String to the given String.
@@ -232,7 +231,7 @@ class String : public Sequence<char>
      * @return int < 0, 0, > 0 if we are greater than, equal to
      *         or less then the given String.
      */
-    virtual int compareTo(const String & str) const;
+    virtual int compareTo(const String &str) const;
 
     /**
      * Compare with another String.
@@ -243,7 +242,7 @@ class String : public Sequence<char>
      *
      * @return Zero if equal, negative if smaller or positive if greater.
      */
-    virtual int compareTo(const String & str,
+    virtual int compareTo(const String &str,
                           const bool caseSensitive = true) const;
 
     /**
@@ -305,7 +304,7 @@ class String : public Sequence<char>
      *
      * @return List of Strings representing the parts.
      */
-    List<String> split(const String & delimiter) const;
+    List<String> split(const String &delimiter) const;
 
     /**
      * Convert the String to a signed long integer.
@@ -327,28 +326,28 @@ class String : public Sequence<char>
      *
      * @return Reference to the String
      */
-    String & pad(const Size length);
+    String &pad(const Size length);
 
     /**
      * Remove leading and trailing whitespace from the String.
      *
      * @return Reference to the String.
      */
-    String & trim();
+    String &trim();
 
     /**
      * Convert all Characters to lower case.
      *
      * @return Reference to the String.
      */
-    String & lower();
+    String &lower();
 
     /**
      * Convert all Characters to upper case.
      *
      * @return Reference to the String.
      */
-    String & upper();
+    String &upper();
 
     /**
      * Set text-representation of a signed number.
@@ -379,70 +378,70 @@ class String : public Sequence<char>
      *
      * @param str Constant string.
      */
-    void operator = (const char *str);
+    void operator=(const char *str);
 
     /**
      * Assignment operator.
      *
      * @param str Input string
      */
-    void operator = (const String & str);
+    void operator=(const String &str);
 
     /**
      * Comparision operator.
      *
      * @param str Input string
      */
-    bool operator == (const String & str) const;
+    bool operator==(const String &str) const;
 
     /**
      * Inequal operator.
      *
      * @param str Input string
      */
-    bool operator != (const String & str) const;
+    bool operator!=(const String &str) const;
 
     /**
      * Dereference operator (read-only).
      */
-    const char * operator * () const;
+    const char *operator*() const;
 
     /**
      * Dereference operator.
      */
-    char * operator * ();
+    char *operator*();
 
     /**
      * Append character string to the String.
      */
-    String & operator << (const char *str);
+    String &operator<<(const char *str);
 
     /**
      * Append String to another String.
      */
-    String & operator << (const String & str);
+    String &operator<<(const String &str);
 
     /**
      * Append the given signed number as text to the String.
      */
-    String & operator << (const int number);
+    String &operator<<(const int number);
 
     /**
      * Append the given unsigned number as text to the String.
      */
-    String & operator << (const unsigned int number);
+    String &operator<<(const unsigned int number);
 
     /**
      * Append the pointer as hexidecimal unsigned number to the String.
      */
-    String & operator << (const void *pointer);
+    String &operator<<(const void *pointer);
 
     /**
      * Change the default number format representation.
      */
-    String & operator << (const Number::Base format);
+    String &operator<<(const Number::Base format);
 
-  private:
+private:
 
     /** Current value of the String. */
     char *m_string;

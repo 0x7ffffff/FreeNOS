@@ -21,51 +21,47 @@
 #include <Types.h>
 #include <Factory.h>
 
-class MyTestClass : public Factory<MyTestClass>
-{
-  public:
+class MyTestClass : public Factory<MyTestClass> {
+public:
     MyTestClass()
-    : val(1234)
-    {
+            : val(1234) {
     }
 
     u32 val;
 };
 
-class MyAbstractTestClass : public AbstractFactory<MyAbstractTestClass>
-{
-  public:
+class MyAbstractTestClass : public AbstractFactory<MyAbstractTestClass> {
+public:
     MyAbstractTestClass()
-    : val(4567)
-    {
+            : val(4567) {
     }
 
     u32 val;
 };
 
-template<> MyAbstractTestClass * AbstractFactory<MyAbstractTestClass>::create()
-{
+template<>
+MyAbstractTestClass *AbstractFactory<MyAbstractTestClass>::create() {
     return new MyAbstractTestClass();
 }
 
 TestCase(FactoryCreate)
-{
-    MyTestClass *obj = MyTestClass::create();
+        {
+                MyTestClass * obj = MyTestClass::create();
 
-    testAssert(obj != NULL);
-    testAssert(obj->val == 1234);
-    delete obj;
+        testAssert(obj != NULL);
+        testAssert(obj->val == 1234);
+        delete obj;
 
-    return OK;
-}
+        return OK;
+        }
 
 TestCase(AbstractFactoryCreate)
-{
-    MyAbstractTestClass *obj = MyAbstractTestClass::create();
+        {
+                MyAbstractTestClass * obj = MyAbstractTestClass::create();
 
-    testAssert(obj != NULL);
-    testAssert(obj->val == 4567);
-    delete obj;
+        testAssert(obj != NULL);
+        testAssert(obj->val == 4567);
+        delete obj;
 
-    return OK;
-}
+        return OK;
+        }

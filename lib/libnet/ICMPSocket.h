@@ -39,9 +39,8 @@ class ICMP;
  * receive packets from that host and allow sending packets
  * to that host.
  */
-class ICMPSocket : public NetworkSocket
-{
-  public:
+class ICMPSocket : public NetworkSocket {
+public:
 
     /**
      * Constructor
@@ -76,8 +75,8 @@ class ICMPSocket : public NetworkSocket
      *
      * @return Result code
      */
-    virtual FileSystem::Result read(IOBuffer & buffer,
-                                    Size & size,
+    virtual FileSystem::Result read(IOBuffer &buffer,
+                                    Size &size,
                                     const Size offset);
 
     /**
@@ -90,8 +89,8 @@ class ICMPSocket : public NetworkSocket
      *
      * @return Result code
      */
-    virtual FileSystem::Result write(IOBuffer & buffer,
-                                     Size & size,
+    virtual FileSystem::Result write(IOBuffer &buffer,
+                                     Size &size,
                                      const Size offset);
 
     /**
@@ -110,7 +109,7 @@ class ICMPSocket : public NetworkSocket
      */
     void setReply(const ICMP::Header *reply);
 
-  private:
+private:
 
     /** ICMP protocol instance */
     ICMP *m_icmp;

@@ -112,7 +112,7 @@ extern C char *strndup(const char *s, size_t size);
  *
  * @return Pointer to dest.
  */
-extern C void * memset(void *dest, int ch, size_t count);
+extern C void *memset(void *dest, int ch, size_t count);
 
 /**
  * Copy memory from one place to another.
@@ -123,7 +123,7 @@ extern C void * memset(void *dest, int ch, size_t count);
  *
  * @return The destination address.
  */
-extern C void * memcpy(void *dest, const void *src, size_t count);
+extern C void *memcpy(void *dest, const void *src, size_t count);
 
 /**
  * Calculate the length of a string.
@@ -132,7 +132,9 @@ extern C void * memcpy(void *dest, const void *src, size_t count);
  *
  * @return Length of the string.
  */
-extern C size_t strlen(const char *str);
+extern C size_t
+
+strlen(const char *str);
 
 /**
  * Copy a string.
@@ -168,7 +170,9 @@ extern C int strncpy(char *dest, const char *src, size_t sz);
  *
  * @note This function is copied from OpenBSD-4.3
  */
-extern C size_t strlcpy(char *dst, const char *src, size_t siz);
+extern C size_t
+
+strlcpy(char *dst, const char *src, size_t siz);
 
 /**
  * @brief Concatenate two strings.
@@ -183,7 +187,7 @@ extern C size_t strlcpy(char *dst, const char *src, size_t siz);
  * @return The strcat() function shall return s1; no return value is
  *         reserved to indicate an error.
  */
-extern C char * strcat(char *dest, const char *src);
+extern C char *strcat(char *dest, const char *src);
 
 /**
  * @brief Concatenate a string with part of another
@@ -202,7 +206,7 @@ extern C char * strcat(char *dest, const char *src);
  * @return The strncat() function shall return s1; no return value
  *         shall be reserved to indicate an error.
  */
-extern C char * strncat(char *dest, const char *src, size_t siz);
+extern C char *strncat(char *dest, const char *src, size_t siz);
 
 /**
  * The strerror function maps the number in errnum to a message string.
@@ -214,7 +218,7 @@ extern C char * strncat(char *dest, const char *src, size_t siz);
  *         by the program, but may be overwritten by a subsequent call to the
  *         strerror function.
  */
-extern C char * strerror(int errnum);
+extern C char *strerror(int errnum);
 
 /**
  * @brief String scanning operation.
@@ -228,7 +232,7 @@ extern C char * strerror(int errnum);
  * @return Upon completion, strchr() shall return a pointer to the byte,
  *         or a null pointer if the byte was not found.
  */
-extern C char * strchr(const char *s, int c);
+extern C char *strchr(const char *s, int c);
 
 /**
  * @brief String scanning operation.
@@ -243,7 +247,7 @@ extern C char * strchr(const char *s, int c);
  * @return Upon successful completion, strrchr() shall return a pointer
  *         to the byte or a null pointer if c does not occur in the string.
  */
-extern C char * strrchr(const char *s, int c);
+extern C char *strrchr(const char *s, int c);
 
 /**
  * @}

@@ -20,28 +20,22 @@
 #include "RecoveryClient.h"
 
 RecoveryClient::RecoveryClient(const ProcessID pid)
-    : m_pid(pid)
-{
+        : m_pid(pid) {
 }
 
-inline Recovery::Result RecoveryClient::request(RecoveryMessage &msg) const
-{
-    if (ChannelClient::instance()->syncSendReceive(&msg, sizeof(msg), m_pid) == ChannelClient::Success)
-    {
+inline Recovery::Result RecoveryClient::request(RecoveryMessage &msg) const {
+    if (ChannelClient::instance()->syncSendReceive(&msg, sizeof(msg), m_pid) == ChannelClient::Success) {
         return msg.result;
-    }
-    else
-    {
+    } else {
         return Recovery::IpcError;
     }
 }
 
-Recovery::Result RecoveryClient::restartProcess(const ProcessID pid) const
-{
+Recovery::Result RecoveryClient::restartProcess(const ProcessID pid) const {
     RecoveryMessage msg;
-    msg.type        = ChannelMessage::Request;
-    msg.action      = Recovery::RestartProcess;
-    msg.pid         = pid;
+    msg.type = ChannelMessage::Request;
+    msg.action = Recovery::RestartProcess;
+    msg.pid = pid;
 
     return request(msg);
 }

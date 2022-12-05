@@ -34,9 +34,8 @@
 /**
  * Networking packet queue implementation.
  */
-class NetworkQueue
-{
-  public:
+class NetworkQueue {
+public:
 
     /** Size of payload memory buffer */
     static const Size PayloadBufferSize = 2048;
@@ -47,14 +46,13 @@ class NetworkQueue
     /**
      * Represents a network packet
      */
-    typedef struct Packet
-    {
+    typedef struct Packet {
         Size size;
         u8 *data;
     }
-    Packet;
+            Packet;
 
-  public:
+public:
 
     /**
      * Constructor
@@ -73,7 +71,7 @@ class NetworkQueue
     /**
      * Get unused packet
      */
-    Packet * get();
+    Packet *get();
 
     /**
      * Put unused packet back.
@@ -88,7 +86,7 @@ class NetworkQueue
     /**
      * Retrieve packet with data.
      */
-    Packet * pop();
+    Packet *pop();
 
     /**
      * Check if data packets are available
@@ -97,19 +95,19 @@ class NetworkQueue
      */
     bool hasData() const;
 
-  private:
+private:
 
     /** Contains unused packets */
-    Index<Packet, MaxPackets> m_free;
+    Index <Packet, MaxPackets> m_free;
 
     /** Contains packets with data */
-    Index<Packet, MaxPackets> m_data;
+    Index <Packet, MaxPackets> m_data;
 
     /** Defines the memory range of mapped payload data */
     Memory::Range m_payloadRange;
 };
 
-Log & operator << (Log &log, const NetworkQueue::Packet & pkt);
+Log &operator<<(Log &log, const NetworkQueue::Packet &pkt);
 
 /**
  * @}

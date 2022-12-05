@@ -18,13 +18,11 @@
 #include <Log.h>
 #include "SunxiCpuConfig.h"
 
-SunxiCpuConfig::Result SunxiCpuConfig::initialize()
-{
+SunxiCpuConfig::Result SunxiCpuConfig::initialize() {
     // First map our own I/O memory
     if (m_io.map(IOBase & ~0xfff, PAGESIZE,
                  Memory::User | Memory::Readable |
-                 Memory::Writable | Memory::Device) != IO::Success)
-    {
+                 Memory::Writable | Memory::Device) != IO::Success) {
         ERROR("failed to map I/O memory");
         return IOError;
     }
@@ -32,36 +30,40 @@ SunxiCpuConfig::Result SunxiCpuConfig::initialize()
 
     // Also initialize the power management module
     SunxiPowerManagement::Result r = m_power.initialize();
-    if (r != SunxiPowerManagement::Success)
-    {
-        ERROR("failed to initialize power management module: " << (uint)r);
+    if (r != SunxiPowerManagement::Success) {
+        ERROR("failed to initialize power management module: " << (uint) r);
         return IOError;
     }
 
     return Success;
 }
 
-SunxiCpuConfig::Result SunxiCpuConfig::discover()
-{
+SunxiCpuConfig::Result SunxiCpuConfig::discover() {
     for (Size i = 0; i < NumberOfCores; i++)
         m_cores.append(i);
 
     return Success;
 }
 
-SunxiCpuConfig::Result SunxiCpuConfig::boot(CoreInfo *info)
-{
+SunxiCpuConfig::Result SunxiCpuConfig::boot(CoreInfo *info) {
     u32 reg = 0;
 
     DEBUG("resetting core" << info->coreId <<
-          " at " << (void*) info->kernelEntry);
+                           " at " << (void *) info->kernelEntry);
 
-    switch (info->coreId)
-    {
-        case 0: reg = Cpu0RstCtrl; break;
-        case 1: reg = Cpu1RstCtrl; break;
-        case 2: reg = Cpu2RstCtrl; break;
-        case 3: reg = Cpu3RstCtrl; break;
+    switch (info->coreId) {
+        case 0:
+            reg = Cpu0RstCtrl;
+            break;
+        case 1:
+            reg = Cpu1RstCtrl;
+            break;
+        case 2:
+            reg = Cpu2RstCtrl;
+            break;
+        case 3:
+            reg = Cpu3RstCtrl;
+            break;
         default: {
             ERROR("coreId " << info->coreId << " is invalid");
             return InvalidArgument;

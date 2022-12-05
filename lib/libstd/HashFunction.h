@@ -43,7 +43,7 @@
  *
  * @return Computed hash.
  */
-Size hash(const String & key, Size mod);
+Size hash(const String &key, Size mod);
 
 /**
  * Compute a hash using the FNV algorithm.

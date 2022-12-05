@@ -25,8 +25,7 @@
 #include <Macros.h>
 #include <Log.h>
 
-extern C int kernel_main(CoreInfo *info)
-{
+extern C int kernel_main(CoreInfo *info) {
     // Initialize heap
     Kernel::initializeHeap();
 

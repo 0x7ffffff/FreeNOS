@@ -39,9 +39,8 @@ class SplitAllocator;
 /**
  * Intel page directory implementation.
  */
-class IntelPageDirectory
-{
-  public:
+class IntelPageDirectory {
+public:
 
     /**
      * Copy mappings from another directory.
@@ -132,7 +131,7 @@ class IntelPageDirectory
     MemoryContext::Result releaseRange(const Memory::Range range,
                                        SplitAllocator *alloc);
 
-  private:
+private:
 
     /**
      * Release a single physical page
@@ -151,7 +150,7 @@ class IntelPageDirectory
      *
      * @return Pointer to second level page table
      */
-    IntelPageTable * getPageTable(Address virt, SplitAllocator *alloc) const;
+    IntelPageTable *getPageTable(Address virt, SplitAllocator *alloc) const;
 
     /**
      * Convert Memory::Access to page directory flags.
@@ -162,7 +161,7 @@ class IntelPageDirectory
      */
     u32 flags(Memory::Access access) const;
 
-  private:
+private:
 
     /** Array of page directory entries. */
     u32 m_tables[1024];

@@ -44,21 +44,19 @@
 /**
  * Represents a Test result created by a TestInstance.
  */
-class TestResult
-{
-  public:
+class TestResult {
+public:
 
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         Failure,
         Skipped
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -88,9 +86,9 @@ class TestResult
     /**
      * Get result description.
      */
-    String & getDescription();
+    String &getDescription();
 
-  private:
+private:
 
     /** The result code for this test. */
     const Result m_result;

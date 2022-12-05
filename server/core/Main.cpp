@@ -19,17 +19,15 @@
 #include <KernelLog.h>
 #include "CoreServer.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     KernelLog log;
     SystemInformation info;
 
-    if (info.coreId == 0)
-    {
+    if (info.coreId == 0) {
         NOTICE("initializing on core0");
     }
 
-    CoreServer* server = CoreServer::create();
+    CoreServer *server = CoreServer::create();
     server->initialize();
     server->test();
     return server->runCore();

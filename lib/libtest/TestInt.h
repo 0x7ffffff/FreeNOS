@@ -31,15 +31,14 @@
 /**
  * Generate test data for integers.
  */
-template <class T> class TestInt : public TestData<T>
-{
-  public:
+template<class T>
+class TestInt : public TestData<T> {
+public:
 
     /**
      * Constructor.
      */
-    TestInt(T min, T max) : TestData<T>()
-    {
+    TestInt(T min, T max) : TestData<T>() {
         m_min = min;
         m_max = max;
     }
@@ -62,7 +61,7 @@ template <class T> class TestInt : public TestData<T>
      */
     virtual T unique(Size count = 1);
 
-  private:
+private:
 
     /** Maximum value */
     T m_max;
@@ -71,12 +70,11 @@ template <class T> class TestInt : public TestData<T>
     T m_min;
 };
 
-template<> int TestInt<int>::random(Size count)
-{
+template<>
+int TestInt<int>::random(Size count) {
     int value = 0;
 
-    while (count--)
-    {
+    while (count--) {
         value = (::random() % m_max);
 
         if (value < m_min)
@@ -88,38 +86,36 @@ template<> int TestInt<int>::random(Size count)
     return value;
 }
 
-template<> int TestInt<int>::unique(Size count)
-{
+template<>
+int TestInt<int>::unique(Size count) {
     // Save current count
     int offset = (int) m_values.count();
 
     // First put values sequentially
-    for (int i = 0; i < (int)count; i++)
+    for (int i = 0; i < (int) count; i++)
         m_values.insert(i + m_min);
 
     // Randomize values by swapping
-    for (int i = offset; i < ((int)count + offset); i++)
-    {
+    for (int i = offset; i < ((int) count + offset); i++) {
         int tmp = m_values[i];
 
-        int idx = (::random() % (int)count - 1);
+        int idx = (::random() % (int) count - 1);
         if (idx < offset)
             idx = offset;
 
-        m_values[i]   = m_values[idx];
+        m_values[i] = m_values[idx];
         m_values[idx] = tmp;
     }
     // Success
-    return m_values[offset + (int)count - 1];
+    return m_values[offset + (int) count - 1];
 }
 
-template<> uint TestInt<uint>::random(Size count)
-{
+template<>
+uint TestInt<uint>::random(Size count) {
     uint value = 0;
 
-    while (count--)
-    {
-        value = (((unsigned)::random() + (unsigned)::random()) % m_max);
+    while (count--) {
+        value = (((unsigned) ::random() + (unsigned) ::random()) % m_max);
 
         if (value < m_min)
             value = m_min;
@@ -130,8 +126,8 @@ template<> uint TestInt<uint>::random(Size count)
     return value;
 }
 
-template<> uint TestInt<uint>::unique(Size count)
-{
+template<>
+uint TestInt<uint>::unique(Size count) {
     // Save current count
     Size offset = m_values.count();
 
@@ -140,15 +136,14 @@ template<> uint TestInt<uint>::unique(Size count)
         m_values.insert(i + m_min);
 
     // Randomize values by swapping
-    for (Size i = offset; i < (count + offset); i++)
-    {
+    for (Size i = offset; i < (count + offset); i++) {
         Size tmp = m_values[i];
 
         Size idx = (::random() % (count - 1));
         if (idx < offset)
             idx = offset;
 
-        m_values[i]   = m_values[idx];
+        m_values[i] = m_values[idx];
         m_values[idx] = tmp;
     }
     // Success

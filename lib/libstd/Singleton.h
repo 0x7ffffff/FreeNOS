@@ -36,9 +36,9 @@
  * - the instance is created by the StrictSingleton on first use (lazy-instantiation)
  * - user-class must provide a default constructor without parameters
  */
-template <class T> class StrictSingleton
-{
-  public:
+template<class T>
+class StrictSingleton {
+public:
 
     /**
      * Retrieve the instance.
@@ -50,8 +50,7 @@ template <class T> class StrictSingleton
      * @see __cxa_guard_acquire
      * @see __cxa_guard_release
      */
-    static inline T * instance()
-    {
+    static inline T *instance() {
         static T obj;
         return &obj;
     }
@@ -66,36 +65,34 @@ template <class T> class StrictSingleton
  * - the instance can be overwritten
  * - the instance may be ZERO at any time
  */
-template <class T> class WeakSingleton
-{
-  public:
+template<class T>
+class WeakSingleton {
+public:
 
     /**
      * Constructor
      *
      * @param obj New instance of T.
      */
-    WeakSingleton<T>(T *obj)
-    {
+    WeakSingleton<T>(T *obj) {
         m_instance = obj;
     }
 
     /**
      * Retrieve the instance
      */
-    static inline T * instance()
-    {
+    static inline T *instance() {
         return m_instance;
     }
 
-  private:
+private:
 
     /** One and only instance. */
     static T *m_instance;
 };
 
 /* Initialize the static member obj. */
-template <class T> T* WeakSingleton<T>::m_instance = 0;
+template<class T> T *WeakSingleton<T>::m_instance = 0;
 
 /**
  * @}

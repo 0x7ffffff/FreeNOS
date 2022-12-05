@@ -203,7 +203,7 @@
  * the IDENTIFY result buffer, because IDENTIFY returns
  * 256 little-endian words.
  */
-#define IDENTIFY_TEXT_SWAP(field,size) \
+#define IDENTIFY_TEXT_SWAP(field, size) \
     \
     ({ \
     u8 tmp; \
@@ -219,14 +219,13 @@
 /**
  * @brief IDENTIFY data presentation.
  */
-typedef struct IdentifyData
-{
+typedef struct IdentifyData {
     u16 type;
     u16 reserved1[9];
-    u8  serial[20];
+    u8 serial[20];
     u16 reserved2[3];
-    u8  firmware[8];
-    u8  model[40];
+    u8 firmware[8];
+    u8 model[40];
     u16 maxTransfer;
     u16 trustedFeatures;
     u16 capabilities[2];
@@ -241,27 +240,25 @@ typedef struct IdentifyData
     u16 reserved6[2];
     u16 sectorSize;
 }
-IdentifyData;
+        IdentifyData;
 
 /**
  * @brief Represents a Drive on the ATA bus.
  */
-typedef struct ATADrive
-{
+typedef struct ATADrive {
     /** Bytes returned from IDENTIFY. */
     IdentifyData identity;
 
     /** Number of sectors. */
     Size sectors;
 }
-ATADrive;
+        ATADrive;
 
 /**
  * @brief AT Attachment (ATA) Host Controller Device.
  */
-class ATAController : public Device
-{
-  public:
+class ATAController : public Device {
+public:
 
     /**
      * Constructor
@@ -287,8 +284,8 @@ class ATAController : public Device
      *
      * @return Result code
      */
-    virtual FileSystem::Result read(IOBuffer & buffer,
-                                    Size & size,
+    virtual FileSystem::Result read(IOBuffer &buffer,
+                                    Size &size,
                                     const Size offset);
 
     /**
@@ -300,7 +297,7 @@ class ATAController : public Device
      */
     virtual FileSystem::Result interrupt(const Size vector);
 
-  private:
+private:
 
     /**
      * @brief Polls the Regular Status register.
@@ -309,7 +306,7 @@ class ATAController : public Device
      */
     void pollReady(bool noData = false);
 
-  private:
+private:
 
     /** @brief Drives detected on the ATA bus. */
     List<ATADrive *> drives;

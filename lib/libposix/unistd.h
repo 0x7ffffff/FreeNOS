@@ -52,14 +52,18 @@
  * @return The getpid() function shall always be successful and no return
  *         value is reserved to indicate an error.
  */
-extern C pid_t getpid();
+extern C pid_t
+
+getpid();
 
 /**
  * Get parent process ID.
  *
  * @return The parent process ID.
  */
-extern C pid_t getppid();
+extern C pid_t
+
+getppid();
 
 /**
  * Read from a file
@@ -76,7 +80,9 @@ extern C pid_t getppid();
  *         indicating the number of bytes actually read. Otherwise, the functions shall
  *         return -1 and set errno to indicate the error.
  */
-extern C ssize_t read(int fildes, void *buf, size_t nbyte);
+extern C ssize_t
+
+read(int fildes, void *buf, size_t nbyte);
 
 /**
  * @brief Write on a file.
@@ -94,7 +100,9 @@ extern C ssize_t read(int fildes, void *buf, size_t nbyte);
  *         number shall never be greater than nbyte. Otherwise, -1 shall be
  *         returned and errno set to indicate the error.
  */
-extern C ssize_t write(int fildes, const void *buf, size_t nbyte);
+extern C ssize_t
+
+write(int fildes, const void *buf, size_t nbyte);
 
 /**
  * Close a file descriptor
@@ -126,7 +134,9 @@ extern C int close(int fildes);
  *         shall be returned, errno shall be set to indicate the error, and the file
  *         offset shall remain unchanged.
  */
-extern C off_t lseek(int fildes, off_t offset, int whence);
+extern C off_t
+
+lseek(int fildes, off_t offset, int whence);
 
 /**
  * @brief Create a new process and execute program.

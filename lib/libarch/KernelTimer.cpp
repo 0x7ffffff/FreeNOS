@@ -20,19 +20,17 @@
 #include "KernelTimer.h"
 #include <MemoryBlock.h>
 
-Timer::Result KernelTimer::tick()
-{
+Timer::Result KernelTimer::tick() {
     Timer::Info info;
 
-    const API::Result result = ProcessCtl(SELF, InfoTimer, (Address) &info);
-    if (result != API::Success)
-    {
+    const API::Result result = ProcessCtl(SELF, InfoTimer, (Address) & info);
+    if (result != API::Success) {
         ERROR("failed to retrieve system timer info: result = " << (int) result);
         return Timer::IOError;
     }
 
     m_frequency = info.frequency;
-    m_ticks     = info.ticks;
+    m_ticks = info.ticks;
 
     return Timer::Success;
 }

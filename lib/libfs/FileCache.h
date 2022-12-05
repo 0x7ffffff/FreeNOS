@@ -32,8 +32,7 @@
 /**
  * Cached in-memory file.
  */
-typedef struct FileCache
-{
+typedef struct FileCache {
     /**
      * @brief Constructor function.
      *
@@ -42,12 +41,10 @@ typedef struct FileCache
      * @param p Our parent. ZERO if we have no parent.
      */
     FileCache(File *f, const char *n, FileCache *p)
-            : file(f), parent(p)
-    {
+            : file(f), parent(p) {
         name = n;
 
-        if (p && p != this)
-        {
+        if (p && p != this) {
             p->entries.insert(name, this);
         }
     }
@@ -64,7 +61,7 @@ typedef struct FileCache
     /** Parent */
     FileCache *parent;
 }
-FileCache;
+        FileCache;
 
 /**
  * @}

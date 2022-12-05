@@ -30,38 +30,32 @@
 #include <errno.h>
 #include "HostShares.h"
 
-static void signal_sharecreated(int sig, siginfo_t *siginfo, void *context)
-{
+static void signal_sharecreated(int sig, siginfo_t *siginfo, void *context) {
     HostShareManager::instance()->notifyShareCreated(siginfo->si_pid);
 }
 
-static void signal_terminate(int sig, siginfo_t *siginfo, void *context)
-{
+static void signal_terminate(int sig, siginfo_t *siginfo, void *context) {
     HostShareManager::instance()->terminate();
     ::exit(EXIT_SUCCESS);
 }
 
 HostShareManager::HostShareManager()
-    : m_kernelChannel(Channel::Producer, sizeof(ProcessEvent))
-{
+        : m_kernelChannel(Channel::Producer, sizeof(ProcessEvent)) {
     initialize();
 }
 
-HostShareManager::~HostShareManager()
-{
+HostShareManager::~HostShareManager() {
     terminate();
 }
 
-HostShareManager::Result HostShareManager::initialize()
-{
+HostShareManager::Result HostShareManager::initialize() {
     struct sigaction act;
     memset(&act, 0, sizeof(act));
 
     // Handle signal for receiving new shares
     act.sa_sigaction = &signal_sharecreated;
     act.sa_flags = SA_SIGINFO;
-    if (sigaction(SIGUSR1, &act, (struct sigaction *)NULL) < 0)
-    {
+    if (sigaction(SIGUSR1, &act, (struct sigaction *) NULL) < 0) {
         perror("sigaction");
         ::exit(EXIT_FAILURE);
         return API::IOError;
@@ -69,8 +63,7 @@ HostShareManager::Result HostShareManager::initialize()
 
     // On terminate, we must cleanup all shares
     act.sa_sigaction = &signal_terminate;
-    if (sigaction(SIGTERM, &act, (struct sigaction *) NULL) < 0)
-    {
+    if (sigaction(SIGTERM, &act, (struct sigaction *) NULL) < 0) {
         perror("sigaction");
         ::exit(EXIT_FAILURE);
         return API::IOError;
@@ -86,12 +79,10 @@ HostShareManager::Result HostShareManager::initialize()
     return API::Success;
 }
 
-HostShareManager::Result HostShareManager::terminate()
-{
+HostShareManager::Result HostShareManager::terminate() {
     char name[1024];
 
-    for (HashIterator<ProcessID, ProcessShares::MemoryShare *> i(m_shares); i.hasCurrent();)
-    {
+    for (HashIterator < ProcessID, ProcessShares::MemoryShare * > i(m_shares); i.hasCurrent();) {
         ProcessShares::MemoryShare *share = i.current();
         getChannelName(share->pid, name, sizeof(name));
         shm_unlink(name);
@@ -104,11 +95,10 @@ HostShareManager::Result HostShareManager::terminate()
 }
 
 HostShareManager::Result HostShareManager::createShare(
-    const ProcessID pid,
-    ProcessShares::MemoryShare *share,
-    const bool initialize,
-    const bool notify)
-{
+        const ProcessID pid,
+        ProcessShares::MemoryShare *share,
+        const bool initialize,
+        const bool notify) {
     char name[1024];
     const Size sz = PAGESIZE * 4;
     int fd = -1;
@@ -118,17 +108,14 @@ HostShareManager::Result HostShareManager::createShare(
 
     // Open the shared memory file
     fd = shm_open(name, O_CREAT | O_RDWR, 0600);
-    if (fd == -1)
-    {
+    if (fd == -1) {
         perror("shm_open");
         return API::IOError;
     }
 
     // Re-sizes the file, if needed
-    if (initialize)
-    {
-        if (ftruncate(fd, sz) != 0)
-        {
+    if (initialize) {
+        if (ftruncate(fd, sz) != 0) {
             perror("ftruncate");
             close(fd);
             return API::IOError;
@@ -137,16 +124,14 @@ HostShareManager::Result HostShareManager::createShare(
 
     // Map it directly into memory
     u8 *ptr = (u8 *) mmap(0, sz, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-    if (ptr == (u8 *) MAP_FAILED)
-    {
+    if (ptr == (u8 *) MAP_FAILED) {
         perror("mmap");
         close(fd);
         return API::IOError;
     }
 
     // Initialize to zero, if needed
-    if (initialize)
-    {
+    if (initialize) {
         memset(ptr, 0, sz);
     }
 
@@ -163,26 +148,22 @@ HostShareManager::Result HostShareManager::createShare(
     m_shares.insert(pid, shareCopy);
 
     // Signal the remote process to raise kernel event here, if needed
-    if (notify)
-    {
+    if (notify) {
         // The other process must be ready to receive this signal
-        for (Size i = 0; i < MaximumRetries; i++)
-        {
+        for (Size i = 0; i < MaximumRetries; i++) {
             if (isReady(pid))
                 break;
             else
                 usleep(RetryWaitTimeUs);
         }
 
-        if (!isReady(pid))
-        {
+        if (!isReady(pid)) {
             printf("PID %u is not ready to receive\n", pid);
             return API::IOError;
         }
 
         int r = kill(pid, SIGUSR1);
-        if (r != 0)
-        {
+        if (r != 0) {
             perror("kill");
             munmap(ptr, sz);
             close(fd);
@@ -196,10 +177,9 @@ HostShareManager::Result HostShareManager::createShare(
 }
 
 HostShareManager::Result HostShareManager::readShare(
-    const ProcessID pid,
-    ProcessShares::MemoryShare *share)
-{
-    ProcessShares::MemoryShare * const * sh = m_shares.get(pid);
+        const ProcessID pid,
+        ProcessShares::MemoryShare *share) {
+    ProcessShares::MemoryShare *const *sh = m_shares.get(pid);
     if (!sh)
         return API::NotFound;
 
@@ -208,30 +188,26 @@ HostShareManager::Result HostShareManager::readShare(
 }
 
 HostShareManager::Result HostShareManager::deleteShares(
-    const ProcessID pid)
-{
+        const ProcessID pid) {
     return API::InvalidArgument;
 }
 
-void HostShareManager::notifyShareCreated(const ProcessID pid)
-{
+void HostShareManager::notifyShareCreated(const ProcessID pid) {
     ProcessShares::MemoryShare share;
     const Result result = createShare(pid, &share, false, false);
-    if (result != API::Success)
-    {
+    if (result != API::Success) {
         printf("failed to process ShareCreated\n");
         ::exit(EXIT_FAILURE);
     }
 
     // Prepare ShareCreated event
     ProcessEvent event;
-    event.type   = ShareCreated;
+    event.type = ShareCreated;
     event.number = pid;
     memcpy(&event.share, &share, sizeof(share));
 
     // Raise ShareCreated event
-    if (m_kernelChannel.write(&event) != MemoryChannel::Success)
-    {
+    if (m_kernelChannel.write(&event) != MemoryChannel::Success) {
         printf("failed to write kernel MemoryChannel\n");
         ::exit(EXIT_FAILURE);
     }
@@ -240,8 +216,7 @@ void HostShareManager::notifyShareCreated(const ProcessID pid)
 
 void HostShareManager::getChannelName(const ProcessID pid,
                                       char *buf,
-                                      const Size size) const
-{
+                                      const Size size) const {
     const ProcessID own_pid = getpid();
 
     if (own_pid < pid)
@@ -250,35 +225,28 @@ void HostShareManager::getChannelName(const ProcessID pid,
         snprintf(buf, size, "/FreeNOS.%u.%u", pid, own_pid);
 }
 
-void HostShareManager::setReady(const bool ready) const
-{
+void HostShareManager::setReady(const bool ready) const {
     char readyFile[32];
     snprintf(readyFile, sizeof(readyFile), "/FreeNOS.%u.ready", getpid());
 
-    if (ready)
-    {
+    if (ready) {
         int fd = shm_open(readyFile, O_CREAT | O_RDWR, 0600);
-        if (fd == -1)
-        {
+        if (fd == -1) {
             perror("shm_open");
             ::exit(EXIT_FAILURE);
         }
-    }
-    else
-    {
+    } else {
         shm_unlink(readyFile);
     }
 }
 
-bool HostShareManager::isReady(const ProcessID pid) const
-{
+bool HostShareManager::isReady(const ProcessID pid) const {
     char readyFile[32];
 
     snprintf(readyFile, sizeof(readyFile), "/FreeNOS.%u.ready", pid);
 
     int fd = shm_open(readyFile, O_RDWR, 0600);
-    if (fd == -1)
-    {
+    if (fd == -1) {
         return false;
     }
 

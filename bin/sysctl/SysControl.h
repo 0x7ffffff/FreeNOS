@@ -29,9 +29,8 @@
 /**
  * Control program for various system services.
  */
-class SysControl : public POSIXApplication
-{
-  public:
+class SysControl : public POSIXApplication {
+public:
 
     /**
      * Constructor
@@ -53,7 +52,7 @@ class SysControl : public POSIXApplication
      */
     virtual Result exec();
 
-  private:
+private:
 
     /**
      * Stop the given process by its ID.

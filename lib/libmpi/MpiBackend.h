@@ -33,9 +33,8 @@
 /**
  * Represents a Message Passing Interface (MPI) implementation backend.
  */
-class MpiBackend : public AbstractFactory<MpiBackend>
-{
-  public:
+class MpiBackend : public AbstractFactory<MpiBackend> {
+public:
 
     /**
      * Result code
@@ -46,7 +45,7 @@ class MpiBackend : public AbstractFactory<MpiBackend>
      */
     typedef int Result;
 
-  public:
+public:
 
     /**
      * Initialize the backend

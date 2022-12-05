@@ -19,15 +19,12 @@
 #include "BroadcomPower.h"
 
 BroadcomPower::BroadcomPower()
-    : m_mask(UART0)
-{
+        : m_mask(UART0) {
 }
 
-BroadcomPower::Result BroadcomPower::initialize()
-{
+BroadcomPower::Result BroadcomPower::initialize() {
     // Initialize mailbox
-    if (m_mailbox.initialize() != BroadcomMailbox::Success)
-    {
+    if (m_mailbox.initialize() != BroadcomMailbox::Success) {
         ERROR("failed to initialize mailbox");
         return IOError;
     }
@@ -36,8 +33,7 @@ BroadcomPower::Result BroadcomPower::initialize()
     return Success;
 }
 
-BroadcomPower::Result BroadcomPower::enable(BroadcomPower::Device device)
-{
+BroadcomPower::Result BroadcomPower::enable(BroadcomPower::Device device) {
     m_mask |= device;
     m_mailbox.write(BroadcomMailbox::PowerManagement, m_mask);
     m_mailbox.read(BroadcomMailbox::PowerManagement, &m_mask);

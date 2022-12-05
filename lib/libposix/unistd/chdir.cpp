@@ -24,10 +24,9 @@
 #include "sys/stat.h"
 #include "unistd.h"
 
-int chdir(const char *filepath)
-{
+int chdir(const char *filepath) {
     String last;
-    List<String> lst;
+    List <String> lst;
     char cwd[PATH_MAX], buf[PATH_MAX], *path = ZERO;
     FileSystemClient filesystem;
 
@@ -37,21 +36,16 @@ int chdir(const char *filepath)
     getcwd(cwd, PATH_MAX);
 
     // Relative or absolute?
-    if (filepath[0] != '/')
-    {
+    if (filepath[0] != '/') {
         snprintf(buf, sizeof(buf), "%s/%s", cwd, filepath);
         FileSystemPath fspath(buf);
 
         // Process '..'
-        for (ListIterator<String> i(fspath.split()); i.hasCurrent(); i++)
-        {
-            if ((*i.current())[0] != '.')
-            {
+        for (ListIterator <String> i(fspath.split()); i.hasCurrent(); i++) {
+            if ((*i.current())[0] != '.') {
                 lst.append(i.current());
                 last = i.current();
-            }
-            else if ((*i.current())[1] == '.' && last.length() > 0)
-            {
+            } else if ((*i.current())[1] == '.' && last.length() > 0) {
                 lst.remove(last);
             }
         }
@@ -59,32 +53,27 @@ int chdir(const char *filepath)
         memset(buf, 0, sizeof(buf));
 
         // Construct final path
-        for (ListIterator<String> i(&lst); i.hasCurrent(); i++)
-        {
+        for (ListIterator <String> i(&lst); i.hasCurrent(); i++) {
             strcat(buf, "/");
             strcat(buf, *i.current());
         }
         path = buf;
-    }
-    else
+    } else
         path = (char *) filepath;
 
     // Fall back to slash?
-    if (!path[0])
-    {
+    if (!path[0]) {
         strcpy(buf, "/");
         path = buf;
     }
 
     // Stat the file
-    if (stat(path, &st) != 0)
-    {
+    if (stat(path, &st) != 0) {
         return -1;
     }
 
     // Must be a directory
-    if (!S_ISDIR(st.st_mode))
-    {
+    if (!S_ISDIR(st.st_mode)) {
         errno = ENOTDIR;
         return -1;
     }

@@ -24,31 +24,26 @@
 #include "FileStatus.h"
 
 FileStatus::FileStatus(int argc, char **argv)
-    : POSIXApplication(argc, argv)
-{
+        : POSIXApplication(argc, argv) {
     parser().setDescription("Retrieve file status from the filesystem");
     parser().registerPositional("FILE", "Name of the file(s) to stat", 0);
 }
 
-FileStatus::~FileStatus()
-{
+FileStatus::~FileStatus() {
 }
 
-FileStatus::Result FileStatus::exec()
-{
-    const Vector<Argument *> & positionals = arguments().getPositionals();
+FileStatus::Result FileStatus::exec() {
+    const Vector<Argument *> &positionals = arguments().getPositionals();
     Result result = Success;
     Result ret = Success;
 
     // Perform a stat for each file
-    for (Size i = 0; i < positionals.count(); i++)
-    {
+    for (Size i = 0; i < positionals.count(); i++) {
         // Stat the file immediately
         result = printStatus(positionals[i]->getValue());
 
         // Update exit status, if needed
-        if (result != Success)
-        {
+        if (result != Success) {
             ret = result;
         }
     }
@@ -57,13 +52,11 @@ FileStatus::Result FileStatus::exec()
     return ret;
 }
 
-FileStatus::Result FileStatus::printStatus(const String & file) const
-{
+FileStatus::Result FileStatus::printStatus(const String &file) const {
     struct stat st;
 
     // Try to stat the file
-    if ((stat(*file, &st)) < 0)
-    {
+    if ((stat(*file, &st)) < 0) {
         ERROR("failed to stat `" << *file << "': " << strerror(errno));
         return IOError;
     }
@@ -73,28 +66,19 @@ FileStatus::Result FileStatus::printStatus(const String & file) const
     printf("Type: ");
 
     // Print the right file type
-    if (S_ISREG(st.st_mode))
-    {
+    if (S_ISREG(st.st_mode)) {
         printf("Regular File\r\n");
-    }
-    else if (S_ISDIR(st.st_mode))
-    {
+    } else if (S_ISDIR(st.st_mode)) {
         printf("Directory\r\n");
-    }
-    else if (S_ISCHR(st.st_mode))
-    {
+    } else if (S_ISCHR(st.st_mode)) {
         printf("Character Device\r\n");
         printf("Major ID: %u\r\n", st.st_dev.major);
         printf("Minor ID: %u\r\n", st.st_dev.minor);
-    }
-    else if (S_ISBLK(st.st_mode))
-    {
+    } else if (S_ISBLK(st.st_mode)) {
         printf("Block Device\r\n");
         printf("Major ID: %u\r\n", st.st_dev.major);
         printf("Minor ID: %u\r\n", st.st_dev.minor);
-    }
-    else
-    {
+    } else {
         printf("Unknown\r\n");
     }
 

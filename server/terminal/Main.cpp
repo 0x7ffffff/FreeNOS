@@ -21,8 +21,7 @@
 #include <FileSystemClient.h>
 #include "Terminal.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     KernelLog log;
 
     // Wait for the input/output devices to become available
@@ -38,8 +37,7 @@ int main(int argc, char **argv)
 
     // Initialize
     const FileSystem::Result result = server.initialize();
-    if (result != FileSystem::Success)
-    {
+    if (result != FileSystem::Success) {
         ERROR("failed to initialize: result = " << (int) result);
         return 1;
     }

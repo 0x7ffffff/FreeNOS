@@ -40,7 +40,7 @@
  *
  * @return String pointer to the last component.
  */
-extern C char * basename(char *path);
+extern C char *basename(char *path);
 
 /**
  * @brief Return the directory portion of a pathname.
@@ -49,7 +49,7 @@ extern C char * basename(char *path);
  *
  * @return String pointer to the directory of pathname.
  */
-extern C char * dirname(char *path);
+extern C char *dirname(char *path);
 
 /**
  * @}

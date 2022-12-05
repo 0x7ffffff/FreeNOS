@@ -36,9 +36,8 @@
 /**
  * Uses a BootSymbol inside a BootImage as a storage provider.
  */
-class BootSymbolStorage : public Storage
-{
-  public:
+class BootSymbolStorage : public Storage {
+public:
 
     /**
      * Constructor function.
@@ -74,7 +73,7 @@ class BootSymbolStorage : public Storage
      */
     virtual u64 capacity() const;
 
-  private:
+private:
 
     /**
      * Loads the BootSymbol from the BootImage.
@@ -92,7 +91,7 @@ class BootSymbolStorage : public Storage
      */
     const BootSegment loadSegment(const BootSymbol &symbol) const;
 
-  private:
+private:
 
     /** Read-only reference to the BootImage storage */
     const BootImageStorage &m_bootImage;

@@ -27,8 +27,7 @@
  * @{
  */
 
-enum ProcessEventType
-{
+enum ProcessEventType {
     InterruptEvent,
     ShareCreated,
     ProcessTerminated
@@ -37,13 +36,12 @@ enum ProcessEventType
 /**
  * Represents a process which may run on the host.
  */
-typedef struct ProcessEvent
-{
+typedef struct ProcessEvent {
     ProcessEventType type;
     Size number;
     ProcessShares::MemoryShare share;
 }
-ProcessEvent;
+        ProcessEvent;
 
 /**
  * @}

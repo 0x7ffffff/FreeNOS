@@ -35,8 +35,7 @@
 /**
  * System name structure.
  */
-struct utsname
-{
+struct utsname {
     /** Name of this implementation of the operating system. */
     char sysname[UTSBUF];
 

@@ -23,94 +23,94 @@
 #include <MemoryBlock.h>
 
 TestCase(InitData)
-{
-    u8 array1[256];
-    TestInt<uint> ints(0, 0xff);
+        {
+                u8 array1[256];
+        TestInt<uint> ints(0, 0xff);
 
-    MemoryBlock::set(array1, ints.random(), sizeof(array1));
+        MemoryBlock::set(array1, ints.random(), sizeof(array1));
 
-    for (Size i = 0; i < sizeof(array1); i++)
-    {
-        testAssert(array1[i] == ints[0]);
-    }
+        for (Size i = 0; i < sizeof(array1); i++)
+        {
+            testAssert(array1[i] == ints[0]);
+        }
 
-    return OK;
-}
+        return OK;
+        }
 
 TestCase(CopyData)
-{
-    TestInt<uint> ints(0, 0xff);
-    u8 array1[256];
-    u8 array2[256];
+        {
+                TestInt < uint > ints(0, 0xff);
+        u8 array1[256];
+        u8 array2[256];
 
-    // Clear both arrays first
-    MemoryBlock::set(array1, 0, sizeof(array1));
-    MemoryBlock::set(array2, 0, sizeof(array2));
+        // Clear both arrays first
+        MemoryBlock::set(array1, 0, sizeof(array1));
+        MemoryBlock::set(array2, 0, sizeof(array2));
 
-    // Fill the first array with random integers
-    for (Size i = 0; i < sizeof(array1); i++)
-    {
-        array1[i] = ints.random();
-    }
+        // Fill the first array with random integers
+        for (Size i = 0; i < sizeof(array1); i++)
+        {
+            array1[i] = ints.random();
+        }
 
-    // Copy the first array to the second
-    MemoryBlock::copy(array2, array1, sizeof(array2));
+        // Copy the first array to the second
+        MemoryBlock::copy(array2, array1, sizeof(array2));
 
-    // Now verify both arrays are identical
-    for (Size i = 0; i < sizeof(array1); i++)
-    {
-        testAssert(array1[i] == array2[i]);
-        testAssert(array1[i] == ints[i]);
-        testAssert(array2[i] == ints[i]);
-    }
+        // Now verify both arrays are identical
+        for (Size i = 0; i < sizeof(array1); i++)
+        {
+            testAssert(array1[i] == array2[i]);
+            testAssert(array1[i] == ints[i]);
+            testAssert(array2[i] == ints[i]);
+        }
 
-    return OK;
-}
+        return OK;
+        }
 
 TestCase(CopyString)
-{
-    char str[128];
+        {
+                char str[128];
 
-    MemoryBlock::copy(str, (char *)"testing", sizeof(str));
-    testString(str, "testing");
+        MemoryBlock::copy(str, (char *)"testing", sizeof(str));
+        testString(str, "testing");
 
-    return OK;
-}
+        return OK;
+        }
 
 TestCase(CompareData)
-{
-    TestInt<uint> ints(0, 0xff);
-    u8 array1[256];
-    u8 array2[256];
+        {
+                TestInt < uint > ints(0, 0xff);
+        u8 array1[256];
+        u8 array2[256];
 
-    // Fill the both arrays with random integers
-    for (Size i = 0; i < sizeof(array1); i++)
-    {
-        array1[i] = ints.random();
-        array2[i] = array1[i];
-    }
+        // Fill the both arrays with random integers
+        for (Size i = 0; i < sizeof(array1); i++)
+        {
+            array1[i] = ints.random();
+            array2[i] = array1[i];
+        }
 
-    // The array are now identical
-    testAssert(MemoryBlock::compare(&array1, &array2, sizeof(array1)));
+        // The array are now identical
+        testAssert(MemoryBlock::compare(&array1, &array2, sizeof(array1)));
 
-    // Change one byte in the second array
-    array2[0]++;
-    testAssert(!MemoryBlock::compare(&array1, &array2, sizeof(array1)));
+        // Change one byte in the second array
+        array2[0]++;
+        testAssert(!MemoryBlock::compare(&array1, &array2, sizeof(array1)));
 
-    return OK;
-}
+        return OK;
+        }
 
 TestCase(CompareString)
-{
-    // Compare without specifying a maximum length
-    testAssert(!MemoryBlock::compare("abc", "def"));
-    testAssert(!MemoryBlock::compare("test", "testing"));
-    testAssert(MemoryBlock::compare("test", "test"));
+        {
+                // Compare without specifying a maximum length
+                testAssert(!MemoryBlock::compare("abc", "def"));
+        testAssert(!MemoryBlock::compare("test", "testing"));
+        testAssert(MemoryBlock::compare("test", "test"));
 
-    // Compare with a maximum length
-    testAssert(MemoryBlock::compare("test", "testing", 4));
-    testAssert(MemoryBlock::compare("testasdf", "test1234", 4));
-    testAssert(!MemoryBlock::compare("test123456", "test567890", 6));
+        // Compare with a maximum length
+        testAssert(MemoryBlock::compare("test", "testing", 4));
+        testAssert(MemoryBlock::compare("testasdf", "test1234", 4));
+        testAssert(!MemoryBlock::compare("test123456", "test567890", 6));
 
-    return OK;
-}
+        return OK;
+        }

@@ -28,8 +28,7 @@
 #include "ListFiles.h"
 
 ListFiles::ListFiles(int argc, char **argv)
-    : POSIXApplication(argc, argv)
-{
+        : POSIXApplication(argc, argv) {
     parser().setDescription("List files on the filesystem");
     parser().registerPositional("FILE", "Target file to list", 0);
     parser().registerFlag('l', "long", "List files in long output format");
@@ -37,32 +36,26 @@ ListFiles::ListFiles(int argc, char **argv)
     parser().registerFlag('n', "no-color", "Set to disable terminal color output");
 }
 
-ListFiles::~ListFiles()
-{
+ListFiles::~ListFiles() {
 }
 
-ListFiles::Result ListFiles::exec()
-{
-    const Vector<Argument *> & positionals = arguments().getPositionals();
+ListFiles::Result ListFiles::exec() {
+    const Vector<Argument *> &positionals = arguments().getPositionals();
     Result result = Success, ret = Success;
 
     // List files provided on the command-line, if any
-    if (positionals.count() > 0)
-    {
-        for (Size i = 0; i < positionals.count(); i++)
-        {
+    if (positionals.count() > 0) {
+        for (Size i = 0; i < positionals.count(); i++) {
             result = printFiles(positionals[i]->getValue());
 
             // Update the return result
-            if (result != Success)
-            {
+            if (result != Success) {
                 ret = result;
             }
         }
     }
-    // Otherwise, list the current directory
-    else
-    {
+        // Otherwise, list the current directory
+    else {
         char path[PATH_MAX];
         getcwd(path, sizeof(path));
 
@@ -73,8 +66,7 @@ ListFiles::Result ListFiles::exec()
     return ret;
 }
 
-ListFiles::Result ListFiles::printFiles(const String & path) const
-{
+ListFiles::Result ListFiles::printFiles(const String &path) const {
     struct dirent *dent;
     struct stat st;
     char tmp[PATH_MAX];
@@ -83,28 +75,24 @@ ListFiles::Result ListFiles::printFiles(const String & path) const
     Result r = Success;
 
     // Retrieve file status
-    if (stat(*path, &st) != 0)
-    {
+    if (stat(*path, &st) != 0) {
         ERROR("failed to stat '" << *path << "': " << strerror(errno));
         return IOError;
     }
 
     // Is the given file a directory?
-    if (S_ISDIR(st.st_mode))
-    {
+    if (S_ISDIR(st.st_mode)) {
         // Attempt to open the directory
-        if (!(d = opendir(*path)))
-        {
+        if (!(d = opendir(*path))) {
             ERROR("failed to open '" << *path << "': " << strerror(errno));
             return IOError;
         }
 
         // Read directory
-        while ((dent = readdir(d)))
-        {
+        while ((dent = readdir(d))) {
             // Construct full path
             snprintf(tmp, sizeof(tmp),
-                    "%s/%s", *path, dent->d_name);
+                     "%s/%s", *path, dent->d_name);
 
             if ((r = printSingleFile(tmp, out)) != Success)
                 break;
@@ -112,9 +100,8 @@ ListFiles::Result ListFiles::printFiles(const String & path) const
         // Close it
         closedir(d);
     }
-    // The given file is not a directory
-    else
-    {
+        // The given file is not a directory
+    else {
         r = printSingleFile(path, out);
     }
 
@@ -124,28 +111,24 @@ ListFiles::Result ListFiles::printFiles(const String & path) const
 
     // Write to standard output
     write(1, *out, out.length());
-    
+
     // Success
     return r;
 }
 
-ListFiles::Result ListFiles::printSingleFile(const String & path, String & out) const
-{
+ListFiles::Result ListFiles::printSingleFile(const String &path, String &out) const {
     const bool color = arguments().get("no-color") == ZERO;
     struct stat st;
 
     // Retrieve file status
-    if (stat(*path, &st) != 0)
-    {
+    if (stat(*path, &st) != 0) {
         ERROR("failed to stat '" << *path << "': " << strerror(errno));
         return IOError;
     }
 
     // Apply long output
-    if (arguments().get("long"))
-    {
-        if (color)
-        {
+    if (arguments().get("long")) {
+        if (color) {
             out << WHITE;
         }
         out << (st.st_mode & S_IRUSR ? "r" : "-");
@@ -169,15 +152,14 @@ ListFiles::Result ListFiles::printSingleFile(const String & path, String & out) 
     }
 
     // Apply coloring
-    if (color)
-    {
+    if (color) {
         if (S_ISDIR(st.st_mode))
             out << BLUE;
 
         else if (S_ISBLK(st.st_mode) || S_ISCHR(st.st_mode))
             out << YELLOW;
 
-        // Is the file executable?
+            // Is the file executable?
         else if (st.st_mode & 0100)
             out << GREEN;
         else
@@ -186,8 +168,7 @@ ListFiles::Result ListFiles::printSingleFile(const String & path, String & out) 
 
     out << basename((char *) *path) << " ";
 
-    if (color)
-    {
+    if (color) {
         out << WHITE;
     }
 

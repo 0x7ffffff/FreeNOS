@@ -22,56 +22,56 @@
 #include <FileSystemPath.h>
 
 TestCase(FileSystemPathConstruct)
-{
-    const String testpath("/mnt/path/to/my/file.txt");
+        {
+                const String testpath("/mnt/path/to/my/file.txt");
 
-    // Provide absolute path
-    FileSystemPath path(*testpath);
+                // Provide absolute path
+                FileSystemPath path(*testpath);
 
-    // Verify members
-    testString(*path.base(), "file.txt");
-    testString(*path.parent(), "/mnt/path/to/my");
-    testString(*path.full(), *testpath);
-    testAssert(path.split().count() == 5);
-    testAssert(path.length() == testpath.length());
+                // Verify members
+                testString(*path.base(), "file.txt");
+                testString(*path.parent(), "/mnt/path/to/my");
+                testString(*path.full(), *testpath);
+                testAssert(path.split().count() == 5);
+                testAssert(path.length() == testpath.length());
 
-    // Provide empty path
-    FileSystemPath empty("");
-    testString(*empty.base(), "");
-    testString(*empty.parent(), "");
-    testString(*empty.full(), "");
-    testAssert(empty.length() == 0);
+                // Provide empty path
+                FileSystemPath empty("");
+                testString(*empty.base(), "");
+                testString(*empty.parent(), "");
+                testString(*empty.full(), "");
+                testAssert(empty.length() == 0);
 
-    return OK;
-}
+                return OK;
+        }
 
 TestCase(FileSystemPathSplit)
-{
-    const String testpath("/mnt/path/to/my/file.txt");
+        {
+                const String testpath("/mnt/path/to/my/file.txt");
 
-    FileSystemPath path(*testpath);
-    const List<String> parts = path.split();
-    const List<String>::Node *l = parts.head();
+                FileSystemPath path(*testpath);
+                const List<String> parts = path.split();
+                const List<String>::Node *l = parts.head();
 
-    testAssert(parts.count() == 5);
-    testAssert(l && l->next);
-    testString(*l->data, "mnt");
+                testAssert(parts.count() == 5);
+                testAssert(l && l->next);
+                testString(*l->data, "mnt");
 
-    l = l->next;
-    testAssert(l && l->next);
-    testString(*l->data, "path");
+                l = l->next;
+                testAssert(l && l->next);
+                testString(*l->data, "path");
 
-    l = l->next;
-    testAssert(l && l->next);
-    testString(*l->data, "to");
+                l = l->next;
+                testAssert(l && l->next);
+                testString(*l->data, "to");
 
-    l = l->next;
-    testAssert(l && l->next);
-    testString(*l->data, "my");
+                l = l->next;
+                testAssert(l && l->next);
+                testString(*l->data, "my");
 
-    l = l->next;
-    testAssert(l && l->next == ZERO);
-    testString(*l->data, "file.txt");
+                l = l->next;
+                testAssert(l && l->next == ZERO);
+                testString(*l->data, "file.txt");
 
-    return OK;
-}
+                return OK;
+        }

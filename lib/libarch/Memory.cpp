@@ -18,9 +18,8 @@
 #include <MemoryBlock.h>
 #include "Memory.h"
 
-void clearBSS()
-{
+void clearBSS() {
     extern Address __bss_start, __bss_end;
-    const Address bss_size = (&__bss_end - &__bss_start) * sizeof(Address *);
+    const Address bss_size = (&__bss_end - &__bss_start) * sizeof(Address * );
     MemoryBlock::set(&__bss_start, 0, bss_size);
 }

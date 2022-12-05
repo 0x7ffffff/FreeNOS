@@ -42,9 +42,8 @@
 /**
  * Raspberry Pi Interrupt Controller implementation
  */
-class BroadcomInterrupt : public IntController
-{
-  public:
+class BroadcomInterrupt : public IntController {
+public:
 
     /**
      * Constructor
@@ -79,7 +78,7 @@ class BroadcomInterrupt : public IntController
      *
      * @return Result code.
      */
-    virtual Result nextPending(uint & irq);
+    virtual Result nextPending(uint &irq);
 
     /**
      * Check if an IRQ vector is set.
@@ -88,7 +87,7 @@ class BroadcomInterrupt : public IntController
      */
     virtual bool isTriggered(uint vector);
 
-  private:
+private:
 
     /** I/O instance */
     ARMIO m_io;

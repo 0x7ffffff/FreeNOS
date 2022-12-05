@@ -19,8 +19,7 @@
 
 Loopback::Loopback(const u32 inode,
                    NetworkServer &server)
-    : NetworkDevice(inode, server)
-{
+        : NetworkDevice(inode, server) {
     DEBUG("");
 
     m_address.addr[0] = 0x11;
@@ -31,18 +30,15 @@ Loopback::Loopback(const u32 inode,
     m_address.addr[5] = 0x66;
 }
 
-Loopback::~Loopback()
-{
+Loopback::~Loopback() {
     DEBUG("");
 }
 
-FileSystem::Result Loopback::initialize()
-{
+FileSystem::Result Loopback::initialize() {
     DEBUG("");
 
     const FileSystem::Result result = NetworkDevice::initialize();
-    if (result != FileSystem::Success)
-    {
+    if (result != FileSystem::Success) {
         ERROR("failed to initialize NetworkDevice: result = " << (int) result);
         return FileSystem::IOError;
     }
@@ -53,24 +49,21 @@ FileSystem::Result Loopback::initialize()
     return FileSystem::Success;
 }
 
-FileSystem::Result Loopback::getAddress(Ethernet::Address *address)
-{
+FileSystem::Result Loopback::getAddress(Ethernet::Address *address) {
     DEBUG("");
 
     MemoryBlock::copy(address, &m_address, sizeof(Ethernet::Address));
     return FileSystem::Success;
 }
 
-FileSystem::Result Loopback::setAddress(const Ethernet::Address *address)
-{
+FileSystem::Result Loopback::setAddress(const Ethernet::Address *address) {
     DEBUG("");
 
     MemoryBlock::copy(&m_address, address, sizeof(Ethernet::Address));
     return FileSystem::Success;
 }
 
-FileSystem::Result Loopback::transmit(NetworkQueue::Packet *pkt)
-{
+FileSystem::Result Loopback::transmit(NetworkQueue::Packet *pkt) {
     DEBUG("size = " << pkt->size);
 
     // Process the packet by protocols as input (loopback)

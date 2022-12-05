@@ -40,21 +40,19 @@
  * consumer, where it stores the feedback information from its
  * consumption.
  */
-class MemoryChannel : public Channel
-{
-  private:
+class MemoryChannel : public Channel {
+private:
 
     /**
      * Defines in-memory ring header
      */
-    typedef struct RingHead
-    {
+    typedef struct RingHead {
         /** Index where the ring buffer starts. */
         Size index;
     }
-    RingHead;
+            RingHead;
 
-  public:
+public:
 
     /**
      * Constructor
@@ -139,17 +137,15 @@ class MemoryChannel : public Channel
      */
     virtual Result flush();
 
-    bool operator == (const MemoryChannel & ch) const
-    {
+    bool operator==(const MemoryChannel &ch) const {
         return false;
     }
 
-    bool operator != (const MemoryChannel & ch) const
-    {
+    bool operator!=(const MemoryChannel &ch) const {
         return false;
     }
 
-  private:
+private:
 
     /**
      * Reset to initial state.
@@ -170,7 +166,7 @@ class MemoryChannel : public Channel
      */
     Result flushPage(const Address page) const;
 
-  private:
+private:
 
     /** Maximum number of messages that can be stored. */
     const Size m_maximumMessages;

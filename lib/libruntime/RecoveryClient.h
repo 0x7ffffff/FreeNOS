@@ -37,9 +37,8 @@ struct RecoveryMessage;
  *
  * @see RecoveryServer
  */
-class RecoveryClient
-{
-  public:
+class RecoveryClient {
+public:
 
     /**
      * Class constructor function.
@@ -57,7 +56,7 @@ class RecoveryClient
      */
     Recovery::Result restartProcess(const ProcessID pid) const;
 
-  private:
+private:
 
     /**
      * Send an IPC request to the RecoveryServer
@@ -68,7 +67,7 @@ class RecoveryClient
      */
     Recovery::Result request(RecoveryMessage &msg) const;
 
-  private:
+private:
 
     /** ProcessID of the RecoveryServer */
     const ProcessID m_pid;

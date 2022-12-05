@@ -30,9 +30,8 @@
  *
  * @bug Running 'sysinfo' and 'ps' commands in turn on arm/sunxi-h3 shows a 4KiB memory leak
  */
-class SysInfo : public POSIXApplication
-{
-  public:
+class SysInfo : public POSIXApplication {
+public:
 
     /**
      * Constructor

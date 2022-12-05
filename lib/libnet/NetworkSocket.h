@@ -34,9 +34,8 @@
 /**
  * Network socket represents a single logical connection on a protocol.
  */
-class NetworkSocket : public File
-{
-  public:
+class NetworkSocket : public File {
+public:
 
     /**
      * Constructor
@@ -70,7 +69,7 @@ class NetworkSocket : public File
      */
     virtual FileSystem::Result process(const NetworkQueue::Packet *pkt) = 0;
 
-  protected:
+protected:
 
     /** ProcessID which owns this socket */
     const ProcessID m_pid;

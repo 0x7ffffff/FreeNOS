@@ -35,9 +35,8 @@
 /**
  * Host operating system cache management implementation.
  */
-class HostCache : public Cache
-{
-  public:
+class HostCache : public Cache {
+public:
 
     /**
      * Invalidate the entire cache.
@@ -91,8 +90,7 @@ class HostCache : public Cache
     virtual Result invalidateAddress(Type type, Address addr);
 };
 
-namespace Arch
-{
+namespace Arch {
     typedef HostCache Cache;
 };
 

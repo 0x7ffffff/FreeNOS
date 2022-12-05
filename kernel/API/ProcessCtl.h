@@ -34,8 +34,7 @@
  *
  * @see ProcessCtl
  */
-typedef enum ProcessOperation
-{
+typedef enum ProcessOperation {
     Spawn = 0,
     KillPID,
     GetPID,
@@ -55,13 +54,12 @@ typedef enum ProcessOperation
     Resume,
     Reset
 }
-ProcessOperation;
+        ProcessOperation;
 
 /**
  * Process information structure, used for Info.
  */
-typedef struct ProcessInfo
-{
+typedef struct ProcessInfo {
     /** Process Identity number. Must be unique. */
     ProcessID id;
 
@@ -71,10 +69,10 @@ typedef struct ProcessInfo
     /** Defines the current state of the Process. */
     Process::State state;
 }
-ProcessInfo;
+        ProcessInfo;
 
 /** Operator to print a ProcessOperation to a Log */
-Log & operator << (Log &log, ProcessOperation op);
+Log &operator<<(Log &log, ProcessOperation op);
 
 /**
  * Prototype for user applications. Process management related operations.
@@ -93,8 +91,7 @@ Log & operator << (Log &log, ProcessOperation op);
 inline API::Result ProcessCtl(const ProcessID proc,
                               const ProcessOperation op,
                               const Address addr = 0,
-                              const Address output = 0)
-{
+                              const Address output = 0) {
     return (API::Result) trapKernel4(API::ProcessCtlNumber, proc, op, addr, output);
 }
 

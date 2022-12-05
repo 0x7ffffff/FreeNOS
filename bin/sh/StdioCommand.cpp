@@ -19,13 +19,11 @@
 #include <fcntl.h>
 #include "StdioCommand.h"
 
-StdioCommand::StdioCommand() : ShellCommand("stdio", 2)
-{
+StdioCommand::StdioCommand() : ShellCommand("stdio", 2) {
     m_help = "Change standard I/O of the shell";
 }
 
-int StdioCommand::execute(const Size nparams, const char **params)
-{
+int StdioCommand::execute(const Size nparams, const char **params) {
     // Close current standard I/O
     close(0);
     close(1);

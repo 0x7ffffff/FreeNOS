@@ -36,9 +36,8 @@
  * @see https://lz4.github.io/lz4/
  * @see https://en.wikipedia.org/wiki/LZ4_(compression_algorithm)
  */
-class Lz4Decompressor
-{
-  private:
+class Lz4Decompressor {
+private:
 
     /** Magic number value marks the start of the frame header */
     static const u32 FrameMagic = 0x184D2204;
@@ -46,14 +45,13 @@ class Lz4Decompressor
     /**
      * Frame FLG Field Shift values
      */
-    enum FrameFlgFields
-    {
-        FrameDictIdShift     = 0,
+    enum FrameFlgFields {
+        FrameDictIdShift = 0,
         FrameContentChkShift = 2,
-        FrameContentSzShift  = 3,
-        FrameBlockChkShift   = 4,
-        FrameBlockIndShift   = 5,
-        FrameVersionShift    = 6,
+        FrameContentSzShift = 3,
+        FrameBlockChkShift = 4,
+        FrameBlockIndShift = 5,
+        FrameVersionShift = 6,
     };
 
     /** Current supported version of the LZ4 algorithm */
@@ -62,20 +60,19 @@ class Lz4Decompressor
     /** EndMark marks the end of the data stream */
     static const u32 EndMark = 0x00000000;
 
-  public:
+public:
 
     /**
      * Result codes
      */
-    enum Result
-    {
+    enum Result {
         Success,
         IOError,
         InvalidArgument,
         NotSupported
     };
 
-  public:
+public:
 
     /**
      * Constructor function.
@@ -109,7 +106,7 @@ class Lz4Decompressor
      */
     Result read(void *buffer, const Size size) const;
 
-  private:
+private:
 
     /**
      * Decompress a block of compressed data
@@ -139,7 +136,7 @@ class Lz4Decompressor
                                    const u8 *next,
                                    Size &byteCount) const;
 
-  private:
+private:
 
     /** Compressed input data */
     const u8 *m_inputData;

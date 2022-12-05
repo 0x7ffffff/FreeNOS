@@ -23,20 +23,20 @@
 #include <ApplicationLauncher.h>
 
 TestCase(RunMpiPing)
-{
-    // Launch mpiping program
-    const char *args[] = { "/bin/mpiping", ZERO };
-    ApplicationLauncher mpiping(TESTROOT "/bin/mpiping", args);
+        {
+                // Launch mpiping program
+                const char *args[] = { "/bin/mpiping", ZERO };
+                ApplicationLauncher mpiping(TESTROOT "/bin/mpiping", args);
 
-    // Start the program
-    const ApplicationLauncher::Result resultCode = mpiping.exec();
-    testAssert(resultCode == ApplicationLauncher::Success);
+                // Start the program
+                const ApplicationLauncher::Result resultCode = mpiping.exec();
+                testAssert(resultCode == ApplicationLauncher::Success);
 
-    // Wait for program to finish
-    const ApplicationLauncher::Result waitResult = mpiping.wait();
-    testAssert(waitResult == ApplicationLauncher::Success || waitResult == ApplicationLauncher::NotFound);
-    testAssert(mpiping.getExitCode() == 0);
+                // Wait for program to finish
+                const ApplicationLauncher::Result waitResult = mpiping.wait();
+                testAssert(waitResult == ApplicationLauncher::Success || waitResult == ApplicationLauncher::NotFound);
+                testAssert(mpiping.getExitCode() == 0);
 
-    // Done
-    return OK;
-}
+                // Done
+                return OK;
+        }

@@ -24,8 +24,7 @@
 #include <DirectoryScanner.h>
 #include <StdioLog.h>
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     char path[255], tmp[255];
     int iterations = 1, r;
     StdioLog log;
@@ -34,38 +33,31 @@ int main(int argc, char **argv)
 
     // Grab command-line arguments, if any.
     // First positional argument is the directory.
-    if (argc > 1)
-    {
+    if (argc > 1) {
         strncpy(path, argv[1], sizeof(path));
         path[254] = 0;
-    }
-    else
-    {
+    } else {
         strncpy(tmp, argv[0], sizeof(tmp));
         strncpy(path, dirname(tmp), sizeof(path));
         path[254] = 0;
     }
     // Optional arguments.
-    for (int i = 1; i < argc; i++)
-    {
+    for (int i = 1; i < argc; i++) {
         if ((strcmp(argv[i], "-i") == 0 || strcmp(argv[i], "--iterations") == 0) &&
-             i < argc - 1)
-        {
-            iterations = atoi(argv[i+1]);
+            i < argc - 1) {
+            iterations = atoi(argv[i + 1]);
         }
     }
     runner.getReporter()->setMultiline(true);
 
     // Discover tests
-    if (scanner.scan(path) != EXIT_SUCCESS)
-    {
+    if (scanner.scan(path) != EXIT_SUCCESS) {
         printf("%s: failed to discover tests\n", argv[0]);
         return EXIT_FAILURE;
     }
 
     // Run tests
-    for (int i = 0; i < iterations; i++)
-    {
+    for (int i = 0; i < iterations; i++) {
         if ((r = runner.run()) != 0)
             return r;
     }

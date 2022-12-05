@@ -20,16 +20,13 @@
 #include "TestSuite.h"
 
 TestSuite::TestSuite()
-    : StrictSingleton<TestSuite>()
-{
+        : StrictSingleton<TestSuite>() {
 }
 
-void TestSuite::addTest(TestInstance *test)
-{
+void TestSuite::addTest(TestInstance *test) {
     m_tests.append(test);
 }
 
-List<TestInstance *> * TestSuite::getTests()
-{
-    return & m_tests;
+List<TestInstance *> *TestSuite::getTests() {
+    return &m_tests;
 }

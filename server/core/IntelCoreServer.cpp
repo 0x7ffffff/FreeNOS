@@ -21,36 +21,30 @@
 #include <Log.h>
 #include "IntelCoreServer.h"
 
-template<> CoreServer* AbstractFactory<CoreServer>::create()
-{
+template<>
+CoreServer *AbstractFactory<CoreServer>::create() {
     return new IntelCoreServer();
 }
 
 IntelCoreServer::IntelCoreServer()
-    : CoreServer()
-    , m_mp(m_apic)
-{
+        : CoreServer(), m_mp(m_apic) {
 }
 
-IntelCoreServer::Result IntelCoreServer::initialize()
-{
+IntelCoreServer::Result IntelCoreServer::initialize() {
     API::Result r = ProcessCtl(SELF, WatchIRQ, IPIVector);
 
-    if (r != API::Success)
-    {
+    if (r != API::Success) {
         ERROR("failed to register IPI vector: "
-              "ProcessCtl(WatchIRQ) returned: " << (uint)r);
+              "ProcessCtl(WatchIRQ) returned: " << (uint) r);
         return IOError;
     }
 
     return CoreServer::initialize();
 }
 
-Core::Result IntelCoreServer::bootCore(uint coreId, CoreInfo *info)
-{
+Core::Result IntelCoreServer::bootCore(uint coreId, CoreInfo *info) {
     // Signal the core to boot
-    if (m_mp.boot(info) != IntelMP::Success)
-    {
+    if (m_mp.boot(info) != IntelMP::Success) {
         ERROR("failed to boot core" << coreId);
         return Core::BootError;
     }
@@ -59,23 +53,17 @@ Core::Result IntelCoreServer::bootCore(uint coreId, CoreInfo *info)
     return Core::Success;
 }
 
-Core::Result IntelCoreServer::discoverCores()
-{
+Core::Result IntelCoreServer::discoverCores() {
     m_mp.initialize();
 
     if (m_acpi.initialize() == IntelACPI::Success &&
-        m_acpi.discover() == IntelACPI::Success)
-    {
+        m_acpi.discover() == IntelACPI::Success) {
         NOTICE("using ACPI as CoreManager");
         m_cores = &m_acpi;
-    }
-    else if (m_mp.discover() == IntelMP::Success)
-    {
+    } else if (m_mp.discover() == IntelMP::Success) {
         NOTICE("using MPTable as CoreManager");
         m_cores = &m_mp;
-    }
-    else
-    {
+    } else {
         ERROR("no CoreManager found (ACPI or MPTable)");
         return Core::NotFound;
     }
@@ -83,18 +71,15 @@ Core::Result IntelCoreServer::discoverCores()
     return Core::Success;
 }
 
-void IntelCoreServer::waitIPI() const
-{
+void IntelCoreServer::waitIPI() const {
     // Wait for IPI which will wake us
     ProcessCtl(SELF, EnableIRQ, IPIVector);
     ProcessCtl(SELF, EnterSleep, 0, 0);
 }
 
-Core::Result IntelCoreServer::sendIPI(uint coreId)
-{
+Core::Result IntelCoreServer::sendIPI(uint coreId) {
     // Send IPI to ensure the slave wakes up for the message
-    if (m_apic.sendIPI(coreId, IPIVector) != IntController::Success)
-    {
+    if (m_apic.sendIPI(coreId, IPIVector) != IntController::Success) {
         ERROR("failed to send IPI to core" << coreId);
         return Core::IOError;
     }

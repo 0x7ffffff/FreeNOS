@@ -17,16 +17,13 @@
 
 #include "ArgumentContainer.h"
 
-ArgumentContainer::ArgumentContainer()
-{
+ArgumentContainer::ArgumentContainer() {
 }
 
-ArgumentContainer::~ArgumentContainer()
-{
+ArgumentContainer::~ArgumentContainer() {
     // cleanup flags
-    for (HashIterator<String, Argument *> it(m_flags);
-         it.hasCurrent();)
-    {
+    for (HashIterator < String, Argument * > it(m_flags);
+         it.hasCurrent();) {
         delete it.current();
         it.remove();
     }
@@ -36,26 +33,22 @@ ArgumentContainer::~ArgumentContainer()
         delete m_positionals[i];
 }
 
-const Vector<Argument *> & ArgumentContainer::getPositionals() const
-{
+const Vector<Argument *> &ArgumentContainer::getPositionals() const {
     return m_positionals;
 }
 
-const HashTable<String, Argument *> & ArgumentContainer::getFlags() const
-{
+const HashTable<String, Argument *> &ArgumentContainer::getFlags() const {
     return m_flags;
 }
 
-const char * ArgumentContainer::get(const char *name) const
-{
+const char *ArgumentContainer::get(const char *name) const {
     // Search flag arguments
-    const Argument * const *arg = m_flags.get(name);
+    const Argument *const *arg = m_flags.get(name);
     if (arg)
         return *(*arg)->getValue();
 
     // Search positional arguments
-    for (Size i = 0; i < m_positionals.count(); i++)
-    {
+    for (Size i = 0; i < m_positionals.count(); i++) {
         const Argument *a = m_positionals[i];
 
         if (a->getName().equals(name))
@@ -64,14 +57,12 @@ const char * ArgumentContainer::get(const char *name) const
     return ZERO;
 }
 
-ArgumentContainer::Result ArgumentContainer::addPositional(Argument *arg)
-{
+ArgumentContainer::Result ArgumentContainer::addPositional(Argument *arg) {
     m_positionals.insert(arg);
     return Success;
 }
 
-ArgumentContainer::Result ArgumentContainer::addFlag(Argument *arg)
-{
+ArgumentContainer::Result ArgumentContainer::addFlag(Argument *arg) {
     m_flags.insert(arg->getName(), arg);
     return Success;
 }

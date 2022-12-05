@@ -35,9 +35,8 @@
 /**
  * Uses a BootImage as a storage provider.
  */
-class BootImageStorage : public Storage
-{
-  public:
+class BootImageStorage : public Storage {
+public:
 
     /**
      * Constructor function.
@@ -78,16 +77,16 @@ class BootImageStorage : public Storage
      */
     virtual u64 capacity() const;
 
-  private:
+private:
 
     /**
      * Loads the BootImage into virtual memory.
      *
      * @return Pointer to the BootImage or ZERO on failure
      */
-    const BootImage * load() const;
+    const BootImage *load() const;
 
-  private:
+private:
 
     /** Pointer to the BootImage */
     const BootImage *m_image;

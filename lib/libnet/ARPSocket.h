@@ -37,9 +37,8 @@ class ARP;
  *
  * ARP sockets receive a copy of ARP reply packets.
  */
-class ARPSocket : public NetworkSocket
-{
-  public:
+class ARPSocket : public NetworkSocket {
+public:
 
     /**
      * Constructor
@@ -65,8 +64,8 @@ class ARPSocket : public NetworkSocket
      *
      * @return Result code
      */
-    virtual FileSystem::Result read(IOBuffer & buffer,
-                                    Size & size,
+    virtual FileSystem::Result read(IOBuffer &buffer,
+                                    Size &size,
                                     const Size offset);
 
     /**
@@ -79,8 +78,8 @@ class ARPSocket : public NetworkSocket
      *
      * @return Result code
      */
-    virtual FileSystem::Result write(IOBuffer & buffer,
-                                     Size & size,
+    virtual FileSystem::Result write(IOBuffer &buffer,
+                                     Size &size,
                                      const Size offset);
 
     /**
@@ -92,7 +91,7 @@ class ARPSocket : public NetworkSocket
      */
     virtual FileSystem::Result process(const NetworkQueue::Packet *pkt);
 
-  private:
+private:
 
     /** ARP protocol instance */
     ARP *m_arp;

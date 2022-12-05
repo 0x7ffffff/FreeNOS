@@ -41,9 +41,8 @@
  *       which communicates with the remote CoreServer to properly setup
  *       the channel between cores.
  */
-class ChannelClient : public StrictSingleton<ChannelClient>
-{
-  private:
+class ChannelClient : public StrictSingleton<ChannelClient> {
+private:
 
     /** Maximum number of concurrent outgoing requests. */
     static const Size MaximumRequests = 32u;
@@ -54,32 +53,28 @@ class ChannelClient : public StrictSingleton<ChannelClient>
     /**
      * Holds an outgoing request
      */
-    typedef struct Request
-    {
+    typedef struct Request {
         bool active;
         ProcessID pid;
         ChannelMessage *message;
         CallbackFunction *callback;
 
-        const bool operator == (const struct Request & req) const
-        {
+        const bool operator==(const struct Request &req) const {
             return req.message == message && req.callback == callback;
         }
 
-        const bool operator != (const struct Request & req) const
-        {
+        const bool operator!=(const struct Request &req) const {
             return req.message != message || req.callback != callback;
         }
     }
-    Request;
+            Request;
 
-  public:
+public:
 
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         InvalidArgument,
         InvalidSize,
@@ -88,7 +83,7 @@ class ChannelClient : public StrictSingleton<ChannelClient>
         NotFound
     };
 
-  public:
+public:
 
     /**
      * Constructor.
@@ -105,7 +100,7 @@ class ChannelClient : public StrictSingleton<ChannelClient>
      *
      * @return ChannelRegistry object reference
      */
-    ChannelRegistry & getRegistry();
+    ChannelRegistry &getRegistry();
 
     /**
      * Initialize the ChannelClient.
@@ -201,7 +196,7 @@ class ChannelClient : public StrictSingleton<ChannelClient>
      */
     virtual Result syncSendReceive(void *buffer, const Size msgSize, const ProcessID pid);
 
-  private:
+private:
 
     /**
      * Get consumer for a process.
@@ -211,7 +206,7 @@ class ChannelClient : public StrictSingleton<ChannelClient>
      *
      * @return Channel object if found or ZERO otherwise.
      */
-    Channel * findConsumer(const ProcessID pid, const Size msgSize);
+    Channel *findConsumer(const ProcessID pid, const Size msgSize);
 
     /**
      * Get producer for a process.
@@ -221,15 +216,15 @@ class ChannelClient : public StrictSingleton<ChannelClient>
      *
      * @return Channel object if found or ZERO otherwise.
      */
-    Channel * findProducer(const ProcessID pid, const Size msgSize);
+    Channel *findProducer(const ProcessID pid, const Size msgSize);
 
-  private:
+private:
 
     /** Contains registered channels */
     ChannelRegistry m_registry;
 
     /** Contains ongoing requests */
-    Index<Request, MaximumRequests> m_requests;
+    Index <Request, MaximumRequests> m_requests;
 
     /** Current Process ID */
     const ProcessID m_pid;

@@ -33,8 +33,7 @@
 /**
  * Executable entry for use inside a boot image.
  */
-typedef struct BootEntry
-{
+typedef struct BootEntry {
     /** BootSymbol definition */
     BootSymbol symbol;
 
@@ -47,19 +46,18 @@ typedef struct BootEntry
     /** Number of memory regions. */
     Size numRegions;
 }
-BootEntry;
+        BootEntry;
 
 /**
  * Create system boot image
  */
-class BootImageCreate : public Application
-{
-  private:
+class BootImageCreate : public Application {
+private:
 
     /** Size of memory pages as supported by this program. */
     static const Size PageSize = 4096U;
 
-  public:
+public:
 
     /**
      * Constructor
@@ -81,7 +79,7 @@ class BootImageCreate : public Application
      */
     virtual Result exec();
 
-  protected:
+protected:
 
     /**
      * Print text to output.
@@ -91,7 +89,7 @@ class BootImageCreate : public Application
      */
     virtual Result output(const char *string) const;
 
-  private:
+private:
 
     /**
      * Read boot symbols using a configuration file.

@@ -32,9 +32,8 @@
 /**
  * Change the current working directory.
  */
-class ChangeDirCommand : public ShellCommand
-{
-  public:
+class ChangeDirCommand : public ShellCommand {
+public:
 
     /**
      * Constructor function.

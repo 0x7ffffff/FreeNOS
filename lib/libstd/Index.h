@@ -33,18 +33,16 @@
 /**
  * Index is a N-sized array of pointers to items of type T.
  */
-template <class T, const Size N> class Index
-{
-  public:
+template<class T, const Size N>
+class Index {
+public:
 
     /**
      * Constructor.
      */
     Index()
-        : m_count(0)
-    {
-        for (Size i = 0; i < N; i++)
-        {
+            : m_count(0) {
+        for (Size i = 0; i < N; i++) {
             m_array[i] = ZERO;
         }
     }
@@ -57,24 +55,19 @@ template <class T, const Size N> class Index
      *
      * @return True on success, false otherwise.
      */
-    virtual bool insert(Size & position, T *item)
-    {
+    virtual bool insert(Size &position, T *item) {
         // Check if we are full
-        if (m_count == N)
-        {
+        if (m_count == N) {
             return false;
         }
-        // The item must point to an object
-        else if (item == ZERO)
-        {
+            // The item must point to an object
+        else if (item == ZERO) {
             return false;
         }
 
         // There is space, add the item.
-        for (Size i = 0; i < N; i++)
-        {
-            if (m_array[i] == ZERO)
-            {
+        for (Size i = 0; i < N; i++) {
+            if (m_array[i] == ZERO) {
                 m_array[i] = item;
                 m_count++;
                 position = i;
@@ -94,8 +87,7 @@ template <class T, const Size N> class Index
      *
      * @return True on success, false otherwise.
      */
-    virtual bool insert(T *item)
-    {
+    virtual bool insert(T *item) {
         Size ignored = 0;
         return insert(ignored, item);
     }
@@ -110,22 +102,18 @@ template <class T, const Size N> class Index
      *
      * @return True on success, false otherwise.
      */
-    virtual bool insertAt(const Size position, T *item)
-    {
+    virtual bool insertAt(const Size position, T *item) {
         // Position must be in range of the array
-        if (position >= N)
-        {
+        if (position >= N) {
             return false;
         }
-        // The item must point to an object
-        else if (item == ZERO)
-        {
+            // The item must point to an object
+        else if (item == ZERO) {
             return false;
         }
 
         // Increment counter only when needed
-        if (m_array[position] == ZERO)
-        {
+        if (m_array[position] == ZERO) {
             m_count++;
         }
 
@@ -140,17 +128,14 @@ template <class T, const Size N> class Index
      *
      * @return bool Whether removing the item succeeded.
      */
-    virtual bool remove(const Size position)
-    {
+    virtual bool remove(const Size position) {
         // Position must be in range of the array
-        if (position >= N)
-        {
+        if (position >= N) {
             return false;
         }
 
         // See if the item exists
-        if (!m_array[position])
-        {
+        if (!m_array[position]) {
             return false;
         }
 
@@ -163,12 +148,9 @@ template <class T, const Size N> class Index
     /**
      * Removes and delete()'s all items.
      */
-    void deleteAll()
-    {
-        for (Size i = 0; i < N; i++)
-        {
-            if (m_array[i] != ZERO)
-            {
+    void deleteAll() {
+        for (Size i = 0; i < N; i++) {
+            if (m_array[i] != ZERO) {
                 delete m_array[i];
                 m_array[i] = ZERO;
             }
@@ -184,11 +166,9 @@ template <class T, const Size N> class Index
      *
      * @return Pointer to the item at the given position or ZERO if no item available.
      */
-    virtual T * get(const Size position) const
-    {
+    virtual T *get(const Size position) const {
         // Position must be in range of the array
-        if (position >= N)
-        {
+        if (position >= N) {
             return ZERO;
         }
 
@@ -198,12 +178,9 @@ template <class T, const Size N> class Index
     /**
      * Check if the given item is stored in this Sequence.
      */
-    virtual bool contains(const T *item) const
-    {
-        for (Size i = 0; i < N; i++)
-        {
-            if (m_array[i] == item)
-            {
+    virtual bool contains(const T *item) const {
+        for (Size i = 0; i < N; i++) {
+            if (m_array[i] == item) {
                 return true;
             }
         }
@@ -214,35 +191,32 @@ template <class T, const Size N> class Index
     /**
      * Size of the Index.
      */
-    virtual Size size() const
-    {
+    virtual Size size() const {
         return N;
     }
 
     /**
      * Item count in the Index.
      */
-    virtual Size count() const
-    {
+    virtual Size count() const {
         return m_count;
     }
 
-   /**
-     * Returns the item at the given position in the Index.
-     *
-     * @param i The position of the item to return.
-     *
-     * @return the Item at position i or ZERO if no item available.
-     */
-    T * operator [] (const Size i)
-    {
+    /**
+      * Returns the item at the given position in the Index.
+      *
+      * @param i The position of the item to return.
+      *
+      * @return the Item at position i or ZERO if no item available.
+      */
+    T *operator[](const Size i) {
         return get(i);
     }
 
-  private:
+private:
 
     /** Array of pointers to items. */
-    T* m_array[N];
+    T *m_array[N];
 
     /** Amount of valid pointers in the array. */
     Size m_count;

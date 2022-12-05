@@ -36,9 +36,8 @@ class ICMP;
  *
  * The ICMP factory creates new sockets for applications.
  */
-class ICMPFactory : public File
-{
-  public:
+class ICMPFactory : public File {
+public:
 
     /**
      * Constructor
@@ -64,11 +63,11 @@ class ICMPFactory : public File
      *
      * @return Result code
      */
-    virtual FileSystem::Result read(IOBuffer & buffer,
-                                    Size & size,
+    virtual FileSystem::Result read(IOBuffer &buffer,
+                                    Size &size,
                                     const Size offset);
 
-  private:
+private:
 
     /** ICMP protocol instance */
     ICMP *m_icmp;

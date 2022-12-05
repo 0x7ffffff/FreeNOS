@@ -33,9 +33,8 @@
 /**
  * Represents the Sunxi kernel implementation
  */
-class SunxiKernel : public ARMKernel
-{
-  public:
+class SunxiKernel : public ARMKernel {
+public:
 
     /**
      * Constructor function.
@@ -44,7 +43,7 @@ class SunxiKernel : public ARMKernel
      */
     SunxiKernel(CoreInfo *info);
 
-  private:
+private:
 
     /**
      * Interrupt handler routine
@@ -53,7 +52,7 @@ class SunxiKernel : public ARMKernel
      */
     static void interrupt(CPUState state);
 
-  private:
+private:
 
     /** ARM Generic Interrupt Controller */
     ARMGenericInterrupt m_gic;

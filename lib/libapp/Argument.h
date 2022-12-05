@@ -32,9 +32,8 @@
 /**
  * Represents program command line argument
  */
-class Argument
-{
-  public:
+class Argument {
+public:
 
     /**
      * Class constructor
@@ -48,7 +47,7 @@ class Argument
      *
      * @param name Input argument name
      */
-    Argument(const String & name);
+    Argument(const String &name);
 
     /**
      * Get single character identifier
@@ -62,21 +61,21 @@ class Argument
      *
      * @return Argument name
      */
-    const String & getName() const;
+    const String &getName() const;
 
     /**
      * Retrieve single line argument description
      *
      * @return Argument description
      */
-    const String & getDescription() const;
+    const String &getDescription() const;
 
     /**
      * Retrieve argument option value (if any)
      *
      * @return Argument value
      */
-    const String & getValue() const;
+    const String &getValue() const;
 
     /**
      * Retrieve maximum argument count (if set)
@@ -127,7 +126,7 @@ class Argument
      *
      * @return Boolean
      */
-    bool operator == (const Argument & arg) const;
+    bool operator==(const Argument &arg) const;
 
     /**
      * Non-equality operator
@@ -136,9 +135,9 @@ class Argument
      *
      * @return Boolean
      */
-    bool operator != (const Argument & arg) const;
+    bool operator!=(const Argument &arg) const;
 
-  private:
+private:
 
     /** Argument identifier */
     char m_id;

@@ -34,9 +34,8 @@ class TestInstance;
 /**
  * Maintains a list of test instances
  */
-class TestSuite : public StrictSingleton<TestSuite>
-{
-  public:
+class TestSuite : public StrictSingleton<TestSuite> {
+public:
 
     /**
      * Class constructor
@@ -55,9 +54,9 @@ class TestSuite : public StrictSingleton<TestSuite>
      *
      * @return List of TestInstances
      */
-    List<TestInstance *> * getTests();
+    List<TestInstance *> *getTests();
 
-  private:
+private:
 
     /** List of TestInstances in the suite */
     List<TestInstance *> m_tests;

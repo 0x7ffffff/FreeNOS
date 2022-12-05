@@ -61,8 +61,7 @@
 /**
  * Represents a directory entry.
  */
-struct dirent
-{
+struct dirent {
     /** Name of entry. */
     char d_name[DIRLEN];
 
@@ -91,8 +90,7 @@ struct dirent
  *
  * @note The DIR type may be an incomplete type.
  */
-typedef struct DIR
-{
+typedef struct DIR {
     /** File descriptor returned by opendir(). */
     int fd;
 
@@ -108,7 +106,7 @@ typedef struct DIR
     /** End-of-file reached? */
     bool eof;
 }
-DIR;
+        DIR;
 
 /**
  * Open directory associated with file descriptor.
@@ -120,7 +118,10 @@ DIR;
  *         pointer to an object of type DIR. Otherwise, these functions
  *         shall return a null pointer and set errno to indicate the error.
  */
-extern C DIR * opendir(const char *dirname);
+extern C DIR
+*
+
+opendir(const char *dirname);
 
 /**
  * Read a directory.
@@ -135,7 +136,7 @@ extern C DIR * opendir(const char *dirname);
  *         be returned and errno shall be set to indicate the error. When the end of
  *         the directory is encountered, a null pointer shall be returned and errno is not changed.
  */
-extern C struct dirent * readdir(DIR *dirp);
+extern C struct dirent *readdir(DIR * dirp);
 
 /**
  * Close a directory stream.
@@ -146,7 +147,7 @@ extern C struct dirent * readdir(DIR *dirp);
  * @return Upon successful completion, closedir() shall return 0; otherwise,
  *         -1 shall be returned and errno set to indicate the error.
  */
-extern C int closedir(DIR *dirp);
+extern C int closedir(DIR * dirp);
 
 /**
  * @}

@@ -20,34 +20,28 @@
 #include <FreeNOS/User.h>
 #include "PL011.h"
 
-template<> SerialDevice* AbstractFactory<SerialDevice>::create()
-{
+template<>
+SerialDevice *AbstractFactory<SerialDevice>::create() {
     return new PL011(UART0_IRQ);
 }
 
 PL011::PL011(const u32 irq)
-    : SerialDevice(irq)
-{
+        : SerialDevice(irq) {
     m_identifier << "serial0";
 }
 
-FileSystem::Result PL011::initialize()
-{
-    if (!isKernel)
-    {
+FileSystem::Result PL011::initialize() {
+    if (!isKernel) {
         // Remap IO base to ensure we have user-level access to the registers.
-        if (m_io.map(UART_BASE, PAGESIZE*2,
+        if (m_io.map(UART_BASE, PAGESIZE * 2,
                      Memory::User | Memory::Readable | Memory::Writable | Memory::Device)
-            != IO::Success)
-        {
+            != IO::Success) {
             return FileSystem::IOError;
         }
 
         // Disable receiving interrupts
         ProcessCtl(SELF, DisableIRQ, m_irq);
-    }
-    else
-    {
+    } else {
         m_io.setBase(UART_BASE);
     }
 
@@ -64,15 +58,12 @@ FileSystem::Result PL011::initialize()
     // Disable FIFO, use 8 bit data transmission, 1 stop bit, no parity
     m_io.write(PL011_LCRH, PL011_LCRH_WLEN_8BIT);
 
-    if (isKernel)
-    {
+    if (isKernel) {
         // Mask all interrupts.
         m_io.write(PL011_IMSC, (1 << 1) | (1 << 4) | (1 << 5) |
                                (1 << 6) | (1 << 7) | (1 << 8) |
                                (1 << 9) | (1 << 10));
-    }
-    else
-    {
+    } else {
         // Enable Rx/Tx interrupts
         m_io.write(PL011_IMSC, PL011_IMSC_RXIM);
         ProcessCtl(SELF, EnableIRQ, m_irq);
@@ -84,8 +75,7 @@ FileSystem::Result PL011::initialize()
     return FileSystem::Success;
 }
 
-FileSystem::Result PL011::interrupt(const Size vector)
-{
+FileSystem::Result PL011::interrupt(const Size vector) {
     // Clear Receive Interrupts
     u32 mis = m_io.read(PL011_MIS);
     if (mis & PL011_MIS_RXMIS)
@@ -97,18 +87,16 @@ FileSystem::Result PL011::interrupt(const Size vector)
         m_io.write(PL011_ICR, PL011_ICR_TXIC);
 
     // Re-enable interrupts
-    if (!isKernel)
-    {
+    if (!isKernel) {
         ProcessCtl(SELF, EnableIRQ, m_irq);
     }
 
     return FileSystem::Success;
 }
 
-FileSystem::Result PL011::read(IOBuffer & buffer,
-                               Size & size,
-                               const Size offset)
-{
+FileSystem::Result PL011::read(IOBuffer &buffer,
+                               Size &size,
+                               const Size offset) {
     Size bytes = 0;
 
     // Clear Receive Interrupts
@@ -117,29 +105,24 @@ FileSystem::Result PL011::read(IOBuffer & buffer,
         m_io.write(PL011_ICR, PL011_ICR_RXIC);
 
     // Read as much bytes as possible
-    while (!(m_io.read(PL011_FR) & PL011_FR_RXFE) && bytes < size)
-    {
+    while (!(m_io.read(PL011_FR) & PL011_FR_RXFE) && bytes < size) {
         //buffer[bytes++] = m_io.read(PL011_DR);
         u8 byte = m_io.read(PL011_DR);
         buffer.bufferedWrite(&byte, 1);
         bytes++;
     }
 
-    if (buffer.getCount())
-    {
+    if (buffer.getCount()) {
         size = buffer.getCount();
         return FileSystem::Success;
-    }
-    else
-    {
+    } else {
         return FileSystem::RetryAgain;
     }
 }
 
-FileSystem::Result PL011::write(IOBuffer & buffer,
-                                Size & size,
-                                const Size offset)
-{
+FileSystem::Result PL011::write(IOBuffer &buffer,
+                                Size &size,
+                                const Size offset) {
     Size bytes = 0;
 
     // Clear Transmit Interrupts
@@ -148,21 +131,16 @@ FileSystem::Result PL011::write(IOBuffer & buffer,
         m_io.write(PL011_ICR, PL011_ICR_TXIC);
 
     // Write as much bytes as possible
-    while (bytes < size)
-    {
-        if (m_io.read(PL011_FR) & PL011_FR_TXFE)
-        {
+    while (bytes < size) {
+        if (m_io.read(PL011_FR) & PL011_FR_TXFE) {
             m_io.write(PL011_DR, buffer[bytes++]);
         }
     }
 
-    if (bytes)
-    {
+    if (bytes) {
         size = bytes;
         return FileSystem::Success;
-    }
-    else
-    {
+    } else {
         return FileSystem::RetryAgain;
     }
 }

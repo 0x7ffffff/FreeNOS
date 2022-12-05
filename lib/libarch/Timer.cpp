@@ -19,36 +19,28 @@
 #include "Timer.h"
 
 Timer::Timer()
-    : m_ticks(0)
-    , m_frequency(0)
-    , m_int(0)
-{
+        : m_ticks(0), m_frequency(0), m_int(0) {
 }
 
-Size Timer::getInterrupt() const
-{
+Size Timer::getInterrupt() const {
     return m_int;
 }
 
-Size Timer::getFrequency() const
-{
+Size Timer::getFrequency() const {
     return m_frequency;
 }
 
-Timer::Result Timer::setFrequency(Size hertz)
-{
+Timer::Result Timer::setFrequency(Size hertz) {
     m_frequency = hertz;
     return Success;
 }
 
 Timer::Result Timer::getCurrent(Info *info,
-                                const Size msecOffset)
-{
+                                const Size msecOffset) {
     info->frequency = m_frequency;
-    info->ticks     = m_ticks;
+    info->ticks = m_ticks;
 
-    if (msecOffset != 0 && m_frequency != 0)
-    {
+    if (msecOffset != 0 && m_frequency != 0) {
         const Size msecPerTick = 1000 / m_frequency;
         info->ticks += ((msecOffset / msecPerTick) + 1);
     }
@@ -56,34 +48,28 @@ Timer::Result Timer::getCurrent(Info *info,
     return Success;
 }
 
-Timer::Result Timer::initialize()
-{
+Timer::Result Timer::initialize() {
     return Success;
 }
 
-Timer::Result Timer::start()
-{
+Timer::Result Timer::start() {
     return Success;
 }
 
-Timer::Result Timer::stop()
-{
+Timer::Result Timer::stop() {
     return Success;
 }
 
-Timer::Result Timer::tick()
-{
+Timer::Result Timer::tick() {
     m_ticks++;
     return Success;
 }
 
-Timer::Result Timer::wait(u32 microseconds) const
-{
+Timer::Result Timer::wait(u32 microseconds) const {
     return Success;
 }
 
-bool Timer::isExpired(const Timer::Info & info) const
-{
+bool Timer::isExpired(const Timer::Info &info) const {
     if (!info.frequency)
         return false;
 

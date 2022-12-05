@@ -46,10 +46,10 @@
 /** Used by GPU */
 #define SYSTIMER_C2   (SYSTIMER_BASE + 0x14)
 #define SYSTIMER_C3   (SYSTIMER_BASE + 0x18)
-    #define M3 3
-    #define M2 2
-    #define M1 1
-    #define M0 0
+#define M3 3
+#define M2 2
+#define M1 1
+#define M0 0
 
 /** BCM Sys Timer runs at 1Mhz */
 #define BCM_SYSTIMER_FREQ 1000000
@@ -57,9 +57,8 @@
 /**
  * Broadcom System-on-Chip system timer.
  */
-class BroadcomTimer : public Timer
-{
-  public:
+class BroadcomTimer : public Timer {
+public:
 
     /**
      * Set timer frequency.
@@ -81,7 +80,7 @@ class BroadcomTimer : public Timer
      */
     virtual Result tick();
 
-  private:
+private:
 
     /** Number of internal cycles needed to provide the current timer frequency */
     u32 m_cycles;

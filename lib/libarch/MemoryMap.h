@@ -35,9 +35,8 @@
  *
  * @todo Currently the total supported system memory is limited to 1GiB
  */
-class MemoryMap
-{
-  public:
+class MemoryMap {
+public:
 
     /**
      * Memory regions.
@@ -49,8 +48,7 @@ class MemoryMap
      *
      * @see region
      */
-    typedef enum Region
-    {
+    typedef enum Region {
         KernelData,    /**<< Kernel program data from libexec, e.g. code, bss, (ro)data */
         KernelPrivate, /**<< Kernel dynamic memory mappings */
         UserData,      /**<< User program data from libexec, e.g. code, bss, (ro)data */
@@ -60,7 +58,7 @@ class MemoryMap
         UserShare,     /**<< User shared dynamic memory mappings */
         UserArgs       /**<< Used for copying program arguments and file descriptors */
     }
-    Region;
+            Region;
 
     /**
      * Constructor.
@@ -89,7 +87,7 @@ class MemoryMap
      */
     void setRange(Region region, Memory::Range range);
 
-  protected:
+protected:
 
     /** Memory ranges. */
     Memory::Range m_regions[MEMORYMAP_MAX_REGIONS];

@@ -28,9 +28,8 @@
 /**
  * Create new device file node.
  */
-class MakeNode : public POSIXApplication
-{
-  public:
+class MakeNode : public POSIXApplication {
+public:
 
     /**
      * Constructor

@@ -18,8 +18,7 @@
 #include <FreeNOS/User.h>
 #include "stdlib.h"
 
-extern C void exit(int status)
-{
+extern C void exit(int status) {
     // Request immediate termination
     ProcessCtl(SELF, KillPID, status);
 }

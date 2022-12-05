@@ -21,32 +21,25 @@
 #include "ApplicationLauncher.h"
 
 POSIXApplication::POSIXApplication(int argc, char **argv)
-    : Application(argc, argv)
-{
+        : Application(argc, argv) {
     setVersion(VERSION);
 }
 
-POSIXApplication::~POSIXApplication()
-{
+POSIXApplication::~POSIXApplication() {
 }
 
-POSIXApplication::Result POSIXApplication::output(const char *string) const
-{
+POSIXApplication::Result POSIXApplication::output(const char *string) const {
     printf("%s", string);
     return Success;
 }
 
-int POSIXApplication::runProgram(const char *path, const char **argv)
-{
+int POSIXApplication::runProgram(const char *path, const char **argv) {
     ApplicationLauncher prog(path, argv);
 
     const ApplicationLauncher::Result result = prog.exec();
-    if (result != ApplicationLauncher::Success)
-    {
+    if (result != ApplicationLauncher::Success) {
         return -1;
-    }
-    else
-    {
+    } else {
         return (int) prog.getPid();
     }
 }

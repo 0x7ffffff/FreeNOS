@@ -28,9 +28,8 @@
 /**
  * Stop executing for some time.
  */
-class Sleep : public POSIXApplication
-{
-  public:
+class Sleep : public POSIXApplication {
+public:
 
     /**
      * Constructor

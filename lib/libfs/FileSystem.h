@@ -28,13 +28,11 @@
  * @{
  */
 
-namespace FileSystem
-{
+namespace FileSystem {
     /**
      * Actions which may be performed on a filesystem.
      */
-    enum Action
-    {
+    enum Action {
         CreateFile = 0,
         ReadFile,
         WriteFile,
@@ -49,8 +47,7 @@ namespace FileSystem
     /**
      * Result code for filesystem Actions.
      */
-    enum Result
-    {
+    enum Result {
         Success = 0,
         InvalidArgument,
         NotFound,
@@ -67,40 +64,38 @@ namespace FileSystem
     /**
      * All possible filetypes.
      */
-    enum FileType
-    {
-        RegularFile         = 0,
-        DirectoryFile       = 1,
-        BlockDeviceFile     = 2,
+    enum FileType {
+        RegularFile = 0,
+        DirectoryFile = 1,
+        BlockDeviceFile = 2,
         CharacterDeviceFile = 3,
-        SymlinkFile         = 4,
-        FIFOFile            = 5,
-        SocketFile          = 6,
-        UnknownFile         = 7,
+        SymlinkFile = 4,
+        FIFOFile = 5,
+        SocketFile = 6,
+        UnknownFile = 7,
     };
 
     /**
      * File access permissions.
      */
-    enum FileMode
-    {
-        OwnerR   = 0400,
-        OwnerW   = 0200,
-        OwnerX   = 0100,
-        OwnerRW  = 0600,
-        OwnerRX  = 0500,
+    enum FileMode {
+        OwnerR = 0400,
+        OwnerW = 0200,
+        OwnerX = 0100,
+        OwnerRW = 0600,
+        OwnerRX = 0500,
         OwnerRWX = 0700,
-        GroupR   = 0040,
-        GroupW   = 0020,
-        GroupX   = 0010,
-        GroupRW  = 0060,
-        GroupRX  = 0050,
+        GroupR = 0040,
+        GroupW = 0020,
+        GroupX = 0010,
+        GroupRW = 0060,
+        GroupRX = 0050,
         GroupRWX = 0070,
-        OtherR   = 0004,
-        OtherW   = 0002,
-        OtherX   = 0001,
-        OtherRW  = 0006,
-        OtherRX  = 0005,
+        OtherR = 0004,
+        OtherW = 0002,
+        OtherX = 0001,
+        OtherRW = 0006,
+        OtherRX = 0005,
         OtherRWX = 0007,
     };
 
@@ -110,8 +105,7 @@ namespace FileSystem
     /**
      * Contains file information.
      */
-    struct FileStat
-    {
+    struct FileStat {
         FileType type;      /**@< File type. */
         u32 inode;          /**@< Inode number */
         ProcessID pid;      /**@< Process identifier of filesystem */
@@ -124,8 +118,7 @@ namespace FileSystem
     /**
      * Provides information about an inode
      */
-    struct WaitSet
-    {
+    struct WaitSet {
         u32 inode;     /**@< Inode number */
         u16 requested; /**@< Requested status flags of the inode */
         u16 current;   /**@< Indicates the currently active status flags */
@@ -134,8 +127,7 @@ namespace FileSystem
     /**
      * WaitSet status flags
      */
-    enum WaitStatus
-    {
+    enum WaitStatus {
         Readable = (1 << 0), /**@< File can be read without blocking */
         Writable = (1 << 1)  /**@< File can be written without blocking */
     };

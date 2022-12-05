@@ -23,20 +23,16 @@
 #include "fcntl.h"
 #include "sys/stat.h"
 
-int open(const char *path, int oflag, ...)
-{
+int open(const char *path, int oflag, ...) {
     const FileSystemClient filesystem;
     Size fd = 0;
 
     // Attempt to open the file
     const FileSystem::Result result = filesystem.openFile(path, fd);
-    if (result == FileSystem::Success)
-    {
+    if (result == FileSystem::Success) {
         errno = ESUCCESS;
         return (int) fd;
-    }
-    else
-    {
+    } else {
         // File not found
         errno = ENOENT;
         return -1;

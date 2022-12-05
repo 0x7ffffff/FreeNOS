@@ -36,9 +36,8 @@
 /**
  * Intel second level page table implementation.
  */
-class IntelPageTable
-{
-  public:
+class IntelPageTable {
+public:
 
     /**
      * Map a virtual address to a physical address.
@@ -82,7 +81,7 @@ class IntelPageTable
      */
     MemoryContext::Result access(Address virt, Memory::Access *access) const;
 
-  private:
+private:
 
     /**
      * Convert MemoryAccess to page table flags.
@@ -93,7 +92,7 @@ class IntelPageTable
      */
     u32 flags(Memory::Access access) const;
 
-  private:
+private:
 
     /** Array of page table entries. */
     u32 m_pages[1024];

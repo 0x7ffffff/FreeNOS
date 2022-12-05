@@ -20,8 +20,7 @@
 #include <DeviceServer.h>
 #include "SerialDevice.h"
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     KernelLog log;
     DeviceServer server("/dev/serial");
 
@@ -37,8 +36,7 @@ int main(int argc, char **argv)
 
     // Initialize
     const FileSystem::Result result = server.initialize();
-    if (result != FileSystem::Success)
-    {
+    if (result != FileSystem::Success) {
         ERROR("failed to initialize: result = " << (int) result);
         return 1;
     }

@@ -19,23 +19,18 @@
 #include "BubbleAllocator.h"
 
 BubbleAllocator::BubbleAllocator(const Allocator::Range range)
-    : Allocator(range)
-    , m_allocated(0)
-{
+        : Allocator(range), m_allocated(0) {
 }
 
-Size BubbleAllocator::available() const
-{
+Size BubbleAllocator::available() const {
     return size() - m_allocated;
 }
 
-Allocator::Result BubbleAllocator::allocate(Allocator::Range & args)
-{
+Allocator::Result BubbleAllocator::allocate(Allocator::Range &args) {
     Size needed = aligned(args.size, alignment());
 
     // Do we still have enough room?
-    if (m_allocated + needed <= size())
-    {
+    if (m_allocated + needed <= size()) {
         args.address = base() + m_allocated;
         m_allocated += needed;
         return Success;
@@ -44,8 +39,7 @@ Allocator::Result BubbleAllocator::allocate(Allocator::Range & args)
     return OutOfMemory;
 }
 
-Allocator::Result BubbleAllocator::release(const Address addr)
-{
+Allocator::Result BubbleAllocator::release(const Address addr) {
     // BubbleAllocator never releases memory
     return InvalidAddress;
 }

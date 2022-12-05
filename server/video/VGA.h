@@ -45,7 +45,7 @@
  * @param front Front text color.
  * @param back Background color.
  */
-#define VGA_ATTR(front,back) \
+#define VGA_ATTR(front, back) \
     (((back & 0xf) << 4) | ((front & 0xf)))
 
 /**
@@ -55,30 +55,29 @@
  * @param front Front text color.
  * @param back Background color.
  */
-#define VGA_CHAR(ch,front,back) \
+#define VGA_CHAR(ch, front, back) \
     ((VGA_ATTR(front,back) << 8) | (ch & 0xff))
 
 /**
  * @brief VGA color attributes.
  */
-enum Colors
-{
-    BLACK        = 0,
-    BLUE         = 1,
-    GREEN        = 2,
-    CYAN         = 3,
-    RED          = 4,
-    MAGENTA      = 5,
-    BROWN        = 6,
-    LIGHTGREY    = 7,
-    DARKGREY     = 8,
-    LIGHTBLUE    = 9,
-    LIGHTGREEN   = 10,
-    LIGHTCYAN    = 11,
-    LIGHTRED     = 12,
+enum Colors {
+    BLACK = 0,
+    BLUE = 1,
+    GREEN = 2,
+    CYAN = 3,
+    RED = 4,
+    MAGENTA = 5,
+    BROWN = 6,
+    LIGHTGREY = 7,
+    DARKGREY = 8,
+    LIGHTBLUE = 9,
+    LIGHTGREEN = 10,
+    LIGHTCYAN = 11,
+    LIGHTRED = 12,
     LIGHTMAGENTA = 13,
-    LIGHTBROWN   = 14,
-    WHITE        = 15,
+    LIGHTBROWN = 14,
+    WHITE = 15,
 };
 
 /**
@@ -91,9 +90,8 @@ enum Colors
  *
  * @see Terminal
  */
-class VGA : public Device
-{
-    public:
+class VGA : public Device {
+public:
 
     /**
      * @brief Class constructor function.
@@ -127,8 +125,8 @@ class VGA : public Device
      *
      * @return Result code
      */
-    virtual FileSystem::Result read(IOBuffer & buffer,
-                                    Size & size,
+    virtual FileSystem::Result read(IOBuffer &buffer,
+                                    Size &size,
                                     const Size offset);
 
     /**
@@ -141,11 +139,11 @@ class VGA : public Device
      *
      * @return Result code
      */
-    virtual FileSystem::Result write(IOBuffer & buffer,
-                                     Size & size,
+    virtual FileSystem::Result write(IOBuffer &buffer,
+                                     Size &size,
                                      const Size offset);
 
-  private:
+private:
 
     /** @brief VGA video memory address. */
     u16 *vga;

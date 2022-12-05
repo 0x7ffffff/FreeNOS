@@ -32,15 +32,13 @@
 /**
  * Interrupt controller interface.
  */
-class IntController
-{
-  public:
+class IntController {
+public:
 
     /**
      * Result codes.
      */
-    enum Result
-    {
+    enum Result {
         Success,
         InvalidIRQ,
         InvalidFrequency,
@@ -101,7 +99,7 @@ class IntController
      *
      * @return Result code.
      */
-    virtual Result nextPending(uint & irq);
+    virtual Result nextPending(uint &irq);
 
     /**
      * Check if an IRQ vector is set.
@@ -122,7 +120,7 @@ class IntController
      */
     virtual Result send(const uint targetCoreId, const uint irq);
 
-  protected:
+protected:
 
     /** Interrupt number base offset */
     uint m_base;

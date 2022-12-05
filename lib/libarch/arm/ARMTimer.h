@@ -36,14 +36,13 @@
 /**
  * ARM Generic Timer.
  */
-class ARMTimer : public Timer
-{
-  private:
+class ARMTimer : public Timer {
+private:
 
     /** Set this bit in the PL1 control register to enable it. */
     static const u32 TimerControlEnable = 1;
 
-  public:
+public:
 
     /**
      * Constructor
@@ -69,7 +68,7 @@ class ARMTimer : public Timer
      */
     virtual Result tick();
 
-  private:
+private:
 
     /**
      * Retrieve system timer frequency
@@ -92,7 +91,7 @@ class ARMTimer : public Timer
      */
     void setPL1PhysicalTimerControl(const u32 value);
 
-  private:
+private:
 
     /** Currently configured initial timer counter. */
     Size m_initialTimerCounter;

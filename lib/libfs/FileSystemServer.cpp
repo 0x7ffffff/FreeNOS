@@ -27,61 +27,49 @@
 #include "FileSystemServer.h"
 
 FileSystemServer::FileSystemServer(Directory *root, const char *path)
-    : ChannelServer<FileSystemServer, FileSystemMessage>(this)
-    , m_pid(ProcessCtl(SELF, GetPID))
-    , m_root(ZERO)
-    , m_mountPath(path)
-    , m_mounts(ZERO)
-    , m_requests(new List<FileSystemRequest *>())
-{
+        : ChannelServer<FileSystemServer, FileSystemMessage>(this), m_pid(ProcessCtl(SELF, GetPID)), m_root(ZERO),
+          m_mountPath(path), m_mounts(ZERO), m_requests(new List<FileSystemRequest *>()) {
     setRoot(root);
 
     // Register message handlers
     addIPCHandler(FileSystem::CreateFile, &FileSystemServer::pathHandler, false);
-    addIPCHandler(FileSystem::StatFile,   &FileSystemServer::pathHandler, false);
+    addIPCHandler(FileSystem::StatFile, &FileSystemServer::pathHandler, false);
     addIPCHandler(FileSystem::DeleteFile, &FileSystemServer::pathHandler, false);
-    addIPCHandler(FileSystem::ReadFile,   &FileSystemServer::pathHandler, false);
-    addIPCHandler(FileSystem::WriteFile,  &FileSystemServer::pathHandler, false);
-    addIPCHandler(FileSystem::WaitFile,   &FileSystemServer::pathHandler, false);
+    addIPCHandler(FileSystem::ReadFile, &FileSystemServer::pathHandler, false);
+    addIPCHandler(FileSystem::WriteFile, &FileSystemServer::pathHandler, false);
+    addIPCHandler(FileSystem::WaitFile, &FileSystemServer::pathHandler, false);
     addIPCHandler(FileSystem::MountFileSystem, &FileSystemServer::mountHandler);
-    addIPCHandler(FileSystem::WaitFileSystem,  &FileSystemServer::pathHandler, false);
-    addIPCHandler(FileSystem::GetFileSystems,  &FileSystemServer::getFileSystemsHandler);
+    addIPCHandler(FileSystem::WaitFileSystem, &FileSystemServer::pathHandler, false);
+    addIPCHandler(FileSystem::GetFileSystems, &FileSystemServer::getFileSystemsHandler);
 }
 
-FileSystemServer::~FileSystemServer()
-{
-    if (m_requests)
-    {
+FileSystemServer::~FileSystemServer() {
+    if (m_requests) {
         delete m_requests;
     }
 
     clearFileCache(m_root);
 }
 
-const char * FileSystemServer::getMountPath() const
-{
+const char *FileSystemServer::getMountPath() const {
     return m_mountPath;
 }
 
-u32 FileSystemServer::getNextInode()
-{
+u32 FileSystemServer::getNextInode() {
     static u32 next = 2;
 
     // Ensure that the inode is not already used
-    while (m_inodeMap.get(++next) != ZERO)
-        ;
+    while (m_inodeMap.get(++next) != ZERO);
 
     return next;
 }
 
-FileSystem::Result FileSystemServer::mount()
-{
+FileSystem::Result FileSystemServer::mount() {
     // The rootfs server manages the mounts table. Retrieve it from the datastore.
-    if (m_pid == ROOTFS_PID)
-    {
+    if (m_pid == ROOTFS_PID) {
         const DatastoreClient datastore;
         const Datastore::Result result =
-            datastore.registerBuffer("mounts", &m_mounts, sizeof(FileSystemMount) * MaximumFileSystemMounts);
+                datastore.registerBuffer("mounts", &m_mounts, sizeof(FileSystemMount) * MaximumFileSystemMounts);
 
         if (result != Datastore::Success)
             return FileSystem::IOError;
@@ -92,58 +80,47 @@ FileSystem::Result FileSystemServer::mount()
         MemoryBlock::set(m_mounts, 0, sizeof(FileSystemMount) * MaximumFileSystemMounts);
         return FileSystem::Success;
     }
-    // Other file systems send a request to root file system to mount.
-    else if (m_mountPath != ZERO)
-    {
+        // Other file systems send a request to root file system to mount.
+    else if (m_mountPath != ZERO) {
         const FileSystemClient rootfs(ROOTFS_PID);
         const FileSystem::Result result = rootfs.mountFileSystem(m_mountPath);
 
         assert(result == FileSystem::Success);
         return result;
-    }
-    else
-    {
+    } else {
         return FileSystem::Success;
     }
 }
 
-File * FileSystemServer::createFile(const FileSystem::FileType type)
-{
+File *FileSystemServer::createFile(const FileSystem::FileType type) {
     return (File *) ZERO;
 }
 
-FileSystem::Result FileSystemServer::registerFile(File *file, const char *path)
-{
+FileSystem::Result FileSystemServer::registerFile(File *file, const char *path) {
     // Add to the filesystem cache
     FileCache *cache = insertFileCache(file, path);
-    if (cache == ZERO)
-    {
+    if (cache == ZERO) {
         return FileSystem::IOError;
     }
 
     // Also add to the parent directory
     Directory *parent = getParentDirectory(path);
-    if (parent != ZERO)
-    {
+    if (parent != ZERO) {
         const FileSystemPath p(path);
         parent->insert(file->getType(), *p.base());
         return FileSystem::Success;
-    }
-    else
-    {
+    } else {
         return FileSystem::NotFound;
     }
 }
 
 FileSystem::Result FileSystemServer::registerDirectory(Directory *dir,
-                                                       const char *path)
-{
+                                                       const char *path) {
     // Add the directory itself first
     FileSystem::Result result = registerFile(dir, path);
-    if (result != FileSystem::Success)
-    {
+    if (result != FileSystem::Success) {
         ERROR("failed to register directory " << path <<
-              ": result = " << (int) result);
+                                              ": result = " << (int) result);
         return result;
     }
 
@@ -153,17 +130,15 @@ FileSystem::Result FileSystemServer::registerDirectory(Directory *dir,
 
     // Insert the '.' directory which points to itself
     result = registerFile(dir, *dot);
-    if (result != FileSystem::Success)
-    {
+    if (result != FileSystem::Success) {
         ERROR("failed to register '.' for directory " << path <<
-              ": result = " << (int) result);
+                                                      ": result = " << (int) result);
         return result;
     }
 
     // Insert the '..' directory which points to its parent
     Directory *parent = getParentDirectory(path);
-    if (parent == ZERO)
-    {
+    if (parent == ZERO) {
         ERROR("failed to retrieve parent directory for " << path);
         return FileSystem::NotFound;
     }
@@ -172,18 +147,15 @@ FileSystem::Result FileSystemServer::registerDirectory(Directory *dir,
     return registerFile(parent, *dot);
 }
 
-FileSystem::Result FileSystemServer::unregisterFile(const char *path)
-{
+FileSystem::Result FileSystemServer::unregisterFile(const char *path) {
     DEBUG("path = " << path);
 
     FileCache *cache = findFileCache(path);
-    if (!cache)
-    {
+    if (!cache) {
         return FileSystem::NotFound;
     }
 
-    if (cache->entries.count() != 0)
-    {
+    if (cache->entries.count() != 0) {
         return FileSystem::PermissionDenied;
     }
 
@@ -191,35 +163,29 @@ FileSystem::Result FileSystemServer::unregisterFile(const char *path)
     return FileSystem::Success;
 }
 
-void FileSystemServer::pathHandler(FileSystemMessage *msg)
-{
+void FileSystemServer::pathHandler(FileSystemMessage *msg) {
     // Prepare request
     FileSystemRequest req(msg);
 
     // Process the request.
-    if (processRequest(req) == FileSystem::RetryAgain)
-    {
+    if (processRequest(req) == FileSystem::RetryAgain) {
         FileSystemRequest *reqCopy = new FileSystemRequest(msg);
         assert(reqCopy != NULL);
         m_requests->append(reqCopy);
     }
 }
 
-bool FileSystemServer::redirectRequest(const char *path, FileSystemMessage *msg)
-{
+bool FileSystemServer::redirectRequest(const char *path, FileSystemMessage *msg) {
     Size savedMountLength = 0;
     FileSystemMount *mnt = ZERO;
 
     // Search for the longest matching mount
-    for (Size i = 0; i < MaximumFileSystemMounts; i++)
-    {
-        if (m_mounts[i].path[0] != ZERO)
-        {
+    for (Size i = 0; i < MaximumFileSystemMounts; i++) {
+        if (m_mounts[i].path[0] != ZERO) {
             const String mountStr(m_mounts[i].path, false);
             const Size mountStrLen = mountStr.length();
 
-            if (mountStrLen > savedMountLength && mountStr.compareTo(path, true, mountStrLen) == 0)
-            {
+            if (mountStrLen > savedMountLength && mountStr.compareTo(path, true, mountStrLen) == 0) {
                 savedMountLength = mountStrLen;
                 mnt = &m_mounts[i];
             }
@@ -243,16 +209,14 @@ bool FileSystemServer::redirectRequest(const char *path, FileSystemMessage *msg)
     return true;
 }
 
-FileSystem::Result FileSystemServer::inodeHandler(FileSystemRequest &req)
-{
+FileSystem::Result FileSystemServer::inodeHandler(FileSystemRequest &req) {
     FileSystemMessage *msg = req.getMessage();
     File *file = ZERO;
 
     DEBUG(m_self << ": inode = " << msg->inode << " action = " << msg->action);
 
     File *const *f = m_inodeMap.get(msg->inode);
-    if (f == ZERO)
-    {
+    if (f == ZERO) {
 
         msg->result = FileSystem::NotFound;
         sendResponse(msg);
@@ -260,56 +224,45 @@ FileSystem::Result FileSystemServer::inodeHandler(FileSystemRequest &req)
     }
     file = (*f);
 
-    if (msg->action == FileSystem::ReadFile)
-    {
+    if (msg->action == FileSystem::ReadFile) {
         msg->result = file->read(req.getBuffer(), msg->size, msg->offset);
 
-        if (msg->result == FileSystem::Success)
-        {
-            if (req.getBuffer().getCount())
-            {
+        if (msg->result == FileSystem::Success) {
+            if (req.getBuffer().getCount()) {
                 req.getBuffer().flushWrite();
             }
         }
 
-        DEBUG(m_self << ": read = " << (int)msg->result);
-    }
-    else if (msg->action == FileSystem::WriteFile)
-    {
-        if (!req.getBuffer().getCount())
-        {
+        DEBUG(m_self << ": read = " << (int) msg->result);
+    } else if (msg->action == FileSystem::WriteFile) {
+        if (!req.getBuffer().getCount()) {
             req.getBuffer().bufferedRead();
         }
 
         msg->result = file->write(req.getBuffer(), msg->size, msg->offset);
-        DEBUG(m_self << ": write = " << (int)msg->result);
-    }
-    else
-    {
+        DEBUG(m_self << ": write = " << (int) msg->result);
+    } else {
         msg->result = FileSystem::NotSupported;
     }
 
     // Only send reply if completed (not RetryAgain)
-    if (msg->result != FileSystem::RetryAgain)
-    {
+    if (msg->result != FileSystem::RetryAgain) {
         sendResponse(msg);
     }
 
     return msg->result;
 }
 
-FileSystem::Result FileSystemServer::waitFileHandler(FileSystemRequest &req)
-{
+FileSystem::Result FileSystemServer::waitFileHandler(FileSystemRequest &req) {
     FileSystemMessage *msg = req.getMessage();
     static FileSystem::WaitSet waitBuf[MaximumWaitSetCount];
     const Size count = msg->size / sizeof(FileSystem::WaitSet) < MaximumWaitSetCount ?
                        msg->size / sizeof(FileSystem::WaitSet) : MaximumWaitSetCount;
-    IOBuffer & ioBuffer = req.getBuffer();
+    IOBuffer &ioBuffer = req.getBuffer();
 
     // Read waitset input struct
     msg->result = ioBuffer.read(&waitBuf, count * sizeof(FileSystem::WaitSet), 0);
-    if (msg->result != FileSystem::Success)
-    {
+    if (msg->result != FileSystem::Success) {
         ERROR("failed to read WaitSet input from PID " << msg->from << ": result = " << (int) msg->result);
         sendResponse(msg);
         return msg->result;
@@ -319,22 +272,18 @@ FileSystem::Result FileSystemServer::waitFileHandler(FileSystemRequest &req)
     msg->result = FileSystem::RetryAgain;
 
     // fill the struct
-    for (Size i = 0; i < count; i++)
-    {
+    for (Size i = 0; i < count; i++) {
         File *const *f = m_inodeMap.get(waitBuf[i].inode);
-        if (f != ZERO)
-        {
+        if (f != ZERO) {
             waitBuf[i].current = 0;
 
-            if ((waitBuf[i].requested & FileSystem::Readable) && (*f)->canRead())
-            {
+            if ((waitBuf[i].requested & FileSystem::Readable) && (*f)->canRead()) {
                 DEBUG("inode " << waitBuf[i].inode << " is readable");
                 waitBuf[i].current |= FileSystem::Readable;
                 msg->result = FileSystem::Success;
             }
 
-            if ((waitBuf[i].requested & FileSystem::Writable) && (*f)->canWrite())
-            {
+            if ((waitBuf[i].requested & FileSystem::Writable) && (*f)->canWrite()) {
                 DEBUG("inode " << waitBuf[i].inode << " is writable");
                 waitBuf[i].current |= FileSystem::Writable;
                 msg->result = FileSystem::Success;
@@ -344,27 +293,21 @@ FileSystem::Result FileSystemServer::waitFileHandler(FileSystemRequest &req)
 
     // write back
     ioBuffer.write(&waitBuf, count * sizeof(FileSystem::WaitSet), 0);
-    if (msg->result != FileSystem::Success && msg->result != FileSystem::RetryAgain)
-    {
+    if (msg->result != FileSystem::Success && msg->result != FileSystem::RetryAgain) {
         ERROR("failed to write WaitSet output to PID " << msg->from << ": result = " << (int) msg->result);
         sendResponse(msg);
         return msg->result;
     }
 
     // Check for timeout
-    if (msg->timeout.frequency != 0 && msg->result == FileSystem::RetryAgain)
-    {
+    if (msg->timeout.frequency != 0 && msg->result == FileSystem::RetryAgain) {
         KernelTimer timer;
         timer.tick();
 
-        if (timer.isExpired(msg->timeout))
-        {
+        if (timer.isExpired(msg->timeout)) {
             msg->result = FileSystem::TimedOut;
-        }
-        else
-        {
-            if (!m_expiry.frequency || m_expiry.ticks > msg->timeout.ticks)
-            {
+        } else {
+            if (!m_expiry.frequency || m_expiry.ticks > msg->timeout.ticks) {
                 m_expiry.ticks = msg->timeout.ticks;
             }
             m_expiry.frequency = msg->timeout.frequency;
@@ -372,16 +315,14 @@ FileSystem::Result FileSystemServer::waitFileHandler(FileSystemRequest &req)
     }
 
     // Only send reply if completed (not RetryAgain)
-    if (msg->result != FileSystem::RetryAgain)
-    {
+    if (msg->result != FileSystem::RetryAgain) {
         sendResponse(msg);
     }
 
     return msg->result;
 }
 
-FileSystem::Result FileSystemServer::processRequest(FileSystemRequest &req)
-{
+FileSystem::Result FileSystemServer::processRequest(FileSystemRequest &req) {
     char buf[FileSystemPath::MaximumLength];
     FileCache *cache = ZERO;
     File *file = ZERO;
@@ -389,22 +330,18 @@ FileSystem::Result FileSystemServer::processRequest(FileSystemRequest &req)
     FileSystem::FileStat st;
 
     // Retrieve file by inode or by file path?
-    if (msg->action == FileSystem::ReadFile || msg->action == FileSystem::WriteFile)
-    {
+    if (msg->action == FileSystem::ReadFile || msg->action == FileSystem::WriteFile) {
         return inodeHandler(req);
-    }
-    else if (msg->action == FileSystem::WaitFile)
-    {
+    } else if (msg->action == FileSystem::WaitFile) {
         return waitFileHandler(req);
     }
 
     // Copy the file path
     const API::Result result = VMCopy(msg->from, API::Read, (Address) buf,
-                                     (Address) msg->buffer, FileSystemPath::MaximumLength);
-    if (result != API::Success)
-    {
-        ERROR("VMCopy failed: result = " << (int)result << " from = " << msg->from <<
-              " addr = " << (void *) msg->buffer << " action = " << (int) msg->action);
+                                      (Address) msg->buffer, FileSystemPath::MaximumLength);
+    if (result != API::Success) {
+        ERROR("VMCopy failed: result = " << (int) result << " from = " << msg->from <<
+                                         " addr = " << (void *) msg->buffer << " action = " << (int) msg->action);
         msg->result = FileSystem::IOError;
         sendResponse(msg);
         return msg->result;
@@ -412,8 +349,7 @@ FileSystem::Result FileSystemServer::processRequest(FileSystemRequest &req)
     DEBUG(m_self << ": path = " << buf << " action = " << msg->action);
 
     // Handle mounted file system paths (will result in redirect messages)
-    if (m_pid == ROOTFS_PID && redirectRequest(buf, msg))
-    {
+    if (m_pid == ROOTFS_PID && redirectRequest(buf, msg)) {
         DEBUG(m_self << ": redirect " << buf << " to " << msg->pid);
         return msg->result;
     }
@@ -422,16 +358,14 @@ FileSystem::Result FileSystemServer::processRequest(FileSystemRequest &req)
 
     // Do we have this file cached?
     if ((cache = findFileCache(path)) ||
-        (cache = lookupFile(path)))
-    {
+        (cache = lookupFile(path))) {
         file = cache->file;
     }
 
     // Check for File not found
     if (file == ZERO &&
         msg->action != FileSystem::CreateFile &&
-        msg->action != FileSystem::WaitFileSystem)
-    {
+        msg->action != FileSystem::WaitFileSystem) {
         DEBUG(m_self << ": not found");
         msg->result = FileSystem::NotFound;
         sendResponse(msg);
@@ -439,69 +373,54 @@ FileSystem::Result FileSystemServer::processRequest(FileSystemRequest &req)
     }
 
     // Perform I/O on the file
-    switch (msg->action)
-    {
+    switch (msg->action) {
         case FileSystem::CreateFile:
-            if (cache)
-            {
+            if (cache) {
                 msg->result = FileSystem::AlreadyExists;
-            }
-            else
-            {
-                const API::Result stResult = VMCopy(msg->from, API::Read, (Address) &st,
-                                                 (Address) msg->stat, sizeof(st));
-                if (stResult != API::Success)
-                {
+            } else {
+                const API::Result stResult = VMCopy(msg->from, API::Read, (Address) & st,
+                                                    (Address) msg->stat, sizeof(st));
+                if (stResult != API::Success) {
                     ERROR("VMCopy failed for FileStat: result = " << (int) stResult <<
-                          " from = " << msg->from << " addr = " << (void *) msg->stat <<
-                          " action = " << (int) msg->action);
+                                                                  " from = " << msg->from << " addr = "
+                                                                  << (void *) msg->stat <<
+                                                                  " action = " << (int) msg->action);
                     msg->result = FileSystem::IOError;
-                }
-                else
-                {
+                } else {
                     // Attempt to create the new file
                     file = createFile(st.type);
-                    if (!file)
-                    {
+                    if (!file) {
                         msg->result = FileSystem::IOError;
-                    }
-                    else
-                    {
+                    } else {
                         msg->result = registerFile(file, *path.full());
                     }
                 }
             }
-            DEBUG(m_self << ": create = " << (int)msg->result);
+            DEBUG(m_self << ": create = " << (int) msg->result);
             break;
 
         case FileSystem::DeleteFile:
             msg->result = unregisterFile(*path.full());
-            DEBUG(m_self << ": delete = " << (int)msg->result);
+            DEBUG(m_self << ": delete = " << (int) msg->result);
             break;
 
         case FileSystem::StatFile:
-            if (file->status(st) == FileSystem::Success)
-            {
+            if (file->status(st) == FileSystem::Success) {
                 st.pid = m_self;
 
                 // Copy to the remote process
-                const API::Result stResult = VMCopy(msg->from, API::Write, (Address) &st,
-                                                   (Address) msg->stat, sizeof(st));
-                if (stResult == API::Success)
-                {
+                const API::Result stResult = VMCopy(msg->from, API::Write, (Address) & st,
+                                                    (Address) msg->stat, sizeof(st));
+                if (stResult == API::Success) {
                     msg->result = FileSystem::Success;
-                }
-                else
-                {
+                } else {
                     ERROR("VMCopy failed of FileStat for PID " << msg->from << ": result = " << (int) stResult);
                     msg->result = FileSystem::IOError;
                 }
-            }
-            else
-            {
+            } else {
                 msg->result = FileSystem::IOError;
             }
-            DEBUG(m_self << ": stat = " << (int)msg->result);
+            DEBUG(m_self << ": stat = " << (int) msg->result);
             break;
 
         case FileSystem::ReadFile:
@@ -518,39 +437,35 @@ FileSystem::Result FileSystemServer::processRequest(FileSystemRequest &req)
         }
 
         default: {
-            ERROR("unhandled file I/O operation: " << (int)msg->action);
+            ERROR("unhandled file I/O operation: " << (int) msg->action);
             msg->result = FileSystem::NotSupported;
             break;
         }
     }
 
     // Only send reply if completed (not RetryAgain)
-    if (msg->result != FileSystem::RetryAgain)
-    {
+    if (msg->result != FileSystem::RetryAgain) {
         sendResponse(msg);
     }
 
     return msg->result;
 }
 
-void FileSystemServer::sendResponse(FileSystemMessage *msg) const
-{
+void FileSystemServer::sendResponse(FileSystemMessage *msg) const {
     msg->type = ChannelMessage::Response;
 
     DEBUG(m_self << ": sending response to PID " << msg->from <<
-                    " for action = " << (int) msg->action <<
-                    " with result = " << (int) msg->result);
+                 " for action = " << (int) msg->action <<
+                 " with result = " << (int) msg->result);
 
     Channel *channel = m_registry.getProducer(msg->from);
-    if (channel == ZERO)
-    {
+    if (channel == ZERO) {
         ERROR("failed to retrieve channel for PID " << msg->from);
         return;
     }
 
     const Channel::Result result = channel->write(msg);
-    if (result != Channel::Success)
-    {
+    if (result != Channel::Success) {
         ERROR("failed to write channel for PID " << msg->from);
         return;
     }
@@ -558,15 +473,13 @@ void FileSystemServer::sendResponse(FileSystemMessage *msg) const
     ProcessCtl(msg->from, Wakeup, 0);
 }
 
-void FileSystemServer::mountHandler(FileSystemMessage *msg)
-{
+void FileSystemServer::mountHandler(FileSystemMessage *msg) {
     char buf[FileSystemPath::MaximumLength + 1];
 
     // Copy the file path
     const API::Result result = VMCopy(msg->from, API::Read, (Address) buf,
-                                     (Address) msg->buffer, FileSystemPath::MaximumLength);
-    if (result != API::Success)
-    {
+                                      (Address) msg->buffer, FileSystemPath::MaximumLength);
+    if (result != API::Success) {
         ERROR("failed to copy mount path: result = " << (int) result);
         msg->result = FileSystem::IOError;
         return;
@@ -577,13 +490,11 @@ void FileSystemServer::mountHandler(FileSystemMessage *msg)
     const String path(buf);
 
     // Check for already existing entry (re-mount)
-    for (Size i = 0; i < MaximumFileSystemMounts; i++)
-    {
+    for (Size i = 0; i < MaximumFileSystemMounts; i++) {
         const String entry(m_mounts[i].path);
 
-        if (path.equals(entry))
-        {
-            m_mounts[i].procID  = msg->from;
+        if (path.equals(entry)) {
+            m_mounts[i].procID = msg->from;
             m_mounts[i].options = ZERO;
             NOTICE("remounted " << m_mounts[i].path);
             msg->result = FileSystem::Success;
@@ -592,10 +503,8 @@ void FileSystemServer::mountHandler(FileSystemMessage *msg)
     }
 
     // Append to our filesystem mounts table
-    for (Size i = 0; i < MaximumFileSystemMounts; i++)
-    {
-        if (!m_mounts[i].path[0])
-        {
+    for (Size i = 0; i < MaximumFileSystemMounts; i++) {
+        if (!m_mounts[i].path[0]) {
             MemoryBlock::copy(m_mounts[i].path, buf, sizeof(m_mounts[i].path));
             m_mounts[i].procID = msg->from;
             m_mounts[i].options = ZERO;
@@ -609,15 +518,13 @@ void FileSystemServer::mountHandler(FileSystemMessage *msg)
     msg->result = FileSystem::IOError;
 }
 
-void FileSystemServer::getFileSystemsHandler(FileSystemMessage *msg)
-{
+void FileSystemServer::getFileSystemsHandler(FileSystemMessage *msg) {
     // Copy mounts table to the requesting process
     const Size mountsSize = sizeof(FileSystemMount) * MaximumFileSystemMounts;
     const Size numBytes = msg->size < mountsSize ? msg->size : mountsSize;
     const API::Result result = VMCopy(msg->from, API::Write, (Address) m_mounts,
-                                     (Address) msg->buffer, numBytes);
-    if (result != API::Success)
-    {
+                                      (Address) msg->buffer, numBytes);
+    if (result != API::Success) {
         ERROR("failed to copy mount table: result = " << (int) result);
         msg->result = FileSystem::IOError;
         return;
@@ -626,17 +533,14 @@ void FileSystemServer::getFileSystemsHandler(FileSystemMessage *msg)
     msg->result = FileSystem::Success;
 }
 
-bool FileSystemServer::retryRequests()
-{
+bool FileSystemServer::retryRequests() {
     bool restartNeeded = false;
 
     DEBUG("");
 
-    for (ListIterator<FileSystemRequest *> i(m_requests); i.hasCurrent(); i++)
-    {
+    for (ListIterator < FileSystemRequest * > i(m_requests); i.hasCurrent(); i++) {
         FileSystem::Result result = processRequest(*i.current());
-        if (result != FileSystem::RetryAgain)
-        {
+        if (result != FileSystem::RetryAgain) {
             delete i.current();
             i.remove();
             restartNeeded = true;
@@ -646,60 +550,48 @@ bool FileSystemServer::retryRequests()
     return restartNeeded;
 }
 
-void FileSystemServer::setRoot(Directory *newRoot)
-{
-    if (newRoot != ZERO)
-    {
+void FileSystemServer::setRoot(Directory *newRoot) {
+    if (newRoot != ZERO) {
         m_root = new FileCache(newRoot, "/", ZERO);
         insertFileCache(newRoot, ".");
         insertFileCache(newRoot, "..");
     }
 }
 
-Directory * FileSystemServer::getParentDirectory(const char *path)
-{
+Directory *FileSystemServer::getParentDirectory(const char *path) {
     const FileSystemPath p(path);
     Directory *parent = ZERO;
 
-    if (p.parent().length() > 0)
-    {
+    if (p.parent().length() > 0) {
         FileCache *cache = findFileCache(*p.parent());
-        if (cache != ZERO)
-        {
+        if (cache != ZERO) {
             parent = static_cast<Directory *>(cache->file);
         }
-    }
-    else
-    {
+    } else {
         parent = static_cast<Directory *>(m_root->file);
     }
 
     return parent;
 }
 
-FileCache * FileSystemServer::lookupFile(const FileSystemPath &path)
-{
-    const List<String> &entries = path.split();
+FileCache *FileSystemServer::lookupFile(const FileSystemPath &path) {
+    const List <String> &entries = path.split();
     FileCache *c = m_root;
     File *file = ZERO;
     Directory *dir;
 
     // Loop the entire path
-    for (ListIterator<String> i(entries); i.hasCurrent(); i++)
-    {
+    for (ListIterator <String> i(entries); i.hasCurrent(); i++) {
         // Do we have this entry cached already?
-        if (!c->entries.contains(i.current()))
-        {
+        if (!c->entries.contains(i.current())) {
             // If this isn't a directory, we cannot perform a lookup
-            if (c->file->getType() != FileSystem::DirectoryFile)
-            {
+            if (c->file->getType() != FileSystem::DirectoryFile) {
                 return ZERO;
             }
             dir = (Directory *) c->file;
 
             // Fetch the file, if possible
-            if (!(file = dir->lookup(*i.current())))
-            {
+            if (!(file = dir->lookup(*i.current()))) {
                 return ZERO;
             }
             // Insert into the FileCache
@@ -707,18 +599,14 @@ FileCache * FileSystemServer::lookupFile(const FileSystemPath &path)
             assert(c != NULL);
 
             // Add file to the inode map
-            if (!m_inodeMap.insert(file->getInode(), file))
-            {
+            if (!m_inodeMap.insert(file->getInode(), file)) {
                 return ZERO;
             }
         }
-        // Move to the next entry
-        else if (c != ZERO)
-        {
+            // Move to the next entry
+        else if (c != ZERO) {
             c = (FileCache *) c->entries.value(i.current());
-        }
-        else
-        {
+        } else {
             break;
         }
     }
@@ -728,24 +616,19 @@ FileCache * FileSystemServer::lookupFile(const FileSystemPath &path)
     return c;
 }
 
-FileCache * FileSystemServer::insertFileCache(File *file, const char *pathStr)
-{
+FileCache *FileSystemServer::insertFileCache(File *file, const char *pathStr) {
     const FileSystemPath path(pathStr);
     FileCache *parent = ZERO;
 
     // Lookup our parent
-    if (path.parent().length() == 0)
-    {
+    if (path.parent().length() == 0) {
         parent = m_root;
-    }
-    else if (!(parent = findFileCache(path.parent())))
-    {
+    } else if (!(parent = findFileCache(path.parent()))) {
         return ZERO;
     }
 
     // Add file to the inode map
-    if (!m_inodeMap.insert(file->getInode(), file))
-    {
+    if (!m_inodeMap.insert(file->getInode(), file)) {
         return ZERO;
     }
 
@@ -755,33 +638,27 @@ FileCache * FileSystemServer::insertFileCache(File *file, const char *pathStr)
     return c;
 }
 
-FileCache * FileSystemServer::findFileCache(const char *path) const
-{
+FileCache *FileSystemServer::findFileCache(const char *path) const {
     const FileSystemPath p(path);
     return findFileCache(p);
 }
 
-FileCache * FileSystemServer::findFileCache(const String &path) const
-{
+FileCache *FileSystemServer::findFileCache(const String &path) const {
     return findFileCache(*path);
 }
 
-FileCache * FileSystemServer::findFileCache(const FileSystemPath &path) const
-{
-    const List<String> &entries = path.split();
+FileCache *FileSystemServer::findFileCache(const FileSystemPath &path) const {
+    const List <String> &entries = path.split();
     FileCache *c = m_root;
 
     // Root is treated special
-    if (path.parent().length() == 0 && path.length() == 0)
-    {
+    if (path.parent().length() == 0 && path.length() == 0) {
         return m_root;
     }
 
     // Loop the entire path
-    for (ListIterator<String> i(entries); i.hasCurrent(); i++)
-    {
-        if (!c->entries.contains(i.current()))
-        {
+    for (ListIterator <String> i(entries); i.hasCurrent(); i++) {
+        if (!c->entries.contains(i.current())) {
             return ZERO;
         }
         c = (FileCache *) c->entries.value(i.current());
@@ -791,18 +668,15 @@ FileCache * FileSystemServer::findFileCache(const FileSystemPath &path) const
     return c;
 }
 
-void FileSystemServer::removeFileFromCache(FileCache *cache, File *file)
-{
+void FileSystemServer::removeFileFromCache(FileCache *cache, File *file) {
     assert(cache != ZERO);
     assert(file != ZERO);
 
     // Walk all our childs
-    for (HashIterator<String, FileCache *> i(cache->entries); i.hasCurrent(); i++)
-    {
+    for (HashIterator < String, FileCache * > i(cache->entries); i.hasCurrent(); i++) {
         FileCache *child = i.current();
 
-        if (child->file == cache->file)
-        {
+        if (child->file == cache->file) {
             static_cast<Directory *>(cache->file)->remove(*child->name);
             removeFileFromCache(child, file);
             child->file = ZERO;
@@ -810,28 +684,23 @@ void FileSystemServer::removeFileFromCache(FileCache *cache, File *file)
     }
 }
 
-void FileSystemServer::clearFileCache(FileCache *cache)
-{
+void FileSystemServer::clearFileCache(FileCache *cache) {
     // Start from root?
-    if (!cache)
-    {
+    if (!cache) {
         cache = m_root;
     }
 
     // Make sure the current file is removed from all childs and below
-    if (cache->file != ZERO)
-    {
+    if (cache->file != ZERO) {
         removeFileFromCache(cache, cache->file);
     }
 
     // Walk all our childs
-    for (HashIterator<String, FileCache *> i(cache->entries); i.hasCurrent();)
-    {
+    for (HashIterator < String, FileCache * > i(cache->entries); i.hasCurrent();) {
         FileCache *child = i.current();
 
         static_cast<Directory *>(cache->file)->remove(*child->name);
-        if (cache->parent && cache->parent->file == child->file)
-        {
+        if (cache->parent && cache->parent->file == child->file) {
             child->file = ZERO;
         }
         clearFileCache(child);
@@ -841,13 +710,10 @@ void FileSystemServer::clearFileCache(FileCache *cache)
     // Cleanup this cache object
     assert(cache->entries.count() == 0);
 
-    if (cache->file != ZERO)
-    {
+    if (cache->file != ZERO) {
         // Remove entry from parent */
-        if (cache->parent)
-        {
-            if (cache->parent->file)
-            {
+        if (cache->parent) {
+            if (cache->parent->file) {
                 static_cast<Directory *>(cache->parent->file)->remove(*cache->name);
             }
             cache->parent->entries.remove(cache->name);

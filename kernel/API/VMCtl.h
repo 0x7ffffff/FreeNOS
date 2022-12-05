@@ -32,8 +32,7 @@
 /**
  * Memory operations which may be used as an argument to VMCtl().
  */
-typedef enum MemoryOperation
-{
+typedef enum MemoryOperation {
     MapContiguous = 0,
     MapSparse,
     UnMap,
@@ -47,7 +46,7 @@ typedef enum MemoryOperation
     CacheInvalidate,
     CacheCleanInvalidate
 }
-MemoryOperation;
+        MemoryOperation;
 
 /**
  * Prototype for user applications. Examines and modifies virtual memory pages.
@@ -60,8 +59,7 @@ MemoryOperation;
  */
 inline API::Result VMCtl(const ProcessID procID,
                          const MemoryOperation op,
-                         Memory::Range *range = ZERO)
-{
+                         Memory::Range *range = ZERO) {
     return (API::Result) trapKernel3(API::VMCtlNumber, procID, op, (Address) range);
 }
 

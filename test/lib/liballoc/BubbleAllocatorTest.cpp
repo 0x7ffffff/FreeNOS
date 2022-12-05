@@ -23,133 +23,133 @@
 #include <BubbleAllocator.h>
 
 TestCase(BubbleConstruct)
-{
-    const Size rangeSize = PAGESIZE * 64;
-    TestInt<uint> addresses(UINT_MIN, UINT_MAX - rangeSize);
-    const Allocator::Range range = { addresses.random(), rangeSize, sizeof(u32) };
-    BubbleAllocator ba(range);
+        {
+                const Size rangeSize = PAGESIZE * 64;
+                TestInt<uint> addresses(UINT_MIN, UINT_MAX - rangeSize);
+                const Allocator::Range range = { addresses.random(), rangeSize, sizeof(u32) };
+                BubbleAllocator ba(range);
 
-    // Verify initial state of the object
-    testAssert(ba.m_allocated == 0);
-    testAssert(ba.base() == addresses[0]);
-    testAssert(ba.size() == rangeSize);
-    testAssert(ba.alignment() == sizeof(u32));
+                // Verify initial state of the object
+                testAssert(ba.m_allocated == 0);
+                testAssert(ba.base() == addresses[0]);
+                testAssert(ba.size() == rangeSize);
+                testAssert(ba.alignment() == sizeof(u32));
 
-    return OK;
-}
+                return OK;
+        }
 
 TestCase(BubbleAllocate)
-{
-    const Size rangeSize = PAGESIZE * 64;
-    TestInt<uint> addresses(UINT_MIN, UINT_MAX - rangeSize);
-    const Allocator::Range range = { addresses.random(), rangeSize, sizeof(u32) };
-    BubbleAllocator ba(range);
-    Allocator::Range args = { 0, PAGESIZE, sizeof(u32) };
+        {
+                const Size rangeSize = PAGESIZE * 64;
+                TestInt<uint> addresses(UINT_MIN, UINT_MAX - rangeSize);
+                const Allocator::Range range = { addresses.random(), rangeSize, sizeof(u32) };
+                BubbleAllocator ba(range);
+                Allocator::Range args = { 0, PAGESIZE, sizeof(u32) };
 
-    // Allocate ten pages
-    for (Size i = 0; i < 10; i++)
-    {
-        testAssert(ba.allocate(args) == Allocator::Success);
-        testAssert(args.address == addresses[0] + (PAGESIZE * i));
-        testAssert(args.size == PAGESIZE);
-        testAssert(ba.m_allocated == PAGESIZE * (i + 1));
-    }
+                // Allocate ten pages
+                for (Size i = 0; i < 10; i++)
+                {
+                    testAssert(ba.allocate(args) == Allocator::Success);
+                    testAssert(args.address == addresses[0] + (PAGESIZE * i));
+                    testAssert(args.size == PAGESIZE);
+                    testAssert(ba.m_allocated == PAGESIZE * (i + 1));
+                }
 
-    // Allocate just 8 bytes
-    args.size = 8;
-    testAssert(ba.allocate(args) == Allocator::Success);
-    testAssert(args.address == addresses[0] + (PAGESIZE * 10));
-    testAssert(args.size == 8);
-    testAssert(ba.m_allocated == (PAGESIZE * 10) + 8);
+                // Allocate just 8 bytes
+                args.size = 8;
+                testAssert(ba.allocate(args) == Allocator::Success);
+                testAssert(args.address == addresses[0] + (PAGESIZE * 10));
+                testAssert(args.size == 8);
+                testAssert(ba.m_allocated == (PAGESIZE * 10) + 8);
 
-    // Allocate another page
-    args.size = PAGESIZE;
-    args.alignment = 8192;
-    testAssert(ba.allocate(args) == Allocator::Success);
-    testAssert(args.address == addresses[0] + (PAGESIZE * 10) + (8));
-    testAssert(args.size == PAGESIZE);
-    testAssert(ba.m_allocated == (PAGESIZE * 11) + (8));
+                // Allocate another page
+                args.size = PAGESIZE;
+                args.alignment = 8192;
+                testAssert(ba.allocate(args) == Allocator::Success);
+                testAssert(args.address == addresses[0] + (PAGESIZE * 10) + (8));
+                testAssert(args.size == PAGESIZE);
+                testAssert(ba.m_allocated == (PAGESIZE * 11) + (8));
 
-    return OK;
-}
+                return OK;
+        }
 
 TestCase(BubbleAlignment)
-{
-    const Size rangeSize = PAGESIZE * 64;
-    const Allocator::Range range = { 0xabcd0000, rangeSize, PAGESIZE };
-    BubbleAllocator ba(range);
-    Allocator::Range args = { 0, PAGESIZE, sizeof(u32) };
+        {
+                const Size rangeSize = PAGESIZE * 64;
+                const Allocator::Range range = { 0xabcd0000, rangeSize, PAGESIZE };
+                BubbleAllocator ba(range);
+                Allocator::Range args = { 0, PAGESIZE, sizeof(u32) };
 
-    // Allocate one page
-    testAssert(ba.allocate(args) == Allocator::Success);
-    testAssert(args.address == range.address);
-    testAssert((args.address % PAGESIZE) == 0);
-    testAssert(args.size == PAGESIZE);
-    testAssert(ba.m_allocated == PAGESIZE);
+                // Allocate one page
+                testAssert(ba.allocate(args) == Allocator::Success);
+                testAssert(args.address == range.address);
+                testAssert((args.address % PAGESIZE) == 0);
+                testAssert(args.size == PAGESIZE);
+                testAssert(ba.m_allocated == PAGESIZE);
 
-    // Try to allocate 16 bytes
-    args.size = 16;
-    testAssert(ba.allocate(args) == Allocator::Success);
-    testAssert(args.address == range.address + PAGESIZE);
-    testAssert((args.address % PAGESIZE) == 0);
-    testAssert(args.size == 16);
-    testAssert(ba.m_allocated == PAGESIZE * 2);
+                // Try to allocate 16 bytes
+                args.size = 16;
+                testAssert(ba.allocate(args) == Allocator::Success);
+                testAssert(args.address == range.address + PAGESIZE);
+                testAssert((args.address % PAGESIZE) == 0);
+                testAssert(args.size == 16);
+                testAssert(ba.m_allocated == PAGESIZE * 2);
 
-    // Allocate another page, should be PAGESIZE aligned
-    args.size = PAGESIZE;
-    testAssert(ba.allocate(args) == Allocator::Success);
-    testAssert(args.address == range.address + (PAGESIZE * 2));
-    testAssert((args.address % PAGESIZE) == 0);
-    testAssert(args.size == PAGESIZE);
-    testAssert(ba.m_allocated == PAGESIZE * 3);
+                // Allocate another page, should be PAGESIZE aligned
+                args.size = PAGESIZE;
+                testAssert(ba.allocate(args) == Allocator::Success);
+                testAssert(args.address == range.address + (PAGESIZE * 2));
+                testAssert((args.address % PAGESIZE) == 0);
+                testAssert(args.size == PAGESIZE);
+                testAssert(ba.m_allocated == PAGESIZE * 3);
 
-    return OK;
-}
+                return OK;
+        }
 
 TestCase(BubbleFull)
-{
-    TestInt<uint> addresses(UINT_MIN, UINT_MAX);
-    const Size rangeSize = PAGESIZE * 10;
-    const Allocator::Range range = { 0xabcd0000, rangeSize, sizeof(u32) };
-    BubbleAllocator ba(range);
-    Allocator::Range args = { 0, PAGESIZE, sizeof(u32) };
+        {
+                TestInt < uint > addresses(UINT_MIN, UINT_MAX);
+        const Size rangeSize = PAGESIZE * 10;
+        const Allocator::Range range = { 0xabcd0000, rangeSize, sizeof(u32) };
+        BubbleAllocator ba(range);
+        Allocator::Range args = { 0, PAGESIZE, sizeof(u32) };
 
-    // Allocate ten pages
-    for (Size i = 0; i < 10; i++)
-    {
-        testAssert(ba.allocate(args) == Allocator::Success);
-        testAssert(args.address == range.address + (PAGESIZE * i));
-        testAssert(args.size == PAGESIZE);
-        testAssert(ba.m_allocated == PAGESIZE * (i + 1));
-    }
+        // Allocate ten pages
+        for (Size i = 0; i < 10; i++)
+        {
+            testAssert(ba.allocate(args) == Allocator::Success);
+            testAssert(args.address == range.address + (PAGESIZE * i));
+            testAssert(args.size == PAGESIZE);
+            testAssert(ba.m_allocated == PAGESIZE * (i + 1));
+        }
 
-    // Now we are full. Allocation should fail
-    testAssert(ba.allocate(args) == Allocator::OutOfMemory);
-    testAssert(ba.m_allocated == PAGESIZE * 10);
+        // Now we are full. Allocation should fail
+        testAssert(ba.allocate(args) == Allocator::OutOfMemory);
+        testAssert(ba.m_allocated == PAGESIZE * 10);
 
-    return OK;
-}
+        return OK;
+        }
 
 TestCase(BubbleRelease)
-{
-    const Size rangeSize = PAGESIZE * 64;
-    TestInt<uint> addresses(UINT_MIN, UINT_MAX - rangeSize);
-    const Allocator::Range range = { addresses.random(), rangeSize, sizeof(u32) };
-    BubbleAllocator ba(range);
-    Allocator::Range args = { 0, PAGESIZE, sizeof(u32) };
+        {
+                const Size rangeSize = PAGESIZE * 64;
+                TestInt<uint> addresses(UINT_MIN, UINT_MAX - rangeSize);
+                const Allocator::Range range = { addresses.random(), rangeSize, sizeof(u32) };
+                BubbleAllocator ba(range);
+                Allocator::Range args = { 0, PAGESIZE, sizeof(u32) };
 
-    // Allocate ten pages
-    for (Size i = 0; i < 10; i++)
-    {
-        testAssert(ba.allocate(args) == Allocator::Success);
-        testAssert(args.address == addresses[0] + (PAGESIZE * i));
-        testAssert(args.size == PAGESIZE);
-        testAssert(ba.m_allocated == PAGESIZE * (i + 1));
-    }
+                // Allocate ten pages
+                for (Size i = 0; i < 10; i++)
+                {
+                    testAssert(ba.allocate(args) == Allocator::Success);
+                    testAssert(args.address == addresses[0] + (PAGESIZE * i));
+                    testAssert(args.size == PAGESIZE);
+                    testAssert(ba.m_allocated == PAGESIZE * (i + 1));
+                }
 
-    // Releasing should not work
-    testAssert(ba.release(addresses[0]) != Allocator::Success);
-    testAssert(ba.m_allocated == PAGESIZE * 10);
+                // Releasing should not work
+                testAssert(ba.release(addresses[0]) != Allocator::Success);
+                testAssert(ba.m_allocated == PAGESIZE * 10);
 
-    return OK;
-}
+                return OK;
+        }

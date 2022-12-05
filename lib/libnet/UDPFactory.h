@@ -35,9 +35,8 @@ class UDP;
  *
  * The UDP factory creates new sockets for applications.
  */
-class UDPFactory : public File
-{
-  public:
+class UDPFactory : public File {
+public:
 
     /**
      * Constructor
@@ -63,11 +62,11 @@ class UDPFactory : public File
      *
      * @return Result code
      */
-    virtual FileSystem::Result read(IOBuffer & buffer,
-                                    Size & size,
+    virtual FileSystem::Result read(IOBuffer &buffer,
+                                    Size &size,
                                     const Size offset);
 
-  private:
+private:
 
     /** UDP protocol instance */
     UDP *m_udp;

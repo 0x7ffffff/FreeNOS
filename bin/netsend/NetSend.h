@@ -30,9 +30,8 @@
 /**
  * Diagnostic program for sending network packets
  */
-class NetSend : public POSIXApplication
-{
-  private:
+class NetSend : public POSIXApplication {
+private:
 
     /** Size of each packet to send in bytes */
     static const Size PacketSize = 1448;
@@ -40,7 +39,7 @@ class NetSend : public POSIXApplication
     /** Number of packets to submit for transmission each iteration */
     static const Size QueueSize = NetworkQueue::MaxPackets;
 
-  public:
+public:
 
     /**
      * Class constructor.
@@ -70,7 +69,7 @@ class NetSend : public POSIXApplication
      */
     virtual Result exec();
 
-  private:
+private:
 
     /**
      * Send multiple UDP packets
@@ -83,9 +82,9 @@ class NetSend : public POSIXApplication
      */
     Result udpSendMultiple(const struct iovec *vec,
                            const Size count,
-                           const struct sockaddr & addr) const;
+                           const struct sockaddr &addr) const;
 
-  private:
+private:
 
     /** Network client */
     NetworkClient *m_client;

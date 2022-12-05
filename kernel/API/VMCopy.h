@@ -43,8 +43,7 @@ inline API::Result VMCopy(const ProcessID proc,
                           const API::Operation how,
                           const Address ours,
                           const Address theirs,
-                          const Size sz)
-{
+                          const Size sz) {
     return (API::Result) trapKernel5(API::VMCopyNumber, proc, how, ours, theirs, sz);
 }
 

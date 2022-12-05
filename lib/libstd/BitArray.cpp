@@ -19,39 +19,32 @@
 #include "BitArray.h"
 #include "MemoryBlock.h"
 
-BitArray::BitArray(const Size bitCount, u8 *array)
-{
+BitArray::BitArray(const Size bitCount, u8 *array) {
     m_array = array ? array : new u8[calculateBitmapSize(bitCount)];
     m_allocated = (array == ZERO);
-    m_bitCount  = bitCount;
+    m_bitCount = bitCount;
     m_set = 0;
 
     clear();
 }
 
-BitArray::~BitArray()
-{
-    if (m_allocated)
-    {
+BitArray::~BitArray() {
+    if (m_allocated) {
         delete[] m_array;
     }
 }
 
-Size BitArray::size() const
-{
+Size BitArray::size() const {
     return m_bitCount;
 }
 
-Size BitArray::count(const bool on) const
-{
+Size BitArray::count(const bool on) const {
     return on ? m_set : m_bitCount - m_set;
 }
 
-void BitArray::set(const Size bit, const bool value)
-{
+void BitArray::set(const Size bit, const bool value) {
     // Check if the bit is inside the array
-    if (bit >= m_bitCount)
-    {
+    if (bit >= m_bitCount) {
         return;
     }
 
@@ -59,37 +52,29 @@ void BitArray::set(const Size bit, const bool value)
     bool current = m_array[bit / 8] & (1 << (bit % 8));
 
     // Update the bit only if needed (and update administration)
-    if (current != value)
-    {
-        if (value)
-        {
+    if (current != value) {
+        if (value) {
             m_array[bit / 8] |= 1 << (bit % 8);
             m_set++;
-        }
-        else
-        {
+        } else {
             m_array[bit / 8] &= ~(1 << (bit % 8));
             m_set--;
         }
     }
 }
 
-void BitArray::unset(const Size bit)
-{
+void BitArray::unset(const Size bit) {
     set(bit, false);
 }
 
-bool BitArray::isSet(const Size bit) const
-{
+bool BitArray::isSet(const Size bit) const {
     assert(bit < m_bitCount);
 
     return m_array[bit / 8] & (1 << (bit % 8));
 }
 
-void BitArray::setRange(const Size from, const Size to)
-{
-    for (Size i = from; i <= to; i++)
-    {
+void BitArray::setRange(const Size from, const Size to) {
+    for (Size i = from; i <= to; i++) {
         set(i, true);
     }
 }
@@ -97,16 +82,13 @@ void BitArray::setRange(const Size from, const Size to)
 BitArray::Result BitArray::setNext(Size *bit,
                                    const Size count,
                                    const Size start,
-                                   const Size boundary)
-{
+                                   const Size boundary) {
     Size from = 0, found = 0;
 
     // Loop BitArray for unset bits
-    for (Size i = start; i < m_bitCount;)
-    {
+    for (Size i = start; i < m_bitCount;) {
         // Try to fast-forward 32 bits to search
-        if (m_bitCount > 32 && i < m_bitCount - 32 && ((u32 *)m_array)[i / 32] == 0xffffffff)
-        {
+        if (m_bitCount > 32 && i < m_bitCount - 32 && ((u32 *) m_array)[i / 32] == 0xffffffff) {
             from = found = 0;
 
             if (i & 31)
@@ -115,9 +97,8 @@ BitArray::Result BitArray::setNext(Size *bit,
                 i += 32;
             continue;
         }
-        // Try to fast-forward 8 bits to search
-        else if (m_bitCount > 8 && i < m_bitCount - 8 && m_array[i / 8] == 0xff)
-        {
+            // Try to fast-forward 8 bits to search
+        else if (m_bitCount > 8 && i < m_bitCount - 8 && m_array[i / 8] == 0xff) {
             from = found = 0;
 
             if (i & 7)
@@ -125,33 +106,24 @@ BitArray::Result BitArray::setNext(Size *bit,
             else
                 i += 8;
             continue;
-        }
-        else if (!isSet(i))
-        {
+        } else if (!isSet(i)) {
             // Remember this bit
-            if (!found)
-            {
-                if (!(i % boundary))
-                {
-                    from  = i;
+            if (!found) {
+                if (!(i % boundary)) {
+                    from = i;
                     found = 1;
                 }
-            }
-            else
-            {
+            } else {
                 found++;
             }
 
             // Are there enough contigious bits?
-            if (found >= count)
-            {
+            if (found >= count) {
                 setRange(from, i);
                 *bit = from;
                 return Success;
             }
-        }
-        else
-        {
+        } else {
             from = found = 0;
         }
 
@@ -162,42 +134,35 @@ BitArray::Result BitArray::setNext(Size *bit,
     return OutOfMemory;
 }
 
-u8 * BitArray::array() const
-{
+u8 *BitArray::array() const {
     return m_array;
 }
 
-void BitArray::setArray(u8 *map, const Size bitCount)
-{
+void BitArray::setArray(u8 *map, const Size bitCount) {
     // Set bits count
-    if (bitCount)
-    {
+    if (bitCount) {
         m_bitCount = bitCount;
     }
 
     // Cleanup old array, if needed
-    if (m_array && m_allocated)
-    {
+    if (m_array && m_allocated) {
         delete[] m_array;
     }
 
     // Reassign to the new map
     m_array = map;
     m_allocated = false;
-    m_set   = 0;
+    m_set = 0;
 
     // Recalculate set bits
-    for (Size i = 0; i < m_bitCount; i++)
-    {
-        if (isSet(i))
-        {
+    for (Size i = 0; i < m_bitCount; i++) {
+        if (isSet(i)) {
             m_set++;
         }
     }
 }
 
-void BitArray::clear()
-{
+void BitArray::clear() {
     // Zero it
     MemoryBlock::set(m_array, 0, calculateBitmapSize(m_bitCount));
 
@@ -205,18 +170,15 @@ void BitArray::clear()
     m_set = 0;
 }
 
-bool BitArray::operator[](const Size bit) const
-{
+bool BitArray::operator[](const Size bit) const {
     return isSet(bit);
 }
 
-bool BitArray::operator[](const int bit) const
-{
+bool BitArray::operator[](const int bit) const {
     return isSet(bit);
 }
 
-inline Size BitArray::calculateBitmapSize(const Size bitCount) const
-{
+inline Size BitArray::calculateBitmapSize(const Size bitCount) const {
     const Size bytes = bitCount / 8;
 
     if (bitCount % 8)

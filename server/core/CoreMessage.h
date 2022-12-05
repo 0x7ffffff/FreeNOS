@@ -35,8 +35,7 @@
  *
  * @see CoreServer
  */
-typedef struct CoreMessage : public ChannelMessage
-{
+typedef struct CoreMessage : public ChannelMessage {
     Core::Action action;    /**< Action to perform. */
     Core::Result result;    /**< Result code. */
     Size coreNumber;        /**< Indicates a number of cores or a specific coreId. */
@@ -44,7 +43,7 @@ typedef struct CoreMessage : public ChannelMessage
     Size programSize;       /**< Contains the size of a loaded program. */
     const char *programCmd; /**< Command-line string for a loaded program. */
 }
-CoreMessage;
+        CoreMessage;
 
 /**
  * @}

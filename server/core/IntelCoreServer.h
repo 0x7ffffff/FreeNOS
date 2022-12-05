@@ -39,14 +39,13 @@
  *
  * @see IntelMP
  */
-class IntelCoreServer : public CoreServer
-{
-  private:
+class IntelCoreServer : public CoreServer {
+private:
 
     /** Inter-Processor-Interrupt vector number */
     static const uint IPIVector = 50;
 
-  public:
+public:
 
     /**
      * Class constructor function.
@@ -91,7 +90,7 @@ class IntelCoreServer : public CoreServer
      */
     virtual Core::Result sendIPI(uint coreId);
 
-  private:
+private:
 
     IntelAPIC m_apic;
     IntelMP m_mp;

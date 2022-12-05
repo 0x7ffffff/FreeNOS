@@ -21,14 +21,11 @@
 #include "IntelMP.h"
 #include "IntelBoot.h"
 
-IntelMP::IntelMP(IntelAPIC & apic)
-    : CoreManager()
-    , m_apic(apic)
-{
+IntelMP::IntelMP(IntelAPIC &apic)
+        : CoreManager(), m_apic(apic) {
 }
 
-IntelMP::Result IntelMP::initialize()
-{
+IntelMP::Result IntelMP::initialize() {
     SystemInformation info;
 
     m_bios.map(MPAreaAddr, MPAreaSize);
@@ -38,14 +35,12 @@ IntelMP::Result IntelMP::initialize()
     return Success;
 }
 
-IntelMP::MPConfig * IntelMP::scanMemory(Address addr)
-{
+IntelMP::MPConfig *IntelMP::scanMemory(Address addr) {
     MPFloat *mpf;
 
     // Look for the Multiprocessor configuration
-    for (uint i = 0; i < MPAreaSize - sizeof(Address); i += sizeof(Address))
-    {
-        mpf = (MPFloat *)(addr + i);
+    for (uint i = 0; i < MPAreaSize - sizeof(Address); i += sizeof(Address)) {
+        mpf = (MPFloat *) (addr + i);
 
         if (mpf->signature == MPFloatSignature)
             return (MPConfig *) (mpf->configAddr - MPAreaAddr + addr);
@@ -53,8 +48,7 @@ IntelMP::MPConfig * IntelMP::scanMemory(Address addr)
     return ZERO;
 }
 
-IntelMP::Result IntelMP::discover()
-{
+IntelMP::Result IntelMP::discover() {
     MPConfig *mpc = 0;
     MPEntry *entry;
 
@@ -65,11 +59,9 @@ IntelMP::Result IntelMP::discover()
     mpc = scanMemory(m_bios.getBase());
 
     // Retry in the last 1MB of physical memory if not found.
-    if (!mpc)
-    {
+    if (!mpc) {
         mpc = scanMemory(m_lastMemory.getBase());
-        if (!mpc)
-        {
+        if (!mpc) {
             ERROR("MP header not found");
             return NotFound;
         }
@@ -78,7 +70,7 @@ IntelMP::Result IntelMP::discover()
     // Found config
     DEBUG("MP header found at " << (void *) mpc);
     DEBUG("Local APIC at " << (void *) mpc->apicAddr);
-    entry = (MPEntry *)(mpc + 1);
+    entry = (MPEntry *) (mpc + 1);
 
     // Search for multiprocessor entries
     for (uint i = 0; i < mpc->count; i++)
@@ -87,10 +79,9 @@ IntelMP::Result IntelMP::discover()
     return Success;
 }
 
-IntelMP::Result IntelMP::boot(CoreInfo *info)
-{
+IntelMP::Result IntelMP::boot(CoreInfo *info) {
     DEBUG("booting core" << info->coreId << " at " <<
-            (void *) info->memory.phys << " with kernel: " << info->kernelCommand);
+                         (void *) info->memory.phys << " with kernel: " << info->kernelCommand);
 
     // Copy 16-bit realmode startup code
     VMCopy(SELF, API::Write, (Address) bootEntry16, MPEntryAddr, PAGESIZE);
@@ -99,18 +90,16 @@ IntelMP::Result IntelMP::boot(CoreInfo *info)
     VMCopy(SELF, API::Write, (Address) info, MPInfoAddr, sizeof(*info));
 
     // Send inter-processor-interrupt to wakeup the processor
-    if (m_apic.sendStartupIPI(info->coreId, MPEntryAddr) != IntController::Success)
-    {
+    if (m_apic.sendStartupIPI(info->coreId, MPEntryAddr) != IntController::Success) {
         ERROR("failed to send startup IPI via APIC");
         return IOError;
     }
 
     // Wait until the core raises the 'booted' flag in CoreInfo
-    while (1)
-    {
+    while (1) {
         CoreInfo check;
 
-        VMCopy(SELF, API::Read, (Address) &check, MPInfoAddr, sizeof(check));
+        VMCopy(SELF, API::Read, (Address) & check, MPInfoAddr, sizeof(check));
 
         if (check.booted)
             break;
@@ -118,13 +107,10 @@ IntelMP::Result IntelMP::boot(CoreInfo *info)
     return Success;
 }
 
-IntelMP::MPEntry * IntelMP::parseEntry(IntelMP::MPEntry *entry)
-{
-    if (entry->type == MPEntryProc)
-    {
+IntelMP::MPEntry *IntelMP::parseEntry(IntelMP::MPEntry *entry) {
+    if (entry->type == MPEntryProc) {
         m_cores.append(entry->apicId);
         return entry + 1;
-    }
-    else
+    } else
         return (MPEntry *) (((Address)(entry)) + 8);
 }

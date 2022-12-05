@@ -38,9 +38,8 @@
 /**
  * Emulates VMShare() on the host OS using POSIX shared memory
  */
-class HostShareManager : public StrictSingleton<HostShareManager>
-{
-  private:
+class HostShareManager : public StrictSingleton<HostShareManager> {
+private:
 
     /** Maximum number of retries when sending a signal/message. */
     static const Size MaximumRetries = 60u;
@@ -51,7 +50,7 @@ class HostShareManager : public StrictSingleton<HostShareManager>
     /** Use the same result codes as VMShare(). */
     typedef API::Result Result;
 
-  public:
+public:
 
     /**
      * Constructor
@@ -114,7 +113,7 @@ class HostShareManager : public StrictSingleton<HostShareManager>
      */
     void notifyShareCreated(const ProcessID pid);
 
-  private:
+private:
 
     /**
      * Retrieve unique name for channel between target process and this process.
@@ -146,7 +145,7 @@ class HostShareManager : public StrictSingleton<HostShareManager>
      */
     bool isReady(const ProcessID pid) const;
 
-  private:
+private:
 
     /** Keeps track of all known shares. */
     HashTable<ProcessID, ProcessShares::MemoryShare *> m_shares;

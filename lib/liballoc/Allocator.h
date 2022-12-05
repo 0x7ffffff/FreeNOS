@@ -43,15 +43,13 @@
  * allocator. If a child allocator runs out of memory, it can ask the
  * parent for more memory.
  */
-class Allocator
-{
-  public:
+class Allocator {
+public:
 
     /**
      * Allocation results.
      */
-    enum Result
-    {
+    enum Result {
         Success = 0,
         InvalidAddress,
         InvalidSize,
@@ -62,14 +60,13 @@ class Allocator
     /**
      * Describes a range of memory.
      */
-    typedef struct Range
-    {
+    typedef struct Range {
         Address address; /**< Starting address of the memory range. */
         Size size;       /**< Amount of memory in bytes. */
         Size alignment;  /**< Alignment in bytes or ZERO for default alignment. */
     } Range;
 
-  public:
+public:
 
     /**
      * Default class constructor.
@@ -114,7 +111,7 @@ class Allocator
      *
      * @return Pointer to parent Allocator instance or NULL if none.
      */
-    Allocator * parent();
+    Allocator *parent();
 
     /**
      * Get memory base address for allocations.
@@ -152,7 +149,7 @@ class Allocator
      *
      * @return Result value.
      */
-    virtual Result allocate(Range & range);
+    virtual Result allocate(Range &range);
 
     /**
      * Release memory.
@@ -165,7 +162,7 @@ class Allocator
      */
     virtual Result release(const Address addr);
 
-  protected:
+protected:
 
     /**
      * Align memory address.
@@ -180,7 +177,7 @@ class Allocator
      */
     Address aligned(const Address addr, const Size boundary) const;
 
-  private:
+private:
 
     /** Points to the default Allocator for new()/delete(). */
     static Allocator *m_default;
@@ -204,8 +201,7 @@ class Allocator
  *
  * @param sz Amount of memory to allocate.
  */
-inline void * operator new(__SIZE_TYPE__ sz)
-{
+inline void *operator new(__SIZE_TYPE__ sz) {
     Allocator::Range alloc_args;
 
     alloc_args.size = sz;
@@ -222,8 +218,7 @@ inline void * operator new(__SIZE_TYPE__ sz)
  *
  * @param sz Amount of memory to allocate.
  */
-inline void * operator new[](__SIZE_TYPE__ sz)
-{
+inline void *operator new[](__SIZE_TYPE__ sz) {
     Allocator::Range alloc_args;
 
     alloc_args.size = sz;
@@ -240,9 +235,8 @@ inline void * operator new[](__SIZE_TYPE__ sz)
  *
  * @param mem Points to memory to release.
  */
-inline void operator delete (void *mem)
-{
-    Allocator::getDefault()->release((Address)mem);
+inline void operator delete(void *mem) {
+    Allocator::getDefault()->release((Address) mem);
 }
 
 /**
@@ -250,9 +244,8 @@ inline void operator delete (void *mem)
  *
  * @param mem Points to memory to release.
  */
-inline void operator delete[] (void *mem)
-{
-    Allocator::getDefault()->release((Address)mem);
+inline void operator delete[](void *mem) {
+    Allocator::getDefault()->release((Address) mem);
 }
 
 #endif /* __HOST__ */
@@ -263,8 +256,7 @@ inline void operator delete[] (void *mem)
  * @param sz Size to allocate (ignored).
  * @param addr Memory address to return.
  */
-inline void * operator new(__SIZE_TYPE__ sz, Address addr)
-{
+inline void *operator new(__SIZE_TYPE__ sz, Address addr) {
     return (void *) addr;
 }
 

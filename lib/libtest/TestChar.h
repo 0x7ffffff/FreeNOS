@@ -32,9 +32,9 @@
 /**
  * Generate test data for character strings.
  */
-template <class T> class TestChar : public TestData<T>
-{
-  public:
+template<class T>
+class TestChar : public TestData<T> {
+public:
 
     /**
      * Constructor.
@@ -42,8 +42,7 @@ template <class T> class TestChar : public TestData<T>
      * @param min Minimum length of the character strings.
      * @param max Maximum length of the character strings.
      */
-    TestChar(Size min, Size max) : TestData<T>()
-    {
+    TestChar(Size min, Size max) : TestData<T>() {
         m_max = max;
         m_min = min;
     }
@@ -51,8 +50,7 @@ template <class T> class TestChar : public TestData<T>
     /**
      * Destructor.
      */
-    virtual ~TestChar()
-    {
+    virtual ~TestChar() {
         for (Size i = 0; i < this->m_values.count(); i++)
             delete[] this->m_values[i];
     }
@@ -78,12 +76,11 @@ template <class T> class TestChar : public TestData<T>
     /**
      * Get the length of the generated character string.
      */
-    virtual Size length(Size position)
-    {
+    virtual Size length(Size position) {
         return m_lengths[position];
     }
 
-  private:
+private:
 
     /** Maximum value */
     Size m_max;
@@ -92,15 +89,14 @@ template <class T> class TestChar : public TestData<T>
     Size m_min;
 
     /** String lengths */
-    Vector<Size> m_lengths;
+    Vector <Size> m_lengths;
 };
 
-template<> char * TestChar<char *>::random(Size count)
-{
-    char * value = 0;
+template<>
+char *TestChar<char *>::random(Size count) {
+    char *value = 0;
 
-    while (count--)
-    {
+    while (count--) {
         TestInt<uint> sizes(m_min, m_max);
         TestInt<uint> chars(32, 126); /* ' ' till '~' */
         Size len = sizes.random();
@@ -119,8 +115,8 @@ template<> char * TestChar<char *>::random(Size count)
     return value;
 }
 
-template<> char * TestChar<char *>::unique(Size count)
-{
+template<>
+char *TestChar<char *>::unique(Size count) {
     const Size charMin = 32, charMax = 126;  /* ' ' till '~' */
     TestInt<uint> chars(charMin, charMax);
     char value[m_max + 1];
@@ -129,16 +125,14 @@ template<> char * TestChar<char *>::unique(Size count)
     MemoryBlock::set(value, 0, sizeof(value));
 
     // Generate 'count' unique strings using the prefix.
-    for (Size i = 0; i < count; i++)
-    {
+    for (Size i = 0; i < count; i++) {
         const Size len = (i + 1) < m_max ? (i + 1) : m_max;
         char *buf = new char[sizeof(value)];
 
         // String is filled by incrementing characters
         const Size numToAdd = i < m_min ? m_min : 1;
 
-        for (Size j = 0; j < numToAdd; j++)
-        {
+        for (Size j = 0; j < numToAdd; j++) {
             const char c = (char) ((i / (sizeof(value) - 1)) + charMin);
             value[i % (sizeof(value) - 1)] = c;
         }

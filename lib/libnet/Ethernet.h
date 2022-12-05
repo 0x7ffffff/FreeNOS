@@ -25,7 +25,9 @@
 #include "NetworkProtocol.h"
 
 class ARP;
+
 class IPV4;
+
 class ICMP;
 
 /**
@@ -39,9 +41,8 @@ class ICMP;
 /**
  * Ethernet networking protocol
  */
-class Ethernet : public NetworkProtocol
-{
-  public:
+class Ethernet : public NetworkProtocol {
+public:
 
     /** Size of the CRC checksum (which is set after the payload) */
     static const Size CRCSize = 4;
@@ -49,11 +50,11 @@ class Ethernet : public NetworkProtocol
     /**
      * Ethernet network address
      */
-    typedef struct Address
-    {
+    typedef struct Address {
         u8 addr[6];
     }
-    PACKED Address;
+            PACKED
+    Address;
 
     /**
      * Ethernet network packet header.
@@ -61,25 +62,24 @@ class Ethernet : public NetworkProtocol
      * This header is prepended to every
      * ethernet packet send on the actual physical link.
      */
-    typedef struct Header
-    {
+    typedef struct Header {
         Address destination;    /**< packet destination address */
         Address source;         /**< packet source address */
         u16 type;               /**< payload type */
     }
-    PACKED Header;
+            PACKED
+    Header;
 
     /**
      * List of ethernet payload types.
      */
-    enum PayloadType
-    {
+    enum PayloadType {
         IPV4 = 0x0800u,         /**< Internet protocol v4 */
         IPV6 = 0x86ddu,         /**< Internet protocol v6 */
-        ARP  = 0x0806u          /**< Address resolution protocol */
+        ARP = 0x0806u          /**< Address resolution protocol */
     };
 
-  public:
+public:
 
     /**
      * Constructor
@@ -170,7 +170,7 @@ class Ethernet : public NetworkProtocol
     virtual FileSystem::Result process(const NetworkQueue::Packet *pkt,
                                        const Size offset);
 
-  private:
+private:
 
     /** Current ethernet address */
     Address m_address;
@@ -182,7 +182,7 @@ class Ethernet : public NetworkProtocol
     ::IPV4 *m_ipv4;
 };
 
-Log & operator << (Log &log, const Ethernet::Address & addr);
+Log &operator<<(Log &log, const Ethernet::Address &addr);
 
 /**
  * @}

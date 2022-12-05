@@ -34,9 +34,8 @@
 /**
  * Executable and Linkable Format (ELF).
  */
-class ELF : public ExecutableFormat
-{
-  public:
+class ELF : public ExecutableFormat {
+public:
 
     /**
      * Class constructor.

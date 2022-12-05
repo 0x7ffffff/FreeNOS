@@ -17,14 +17,12 @@
 
 #include <Randomizer.h>
 
-extern C void srandom(unsigned int new_seed)
-{
+extern C void srandom(unsigned int new_seed) {
     Randomizer rand;
     rand.seed(new_seed);
 }
 
-extern C long int random(void)
-{
+extern C long int random(void) {
     Randomizer rand;
     return rand.next();
 }

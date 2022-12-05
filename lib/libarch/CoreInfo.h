@@ -57,8 +57,7 @@
  * The kernel and coreserver use this struct for memory management
  * and setting up IPC communication channels between cores.
  */
-typedef struct CoreInfo
-{
+typedef struct CoreInfo {
     /** Set to non-zero by early boot code when this core is running */
     uint booted;
 
@@ -98,17 +97,15 @@ typedef struct CoreInfo
     /** Arch-specific timer counter */
     uint timerCounter;
 
-    bool operator == (const struct CoreInfo & info) const
-    {
+    bool operator==(const struct CoreInfo &info) const {
         return false;
     }
 
-    bool operator != (const struct CoreInfo & info) const
-    {
+    bool operator!=(const struct CoreInfo &info) const {
         return true;
     }
 }
-CoreInfo;
+        CoreInfo;
 
 /**
  * Local CoreInfo instance.
@@ -120,7 +117,8 @@ CoreInfo;
 extern CoreInfo coreInfo;
 
 /** Non-zero if this executable is linked as the kernel */
-extern C uint isKernel;
+extern C uint
+isKernel;
 
 #endif /* __ASSEMBLER__ */
 
